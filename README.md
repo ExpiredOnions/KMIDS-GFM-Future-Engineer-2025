@@ -1,5 +1,7 @@
 # 🚀 Future Engineers - Robotics Project Documentation
 
+<!-- NOTE: MUST PRINT HARD COPY AS WELL -->
+
 <!-- NOTE: Replace all placeholder sections below with your team's actual content and details. -->
 
 ## 📌 Table of Contents
@@ -25,6 +27,14 @@ This project was developed as part of the Future Engineers category in the World
 
 ## 2. ⚙️ Mobility Management
 
+<!-- NOTE: Mobility management discussion should cover how the vehicle movements are
+managed. What motors are selected, how they are selected and implemented.
+A brief discussion regarding the vehicle chassis design /selection can be
+provided as well as the mounting of all components to the vehicle
+chassis/structure. The discussion may include engineering principles such as
+speed, torque, power etc. usage. Building or assembly instructions can be
+provided together with 3D CAD files to 3D print parts. -->
+
 ### 2.1 Motor Selection
 <!-- NOTE: Explain what motors were used, their specifications (torque, RPM, voltage), and why they were chosen. -->
 
@@ -41,6 +51,14 @@ This project was developed as part of the Future Engineers category in the World
 
 ## 3. 🔋 Power and Sense Management
 
+<!-- NOTE: Power and Sense management discussion should cover the power source for
+the vehicle as well as the sensors required to provide the vehicle with
+information to negotiate the different challenges. The discussion can include
+the reasons for selecting various sensors and how they are being used on the
+vehicle together with power consumption. The discussion could include a wiring
+diagram with BOM for the vehicle that includes all aspects of professional
+wiring diagrams. -->
+
 ### 3.1 Power Source
 <!-- NOTE: Describe the battery type, voltage, capacity, and reason for selection. -->
 
@@ -53,6 +71,10 @@ This project was developed as part of the Future Engineers category in the World
 ---
 
 ## 4. 🧠 Obstacle Management
+
+<!-- NOTE: Obstacle management discussion should include the strategy for the vehicle to
+negotiate the obstacle course for all the challenges. This could include flow
+diagrams, pseudo code and source code with detailed comments. -->
 
 ### 4.1 Strategy Overview
 <!-- NOTE: Explain the logic and steps your robot takes to detect and navigate obstacles. -->
@@ -67,6 +89,13 @@ This project was developed as part of the Future Engineers category in the World
 
 ## 5. 🖼️ Images
 
+<!-- NOTE: Pictures of the team and robot must be provided. The pictures of the robot must
+cover all sides of the robot, must be clear, in focus and show aspects of the
+mobility, power and sense, and obstacle management. Reference in the
+discussion sections 1, 2 and 3 can be made to these pictures. Team photo is
+necessary for judges to relate and identify the team during the local and
+international competitions. -->
+
 ### 5.1 Robot Images
 <!-- NOTE: Include clear, high-quality photos from top, bottom, front, back, left, and right. -->
 
@@ -79,6 +108,11 @@ This project was developed as part of the Future Engineers category in the World
 ---
 
 ## 6. 🎥 Performance Videos
+
+<!-- NOTE: The performance videos must demonstrate the performance of the vehicle from
+start to finish for each challenge. The videos could include an overlay of
+commentary, titles or animations. The video could also include aspects of
+section 1, 2 or 3. -->
 
 ### 6.1 Challenge 1 - Open Challenge
 [Watch on YouTube](#) <!-- NOTE: Replace with actual video link -->
