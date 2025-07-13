@@ -1,10 +1,20 @@
-# 🚀 Future Engineers - Robotics Project Documentation
+#  Future Engineers - Robotics Project Documentation
 
 <!-- NOTE: MUST PRINT HARD COPY AS WELL -->
 
+
+Welcome to the official repository of **Team GFM**, participants in the Future Engineers category of the WRO competition.
+
+## Team Members
+- **Garfield** 
+- **Pleum** 
+- **Kao** 
+
+We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, development, testing, and coding of our autonomous vehicle.
+
 <!-- NOTE: Replace all placeholder sections below with your team's actual content and details. -->
 
-## 📌 Table of Contents
+##  Table of Contents
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
 - [3. Power and Sense Management](#3-power-and-sense-management)
@@ -17,15 +27,22 @@
 
 ---
 
-## 1. 📖 About the Project
+## 1.  About the Project
 
-This project was developed as part of the Future Engineers category in the World Robot Olympiad. Our goal was to design, build, and program an autonomous robot capable of completing multiple challenges with efficiency and reliability.
+
+This project focuses on designing, building, and programming an autonomous robot capable of completing a series of complex obstacle challenges as part of the WRO Future Engineers competition. 
+
+The robot is engineered with a modular chassis, powered by a ..., and controlled via an Arduino Mega 2560. It utilises a combination of sensors—including---.
+Our objective was to create an intelligent robot that is capable of navigating through obstacles with precision and speed. 
+
+-This repository contains detailed documentation of our hardware design, sensor integration, mobility strategy, power management, and source code, along with supporting CAD files, wiring diagrams, and demonstration videos.-
+
 
 <!-- NOTE: You should add a few paragraphs here about your inspiration, high-level goals, team structure, and overall approach. -->
 
 ---
 
-## 2. ⚙️ Mobility Management
+## 2.  Mobility Management
 
 <!-- NOTE: Mobility management discussion should cover how the vehicle movements are
 managed. What motors are selected, how they are selected and implemented.
@@ -49,7 +66,7 @@ provided together with 3D CAD files to 3D print parts. -->
 
 ---
 
-## 3. 🔋 Power and Sense Management
+## 3.  Power and Sense Management
 
 <!-- NOTE: Power and Sense management discussion should cover the power source for
 the vehicle as well as the sensors required to provide the vehicle with
@@ -70,7 +87,7 @@ wiring diagrams. -->
 
 ---
 
-## 4. 🧠 Obstacle Management
+## 4.  Obstacle Management
 
 <!-- NOTE: Obstacle management discussion should include the strategy for the vehicle to
 negotiate the obstacle course for all the challenges. This could include flow
@@ -87,7 +104,7 @@ diagrams, pseudo code and source code with detailed comments. -->
 
 ---
 
-## 5. 🖼️ Images
+## 5.  Images
 
 <!-- NOTE: Pictures of the team and robot must be provided. The pictures of the robot must
 cover all sides of the robot, must be clear, in focus and show aspects of the
@@ -107,7 +124,7 @@ international competitions. -->
 
 ---
 
-## 6. 🎥 Performance Videos
+## 6.  Performance Videos
 
 <!-- NOTE: The performance videos must demonstrate the performance of the vehicle from
 start to finish for each challenge. The videos could include an overlay of
@@ -124,7 +141,7 @@ section 1, 2 or 3. -->
 
 ---
 
-## 7. 💻 Source Code
+## 7.  Source Code
 
 ### 7.1 Code Structure
 <!-- NOTE: Explain how your codebase is organized (e.g., folders for different challenges or components). -->
@@ -141,7 +158,7 @@ section 1, 2 or 3. -->
 
 ---
 
-## 8. 🛠️ Build Instructions
+## 8.  Build Instructions
 
 ### 8.1 3D Printed Parts
 <!-- NOTE: Mention parts that are 3D printed. Include .STL files in the repo. -->
