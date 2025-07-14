@@ -3,14 +3,14 @@
 <!-- NOTE: MUST PRINT HARD COPY AS WELL -->
 
 
-Welcome to the official repository of **Team GFM**, participants in the Future Engineers category of the WRO competition.
+Welcome to the official repository of **Team GFM**. We are participants in the Future Engineers category of the WRO competition.
 
 ## Team Members
 - **Garfield** 
 - **Pleum** 
 - **Kao** 
 
-We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, development, testing, and coding of our autonomous vehicle.
+We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
 <!-- NOTE: Replace all placeholder sections below with your team's actual content and details. -->
 
@@ -32,10 +32,13 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 
 This project focuses on designing, building, and programming an autonomous robot capable of completing a series of complex obstacle challenges as part of the WRO Future Engineers competition. 
 
-The robot is engineered with a modular chassis, powered by a ..., and controlled via an Arduino Mega 2560. It utilises a combination of sensors—including---.
+Team GFM was inspired by the challenge of applying engineering principles and problem-solving skills to creatively and efficiently solve complex problems. Pushing forward with our passion for innovation and hands-on learning.
+
+Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systemic process, brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and smoother workflow thoughout the project.
+
+The robot is engineered with a modular chassis, powered by a ..., and controlled via an .... It utilises a combination of sensors ---.
 Our objective was to create an intelligent robot that is capable of navigating through obstacles with precision and speed. 
 
--This repository contains detailed documentation of our hardware design, sensor integration, mobility strategy, power management, and source code, along with supporting CAD files, wiring diagrams, and demonstration videos.-
 
 
 <!-- NOTE: You should add a few paragraphs here about your inspiration, high-level goals, team structure, and overall approach. -->
