@@ -36,9 +36,9 @@ Team GFM was inspired by the challenge of applying engineering principles and pr
 
 Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systemic process, brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and smoother workflow thoughout the project.
 
-The robot is engineered with a modular chassis, powered by a ..., and controlled via an .... It utilises a combination of sensors ---.
-Our objective was to create an intelligent robot that is capable of navigating through obstacles with precision and speed. 
+The robot is engineered with a modular chassis, powered by a N20 motor with an encoder, and controlled using Raspberry Pi 5 and Raspberry Pi Pico 2. It utilises a combination of an RPLidar C1 LIDAR sensor and a fish-eye lens camera to provide a 360° view for obstacle detection and navigation.
 
+Our objective was to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed. 
 
 
 <!-- NOTE: You should add a few paragraphs here about your inspiration, high-level goals, team structure, and overall approach. -->
