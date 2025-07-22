@@ -1,9 +1,14 @@
-#  Future Engineers - Robotics Project Documentation
-
-<!-- NOTE: MUST PRINT HARD COPY AS WELL -->
+# Hello! We are **Team KMIDS-GFM**.
 
 
-Welcome to the official repository of **Team KMIDS-GFM**. We are participants in the Future Engineers category of the WRO competition.
+<p align="center">
+  pic
+</p>
+
+
+
+# WRO - Future Engineers - Robotics Project Documentation
+
 
 ## Team Members
 - **Chayanon Ninyawee (Garfield)** 
@@ -17,7 +22,21 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 ##  Table of Contents
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
+  - [Powertrain](#21-powertrain)
+    - [Motor](#motor)
+  - [Steering](#22-steering)
+    - [Servo](#servo)
+  - [Chassis Design](#23-chassis-design)
+  - [Mounting and Structure](#24-mounting-and-structure)
 - [3. Power and Sense Management](#3-power-and-sense-management)
+  - [Power Source](#31-power-source)
+  - [Sensor and Camera](#32-sensor-and-camera)
+    - [LIDAR Sensor](#lidar-sensor)
+    - [Fish Eye Lens Camera](#fish-eye-lens-camera)
+  - [Processing-Unit](#33-processing-units)
+    -[Raspberry Pi 5](#-raspberry-pi-5)
+    -[Raspberry Pi Pico 2](#-raspberry-pi-pico-2)
+  - [Circuit Diagram](#34-circuit-diagram)
 - [4. Obstacle Management](#4-obstacle-management)
 - [5. Images](#5-images)
 - [6. Performance Videos](#6-performance-videos)
@@ -46,15 +65,38 @@ Our objective was to create an intelligent robot that is capable of navigating t
 ---
 ## 2. Mobility Management
 
-### 2.1 Motor Selection
+Mobility Principles
 
-**Motor Used:** N20 DC Motor with Encoder  
+- **Drive System:** 2-wheel differential drive (rear wheels).
+- **Steering:** Front-wheel steering using S0004 servo.
+<!-- - **Gear Ratio:**  
+- **Speed/Torque Tradeoff:**  -->
+- **Feedback Control:** Uses encoder data for PID control to maintain trajectory.
+
+### 2.1 Powertrain
 
 
-<!-- **Specifications:**
-- Voltage: 
-- RPM:
-- Torque: -->
+### Motor
+Motor: N20 Motor w/ Encoder
+<!-- link here -->
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT MOTOR" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Voltage: </li>
+        <li>No-load Speed: </li>
+        <li>No-load Speed (RPM)</li>
+        <li>Stall Torque 0.3kg-cm</li>
+        <li>Current Draw (no-load & stall)</li>
+        <li>Gear Ratio: 30:1</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 **Reason for Selection:**
 - **Compact and lightweight**, ideal for small self-driving vehicles.
@@ -68,8 +110,31 @@ Our objective was to create an intelligent robot that is capable of navigating t
 - Encoder wires routed neatly and connected to **Raspberry Pi Pico 2**.
 - Rubber wheels are friction-fitted or screwed onto the motor shaft.
 
-**Servo Used:** S0004
-<!-- **Specifications:** -->
+### 2.2 Steering
+
+### S004 Servo 
+<!-- link here -->
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT SERVO" >
+    </td>
+    <td> 
+      <h3>Specifications:</h3>
+      <ul>
+          <li>Torque Rating: </li>
+          <li>Speed: sec/60°)</li>
+          <li>Voltage: </li>
+          <li>Control Signal Type: (e.g. PWM)</li>
+          <li>Rotation Angle: </li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+### Servo
+**Servo Used:** S004
+**Specifications:**
 
 **Reason for Selection:**
 - **Standard size and PWM interface** makes it easy to control via Raspberry Pi Pico 2.
@@ -84,37 +149,20 @@ Our objective was to create an intelligent robot that is capable of navigating t
 
 ---
 
-### 2.2 Chassis Design
+### 2.3 Chassis Design
 
 **Design Overview:**
-- Chassis is optimized for **symmetry** and **low center of gravity**.
-- **Material:** Acrylic sheet or 3D-printed PLA/ABS.
-- **Dimensions:** Approximately 20 cm × 15 cm (adjustable to rules).
-
-**Component Mounting:**
-- **SBC (Raspberry Pi 5)** mounted on **shock-absorbing standoffs**.
-- **RPi Pico 2** and power regulators are mounted on the base with Velcro or screws.
-- Servo and steering mechanism positioned at the front with rigid brackets.
-- All cables are routed to avoid entanglement or interference with motion.
-
----
-
-### 2.3 Mobility Principles
-
-- **Drive System:** 2-wheel differential drive (rear wheels).
-- **Steering:** Front-wheel steering using S0004 servo.
-<!-- - **Gear Ratio:**  
-- **Speed/Torque Tradeoff:**  -->
-- **Feedback Control:** Uses encoder data for PID control to maintain trajectory.
+- Chassis 
+- **Material:** .
+- **Dimensions:** .
 
 ---
 
 ### 2.4 Mounting and Structure
 
-- All components secured with **custom 3D-printed mounts** or **screw brackets**.
-- 3D designs available in **STL and STEP formats**.
-- Top-down mounting with modular access for battery and components.
-- Wire management maintained using **cable sleeves** and **clips**.
+- The servo is installed at the front center of the chassis using **servo mounts or brackets**, typically included with robotics chassis kits.
+- A **servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
+- The servo is securely screwed into a platform plate or slot to ensure no movement during operation.
 
 ---
 
@@ -128,57 +176,123 @@ Our objective was to create an intelligent robot that is capable of navigating t
 
 ---
 
-### 3.2 Sensors Used
+### 3.2 Sensor and Camera
 
-| Sensor                 | Purpose                          | Reason for Selection                              |
-|------------------------|-----------------------------------|---------------------------------------------------|
-| **RPLidar C1**         | 2D Lidar for obstacle detection   | Fast 360° scan, accurate, SLAM compatible         |
-| **5MP Fish Eye Camera**| Lane and object detection         | Wide-angle view, IR-compatible, fast image output |
-| **Motor Encoders**     | Speed and distance tracking       | Enables precise closed-loop control               |
+### LIDAR Sensor
+
+### [RPLIDAR C1](https://www.slamtec.com/en/C1)
+
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT LIDAR" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Distance Range:
+          <ul>
+            <li>White: 0.05~12m (70% Reflectivity)</li>
+            <li>Black: 0.05~6m (10% Reflectivity)</li>
+          </ul>
+        </li>
+        <li>Angle Resolution: 0.72°</li>
+        <li>Sample Frequency: 8~12Hz (10Hz Typical)</li>
+        <li>Range Accuracy: 15mm</li>
+        <li>Discharge Rate: 30C</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+**Reason for Selection:**
+- **Precise distance measurement** of obstacles within a wide radius
+- **360° scanning** makes it ideal for SLAM (Simultaneous Localization and Mapping).
+- **Compact size and lightweightness** allows easy fitting on our robot.
+- **Fast sampling rate** allows real-time mapping and obstacle avoidance.
+
+### Fish Eye Lens Camera
+
+### [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
+
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT Camera" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Voltage: 130°</li>
+        <li>Resolution: 5MP </li>
+        <li>Focal Length: Adjustable</li>
+        <li>Image Sensor: OV5647</li>
+        <li>Aperture: F2.35</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+**Reason for Selection:**
+- **130° wide field of view** captures a large area for tracking.
+- **Infrared compatibility** enables low-light vision.
+- **High-resolution (5MP)** provides clear image for the robot.
+- **Compact size** fits well on our robot.
+
 
 **Integration:**
-- Camera and Lidar connected to **RPi 5**.
-- Encoders connected to **RPi Pico 2**.
-<!-- - All sensors powered through regulated 5V output from UBECs. -->
+- Camera and Lidar connected to **Raspberry Pi 5**.
 
----
 
-### 3.3 Wiring and Bill of Materials (BOM)
+### 3.3 Processing Units
+
+### [Raspberry Pi 5]()
+
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT RP5" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Quad-core Arm Cortex-A76 CPU @ 2.4GHz</li>
+        <li>8GB LPDDR4X RAM</li>
+        <li>Dual 4K HDMI output (60fps)</li>
+        <li>PCIe 2.0 support via FPC connector</li>
+        <li>2x USB 3.0 ports, 2x USB 2.0 ports</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+### [Raspberry Pi Pico 2]()
+
+<table>
+  <tr>
+    <td>
+      <img src="" alt="INSERT RPP2" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Dual-core Arm Cortex-M0+</li>
+        <li>2MB flash memory</li>
+        <li>264KB SRAM</li>
+        <li>Built-in Wi-Fi (802.11n)</li>
+        <li>26 multi-function GPIO pins</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+### 3.4 Circuit Diagram
 
 **Wiring Summary:**
 >
 
 **Wiring Diagram:**
 > *[Include labeled wiring diagram image here]*
-
----
-
-**Bill of Materials:**
-
-| Component               | Specs                          | Qty | Source/Supplier        |
-|------------------------|---------------------------------|-----|------------------------|
-| N20 DC Motor + Encoder |                                 | 2   |    |
-| S0004 Servo            |                                 | 1   |    |
-| Raspberry Pi Pico 2    | Microcontroller                 | 1   |    |
-| Raspberry Pi 5         | SBC                             | 1   | |
-| RPLidar C1             | 360° Lidar                      | 1   | SLAMTEC         |
-| 5MP Fish Eye Camera    | Wide-angle, IR-capable          | 1   | Cytron     |
-| Chassis Material       | PLA or Acrylic Sheet            | 1   | Local / 3D Printed     |
-| 3D Printed Mounts      | STL files included              | N/A | User-designed          |
-| Wires                  | Assorted lengths/connectors     | —   | Any electronics vendor |
-
----
-
-### 📁 CAD & Design Files
-
-
-- ` ` — Base chassis
-- ` ` — Motor bracket
-- ` ` — Fisheye camera mount
-- ` ` — Front steering servo mount
-
-All files will be uploaded under ` ` and ` ` folders. 
-
 
 ---
 
@@ -254,6 +368,34 @@ NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and 
 ---
 
 ## 8. Build Instructions
+
+**Bill of Materials:**
+
+| Component               | Specs                          | Qty | Source/Supplier        |
+|------------------------|---------------------------------|-----|------------------------|
+| N20 DC Motor + Encoder |                                 | 2   |    |
+| S0004 Servo            |                                 | 1   |    |
+| Raspberry Pi Pico 2    | Microcontroller                 | 1   |    |
+| Raspberry Pi 5         | SBC                             | 1   | |
+| RPLidar C1             | 360° Lidar                      | 1   | SLAMTEC         |
+| 5MP Fish Eye Camera    | Wide-angle, IR-capable          | 1   | Cytron     |
+| Chassis Material       | PLA or Acrylic Sheet            | 1   | Local / 3D Printed     |
+| 3D Printed Mounts      | STL files included              | N/A | User-designed          |
+| Wires                  | Assorted lengths/connectors     | —   | Any electronics vendor |
+
+---
+
+### 📁 CAD & Design Files
+
+
+- ` ` — Base chassis
+- ` ` — Motor bracket
+- ` ` — Fisheye camera mount
+- ` ` — Front steering servo mount
+
+All files will be uploaded under ` ` and ` ` folders. 
+
+
 
 ### 8.1 3D Printed Parts
 <!-- TODO: Mention parts that are 3D printed. Include .STL files in the repo. -->
