@@ -34,8 +34,8 @@ We are a team of dedicated students with a passion for robotics and innovation. 
     - [LIDAR Sensor](#lidar-sensor)
     - [Fish Eye Lens Camera](#fish-eye-lens-camera)
   - [Processing-Unit](#33-processing-units)
-    -[Raspberry Pi 5](#-raspberry-pi-5)
-    -[Raspberry Pi Pico 2](#-raspberry-pi-pico-2)
+    - [Microcontroller](#microcontroller)
+    - [Single-Board Computer](#single-board-computer)
   - [Circuit Diagram](#34-circuit-diagram)
 - [4. Obstacle Management](#4-obstacle-management)
 - [5. Images](#5-images)
@@ -106,7 +106,7 @@ Motor: N20 Motor w/ Encoder
 - **Readily available** and widely supported.
 
 **Mounting:**
-- Installed using **3D-printed motor brackets** or **motor clamps**.
+- Installed using **3D-printed motor clamps** screwed to a detatchable motor plate.
 - Encoder wires routed neatly and connected to **Raspberry Pi Pico 2**.
 - Rubber wheels are friction-fitted or screwed onto the motor shaft.
 
@@ -143,16 +143,28 @@ Motor: N20 Motor w/ Encoder
 - **Widely used in hobby robotics**, with available documentation and mounting kits.
 
 **Mounting:**
-- Installed at the **front center of the chassis** using servo mounts or brackets.
+- Screwed directly into the **front of the chassis** .
 - A servo horn is attached to the **pivoting front wheel or steering linkage**.
 - The servo is screwed into a platform plate or chassis slot to prevent shifting during operation.
+- Uses Ackermann steering geometry similar to the mechanism found in real-world cars. Compared to differential drive robots (which steer by varying the speed of wheels), Ackermann steering turns the front wheels using the servo, while the rear wheel provides the drive force.
+
+This approach allows the robot to:
+
+Turn smoothly with minimal skidding.
+
+Follow curved paths more realistically.
+
+Navigate tight corners with better control at high speeds
 
 ---
 
 ### 2.3 Chassis Design
 
 **Design Overview:**
-- Chassis 
+
+
+- Custom designed and printed chassis
+- 
 - **Material:** .
 - **Dimensions:** .
 
@@ -160,8 +172,9 @@ Motor: N20 Motor w/ Encoder
 
 ### 2.4 Mounting and Structure
 
+- Uses a differential geartrain
 - The servo is installed at the front center of the chassis using **servo mounts or brackets**, typically included with robotics chassis kits.
-- A **servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
+- A **custom printed servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
 - The servo is securely screwed into a platform plate or slot to ensure no movement during operation.
 
 ---
@@ -215,15 +228,15 @@ Motor: N20 Motor w/ Encoder
 
 ### [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
-<table>
+<table >
   <tr>
-    <td>
-      <img src="" alt="INSERT Camera" >
+    <td align="center" width="300" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RaspberryPI-FE-5MPIRCAM.jpg" alt="INSERT Camera" width = 100% >
     </td>
-    <td>
+    <td >
       <h3>Specifications:</h3>
       <ul>
-        <li>Voltage: 130°</li>
+        <li>Voltage: 6V</li>
         <li>Resolution: 5MP </li>
         <li>Focal Length: Adjustable</li>
         <li>Image Sensor: OV5647</li>
@@ -246,7 +259,9 @@ Motor: N20 Motor w/ Encoder
 
 ### 3.3 Processing Units
 
-### [Raspberry Pi 5]()
+### Microcontroller
+
+### [Raspberry Pi 5](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html)
 
 <table>
   <tr>
@@ -266,7 +281,8 @@ Motor: N20 Motor w/ Encoder
   </tr>
 </table>
 
-### [Raspberry Pi Pico 2]()
+### Single-Board Computer
+### [Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
 
 <table>
   <tr>
