@@ -77,12 +77,13 @@ Mobility Principles
 
 
 ### Motor
+
 Motor: N20 Motor w/ Encoder
 <!-- link here -->
 <table>
   <tr>
-    <td>
-      <img src="" alt="INSERT MOTOR" >
+    <td align="center" width="300" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/motor.webp" alt="INSERT MOTOR" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -116,7 +117,7 @@ Motor: N20 Motor w/ Encoder
 <!-- link here -->
 <table>
   <tr>
-    <td>
+    <td align="center" width="300" >
       <img src="" alt="INSERT SERVO" >
     </td>
     <td> 
@@ -160,22 +161,36 @@ Navigate tight corners with better control at high speeds
 
 ### 2.3 Chassis Design
 
-**Design Overview:**
+### Design Overview:
+
+**Principle**
 
 
-- Custom designed and printed chassis
-- 
-- **Material:** .
-- **Dimensions:** .
+**Design**
 
----
+Our robot chassis was completely custom-designed and 3D printed using [placeholder] material, that gives us a detailed and precise model we can tailor to our needs such as allowing our components to fit together seamlessly, while the plastic allows the robot to be both lightweight and durable. The chassis is also designed with modularity in mind for additional future components and fixes.
+
+Material: 
+
+Dimensions:
+
+Design Philosophy: Compact, modular, precision
+
+CAD Software Used: 
+
+dedicated mounting points for motors, servo, camera, LIDAR, and battery compartment. making sure to have reduced overhangs
+
+Similar to the geometry found in cars, the chassis layout follows a rear-drive layout using differential motors (N20 w/ encoders) and front Ackermann steering using an S004 servo. This allows the robot to make curved turns with reduced slippage and increased stability, especially important for tight navigation tasks.
+
+
+
 
 ### 2.4 Mounting and Structure
 
 - Uses a differential geartrain
-- The servo is installed at the front center of the chassis using **servo mounts or brackets**, typically included with robotics chassis kits.
+- The servo is installed at the front center of the chassis using **custom printed servo mounts**, typically included with robotics chassis kits.
 - A **custom printed servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
-- The servo is securely screwed into a platform plate or slot to ensure no movement during operation.
+- The servo is securely screwed into a platform plate.
 
 ---
 
@@ -183,11 +198,20 @@ Navigate tight corners with better control at high speeds
 
 ### 3.1 Power Source
 
-**Battery:**  
-**Reason for Selection:**
+### [18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery))
 
-
----
+<table>
+  <tr>
+    <td align="center" width="300" >
+      <img src="" alt="INSERT Battery" width = 100% >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ### 3.2 Sensor and Camera
 
@@ -197,8 +221,8 @@ Navigate tight corners with better control at high speeds
 
 <table>
   <tr>
-    <td>
-      <img src="" alt="INSERT LIDAR" >
+    <td align="center" width="300" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/LIDAR.jpg" alt="INSERT LIDAR" width = 100% >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -213,6 +237,7 @@ Navigate tight corners with better control at high speeds
         <li>Sample Frequency: 8~12Hz (10Hz Typical)</li>
         <li>Range Accuracy: 15mm</li>
         <li>Discharge Rate: 30C</li>
+        <br/><br/>
       </ul>
     </td>
   </tr>
@@ -223,6 +248,9 @@ Navigate tight corners with better control at high speeds
 - **360° scanning** makes it ideal for SLAM (Simultaneous Localization and Mapping).
 - **Compact size and lightweightness** allows easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
+
+**Additional info**
+- custom made sensor driver 
 
 ### Fish Eye Lens Camera
 
@@ -265,8 +293,8 @@ Navigate tight corners with better control at high speeds
 
 <table>
   <tr>
-    <td>
-      <img src="" alt="INSERT RP5" >
+    <td align="center" width="300" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RP5.webp" alt="INSERT RP5" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -286,8 +314,8 @@ Navigate tight corners with better control at high speeds
 
 <table>
   <tr>
-    <td>
-      <img src="" alt="INSERT RPP2" >
+    <td align="center" width="300" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RPP2.webp" alt="INSERT RPP2" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -301,6 +329,8 @@ Navigate tight corners with better control at high speeds
     </td>
   </tr>
 </table>
+
+
 
 ### 3.4 Circuit Diagram
 
