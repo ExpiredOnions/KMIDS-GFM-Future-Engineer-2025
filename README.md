@@ -22,7 +22,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 ##  Table of Contents
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
-  - [Powertrain](#21-powertrain)
+  - [Drivetrain](#21-drivetrain)
     - [Motor](#motor)
   - [Steering](#22-steering)
     - [Servo](#servo)
@@ -34,8 +34,8 @@ We are a team of dedicated students with a passion for robotics and innovation. 
     - [LIDAR Sensor](#lidar-sensor)
     - [Fish Eye Lens Camera](#fish-eye-lens-camera)
   - [Processing-Unit](#33-processing-units)
-    - [Microcontroller](#microcontroller)
     - [Single-Board Computer](#single-board-computer)
+    - [Microcontroller](#microcontroller)
   - [Circuit Diagram](#34-circuit-diagram)
 - [4. Obstacle Management](#4-obstacle-management)
 - [5. Images](#5-images)
@@ -55,9 +55,9 @@ Team KMIDS-GFM was inspired by the challenge of applying engineering principles 
 
 Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and a smoother workflow throughout the project.
 
-The robot is engineered with a modular chassis, powered by an N20 motor with an encoder, and controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an RPLidar C1 LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
+Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
-Our objective was to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed. 
+Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed. 
 
 
 <!-- TODO: You should add a few paragraphs here about your inspiration, high-level goals, team structure, and overall approach. -->
@@ -65,20 +65,19 @@ Our objective was to create an intelligent robot that is capable of navigating t
 ---
 ## 2. Mobility Management
 
-Mobility Principles
+<!-- Discussion on design principle -->
+
+<!-- Our robot is designed with precision as our priority, as it is essential for navigating obstacles in the competition arena. -->
 
 - **Drive System:** 2-wheel differential drive (rear wheels).
-- **Steering:** Front-wheel steering using S0004 servo.
-<!-- - **Gear Ratio:**  
-- **Speed/Torque Tradeoff:**  -->
-- **Feedback Control:** Uses encoder data for PID control to maintain trajectory.
+- **Steering:** Front-wheel steering using S0004m servo.
 
-### 2.1 Powertrain
+### 2.1 Drivetrain
 
 
 ### Motor
 
-Motor: N20 Motor w/ Encoder
+Motor: N20 Motor 
 <!-- link here -->
 <table>
   <tr>
@@ -88,32 +87,41 @@ Motor: N20 Motor w/ Encoder
     <td>
       <h3>Specifications:</h3>
       <ul>
-        <li>Voltage: </li>
-        <li>No-load Speed: </li>
-        <li>No-load Speed (RPM)</li>
-        <li>Stall Torque 0.3kg-cm</li>
-        <li>Current Draw (no-load & stall)</li>
-        <li>Gear Ratio: 30:1</li>
+        <li>Voltage: 6V </li>
+        <li>No-load Speed: 500RPM </li>
+        <li>Stall Torque 0.15kg-cm</li>
+        <li>Current: 0.023A</li>
+        <li>Gear Ratio: 1:30</li>
       </ul>
     </td>
   </tr>
 </table>
 
 **Reason for Selection:**
-- **Compact and lightweight**, ideal for small self-driving vehicles.
-- **Integrated encoder** enables precise speed/distance tracking, essential for navigation.
-- **Low power consumption**, suitable for embedded systems.
-- **Moderate torque** for flat, indoor arenas.
-- **Readily available** and widely supported.
+- **Compact and lightweight**, allows us to fit into our robot that balances size and power.
+- **Moderate torque**  that is more than enough for the flat arena.
+- **Ease of use**.
 
 **Mounting:**
 - Installed using **3D-printed motor clamps** screwed to a detatchable motor plate.
-- Encoder wires routed neatly and connected to **Raspberry Pi Pico 2**.
-- Rubber wheels are friction-fitted or screwed onto the motor shaft.
+- Wires connected to **Raspberry Pi Pico 2**.
+- Rubber wheels are screwed onto the motor shaft.
 
 ### 2.2 Steering
 
-### S004 Servo 
+
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+
+The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
+
+<img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/ackermann%20steering.png">
+
+While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking where precise control and minimized turning radius are essential. It enables smoother maneuvers and accurate alignment in narrower spaces. .
+
+Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. By using CAD to design the mechanism, it gives us the fexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
+
+
+### S0004m Servo 
 <!-- link here -->
 <table>
   <tr>
@@ -123,19 +131,15 @@ Motor: N20 Motor w/ Encoder
     <td> 
       <h3>Specifications:</h3>
       <ul>
-          <li>Torque Rating: </li>
-          <li>Speed: sec/60°)</li>
-          <li>Voltage: </li>
-          <li>Control Signal Type: (e.g. PWM)</li>
-          <li>Rotation Angle: </li>
+          <li>Rated Torque: 0.6kgf-cm</li>
+          <li>Speed: 0.09sec/60°</li>
+          <li>Voltage: 5V</li>
+          <li>Gearing: Plastic</li>
+          <li>Type: Digital </li>
       </ul>
     </td>
   </tr>
 </table>
-
-### Servo
-**Servo Used:** S004
-**Specifications:**
 
 **Reason for Selection:**
 - **Standard size and PWM interface** makes it easy to control via Raspberry Pi Pico 2.
@@ -149,38 +153,23 @@ Motor: N20 Motor w/ Encoder
 - The servo is screwed into a platform plate or chassis slot to prevent shifting during operation.
 - Uses Ackermann steering geometry similar to the mechanism found in real-world cars. Compared to differential drive robots (which steer by varying the speed of wheels), Ackermann steering turns the front wheels using the servo, while the rear wheel provides the drive force.
 
-This approach allows the robot to:
-
-Turn smoothly with minimal skidding.
-
-Follow curved paths more realistically.
-
-Navigate tight corners with better control at high speeds
 
 ---
 
 ### 2.3 Chassis Design
 
-### Design Overview:
+**Design Overview**
 
-**Principle**
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform that we can implement the steering geometry onto.
 
+Layout
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the center for ease of wiring. 
 
-**Design**
-
-Our robot chassis was completely custom-designed and 3D printed using [placeholder] material, that gives us a detailed and precise model we can tailor to our needs such as allowing our components to fit together seamlessly, while the plastic allows the robot to be both lightweight and durable. The chassis is also designed with modularity in mind for additional future components and fixes.
-
-Material: 
+Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro) that we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chasis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components such as motor clamps, sensor brackets are designed as independent printable components.
 
 Dimensions:
 
-Design Philosophy: Compact, modular, precision
-
-CAD Software Used: 
-
-dedicated mounting points for motors, servo, camera, LIDAR, and battery compartment. making sure to have reduced overhangs
-
-Similar to the geometry found in cars, the chassis layout follows a rear-drive layout using differential motors (N20 w/ encoders) and front Ackermann steering using an S004 servo. This allows the robot to make curved turns with reduced slippage and increased stability, especially important for tight navigation tasks.
+Software Used: FreeCAD
 
 
 
@@ -249,8 +238,9 @@ Similar to the geometry found in cars, the chassis layout follows a rear-drive l
 - **Compact size and lightweightness** allows easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-**Additional info**
-- custom made sensor driver 
+The LIDAR's sensor has been custom coded, to better fit our needs.
+
+[code here]
 
 ### Fish Eye Lens Camera
 
@@ -287,7 +277,7 @@ Similar to the geometry found in cars, the chassis layout follows a rear-drive l
 
 ### 3.3 Processing Units
 
-### Microcontroller
+### Single-Board Computer
 
 ### [Raspberry Pi 5](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html)
 
@@ -309,7 +299,7 @@ Similar to the geometry found in cars, the chassis layout follows a rear-drive l
   </tr>
 </table>
 
-### Single-Board Computer
+### Microcontroller
 ### [Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
 
 <table>
@@ -320,10 +310,10 @@ Similar to the geometry found in cars, the chassis layout follows a rear-drive l
     <td>
       <h3>Specifications:</h3>
       <ul>
-        <li>Dual-core Arm Cortex-M0+</li>
-        <li>2MB flash memory</li>
-        <li>264KB SRAM</li>
-        <li>Built-in Wi-Fi (802.11n)</li>
+        <li>Dual ARM Cortex-M33</li>
+        <li>4 MB QSPI flash memory</li>
+        <li>520KB SRAM</li>
+        <li>2.4GHz 802.11n wireless LAN</li>
         <li>26 multi-function GPIO pins</li>
       </ul>
     </td>
