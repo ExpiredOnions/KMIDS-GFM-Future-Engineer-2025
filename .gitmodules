@@ -1,0 +1,3 @@
+[submodule "LCCV"]
+	path = code/raspberry-pi-5/external/lccv
+	url = https://github.com/kbarni/LCCV.git
