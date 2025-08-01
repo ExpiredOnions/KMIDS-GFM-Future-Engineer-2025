@@ -98,7 +98,7 @@ Motor: N20 Motor
 </table>
 
 **Reason for Selection:**
-- **Compact and lightweight**, allows us to fit into our robot that balances size and power.
+- **Compact and lightweight**, allowing us to fit into our robot that balances size and power.
 - **Moderate torque**  that is more than enough for the flat arena.
 - **Ease of use**.
 
@@ -116,9 +116,9 @@ The fundamental principle of Ackermann geometry involves positioning the steerin
 
 <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/ackermann%20steering.png">
 
-While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking where precise control and minimized turning radius are essential. It enables smoother maneuvers and accurate alignment in narrower spaces. .
+While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvres and accurate alignment in narrower spaces.
 
-Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. By using CAD to design the mechanism, it gives us the fexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
+Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. By using CAD to design the mechanism, it gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
 
 
 ### S0004m Servo 
@@ -126,7 +126,7 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="" alt="INSERT SERVO" >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/servo.png" alt="INSERT SERVO" >
     </td>
     <td> 
       <h3>Specifications:</h3>
@@ -142,7 +142,7 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 </table>
 
 **Reason for Selection:**
-- **Standard size and PWM interface** makes it easy to control via Raspberry Pi Pico 2.
+- **Standard size and PWM interface** make it easy to control via Raspberry Pi Pico 2.
 - **Sufficient torque** to steer the front wheels responsively.
 - **Balanced speed and stability** during turns and lane changes.
 - **Widely used in hobby robotics**, with available documentation and mounting kits.
@@ -163,9 +163,9 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform that we can implement the steering geometry onto.
 
 Layout
-The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the center for ease of wiring. 
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
 
-Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro) that we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chasis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components such as motor clamps, sensor brackets are designed as independent printable components.
+Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chasis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
 
 Dimensions:
 
@@ -177,7 +177,7 @@ Software Used: FreeCAD
 ### 2.4 Mounting and Structure
 
 - Uses a differential geartrain
-- The servo is installed at the front center of the chassis using **custom printed servo mounts**, typically included with robotics chassis kits.
+- The servo is installed at the front centre of the chassis using **custom printed servo mounts**, typically included with robotics chassis kits.
 - A **custom printed servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
 - The servo is securely screwed into a platform plate.
 
@@ -187,20 +187,29 @@ Software Used: FreeCAD
 
 ### 3.1 Power Source
 
-### [18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery))
+### [18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery]()
 
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="" alt="INSERT Battery" width = 100% >
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/battery.png" alt="INSERT Battery" width = 100% >
     </td>
     <td>
       <h3>Specifications:</h3>
       <ul>
+          <li>Capacity: 2000 mAh</li>
+          <li>Normal voltage: 3.7V</li>
+          <li>Standard discharge: 10A </li>
+          <li>Weight: 48g</li>
       </ul>
     </td>
   </tr>
 </table>
+
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a 2x 18650 Lithium-Ion battery pack, connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks.
+
+The onboard processing unit, the Raspberry Pi 5, functions as the brain of the vehicle. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
+
 
 ### 3.2 Sensor and Camera
 
@@ -238,9 +247,7 @@ Software Used: FreeCAD
 - **Compact size and lightweightness** allows easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-The LIDAR's sensor has been custom coded, to better fit our needs.
-
-[code here]
+The LIDAR's sensor driver has been custom-coded, to better fit our needs. [Code Link Here]
 
 ### Fish Eye Lens Camera
 
@@ -267,12 +274,20 @@ The LIDAR's sensor has been custom coded, to better fit our needs.
 **Reason for Selection:**
 - **130° wide field of view** captures a large area for tracking.
 - **Infrared compatibility** enables low-light vision.
-- **High-resolution (5MP)** provides clear image for the robot.
+- **High-resolution (5MP)** provides a clear image for the robot.
 - **Compact size** fits well on our robot.
 
 
-**Integration:**
-- Camera and Lidar connected to **Raspberry Pi 5**.
+This setup allows for a wide-angle view, enhancing environmental awareness during both the Open Challenge and Obstacle Challenge. The camera identifies course elements such as walls, pillars, colored markers, parking spaces, and lane lines.
+
+- Detect and differentiate wall positions.
+
+- Identify pillar colors and types.
+
+- Recognize parking zones.
+
+- Track path lines and boundaries.
+  
 
 
 ### 3.3 Processing Units
@@ -338,10 +353,23 @@ The LIDAR's sensor has been custom coded, to better fit our needs.
 negotiate the obstacle course for all the challenges. This could include flow
 diagrams, pseudo code and source code with detailed comments. -->
 
-### 4.1 Strategy Overview
-<!-- TODO: Explain the logic and steps your robot takes to detect and navigate obstacles. -->
+The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
 
-### 4.2 Flowcharts and Pseudo Code
+The obstacle challenge requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the barriers around it.
+
+### 4.1 Strategy Overview
+
+We divide our strategies into three categories 
+
+**Obstacle Detection and Classification:** The robot identifies the signs and determines their colour and relative position.
+
+**Course Navigation** How to navigate the game field without touching objects, while using the input from the obstacle to steer and pass on the correct side of each sign. 
+
+**Parking:** The robot executes a parallel parking
+
+
+
+### 4.2 Flowcharts and Pseudocode
 <!-- TODO: Include diagrams or lists that represent logical flow for obstacle avoidance. -->
 
 ### 4.3 Source Code Summary
@@ -358,14 +386,44 @@ discussion sections 1, 2 and 3 can be made to these pictures. Team photo is
 necessary for judges to relate and identify the team during the local and
 international competitions. -->
 
+
 ### 5.1 Robot Images
 <!-- TODO: Include clear, high-quality photos from top, bottom, front, back, left, and right. -->
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Front View</b><br>
+      <img src="" width="300">
+    </td>
+    <td align="center">
+      <b>Back View</b><br>
+      <img src="" width="300">
+    </td>
+    <td align="center">
+      <b>Left Side View</b><br>
+      <img src="" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Right Side View</b><br>
+      <img src="" width="300">
+    </td>
+    <td align="center">
+      <b>Top View</b><br>
+      <img src="" width="300">
+    </td>
+    <td align="center">
+      <b>Bottom View</b><br>
+      <img src="" width="300">
+    </td>
+  </tr>
+</table>
 
 ### 5.2 Internal View
 <!-- TODO: Show images of internal layout (wiring, board placement, sensors, motors). -->
 
-### 5.3 Team Photo
-<!-- TODO: Add a team photo with names and roles of each team member. -->
 
 ---
 
