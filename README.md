@@ -98,14 +98,17 @@ Motor: N20 Motor
 </table>
 
 **Reason for Selection:**
-- **Compact and lightweight**, allowing us to fit into our robot that balances size and power.
-- **Moderate torque**  that is more than enough for the flat arena.
-- **Ease of use**.
+- It is compact and lightweight, allowing us to fit into our robot easily.
+- Provides moderate torque that is more than enough for the flat arena.
+- Easy to use on the robot and integrate with other parts.
 
 **Mounting:**
-- Installed using **3D-printed motor clamps** screwed to a detatchable motor plate.
-- Wires connected to **Raspberry Pi Pico 2**.
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate.
+- Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
+
+**Considerations:**
+To reach a faster speed, we can upgrade the N20 motor to the N30, which is the easiest upgrade, providing an overall improvement in speed and torque. However, the N30 motor is typically larger and such, might need extra modifications to the robot's chassis and motor clamp to fit properly. It also generally operates at higher voltages and currents, so the power supply needs to be modified to support this upgrade.
 
 ### 2.2 Steering
 
@@ -142,17 +145,19 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 </table>
 
 **Reason for Selection:**
-- **Standard size and PWM interface** make it easy to control via Raspberry Pi Pico 2.
-- **Sufficient torque** to steer the front wheels responsively.
-- **Balanced speed and stability** during turns and lane changes.
-- **Widely used in hobby robotics**, with available documentation and mounting kits.
+- The small size and PWM interface make it easy to control via Raspberry Pi Pico 2.
+- It has sufficient torque to steer the front wheels responsively.
+- It has balanced speed and stability during turns and lane changes.
+- This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
 **Mounting:**
-- Screwed directly into the **front of the chassis** .
-- A servo horn is attached to the **pivoting front wheel or steering linkage**.
-- The servo is screwed into a platform plate or chassis slot to prevent shifting during operation.
-- Uses Ackermann steering geometry similar to the mechanism found in real-world cars. Compared to differential drive robots (which steer by varying the speed of wheels), Ackermann steering turns the front wheels using the servo, while the rear wheel provides the drive force.
+- Screwed directly into the front of the chassis**.
+- A custom servo horn is attached to the steering linkage.
+- The servo is screwed into a platform plate to prevent shifting.
+- At the front, positioned to allow for Ackermann steering geometry.
 
+**Considerations** 
+We believe that while the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
 
 ---
 
@@ -210,6 +215,11 @@ The power and sensor systems are crucial to the vehicle's ability to navigate th
 
 The onboard processing unit, the Raspberry Pi 5, functions as the brain of the vehicle. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
 
+### **Extra: Uninterruptible Power Supply**
+
+To ensure stable operation throughout the competition, we implemented an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle.
+
+It is powered by a 2x18650 Li-ion battery pack and includes a built-in charging circuit, voltage regulation, and power management. It maintains a stable 5V output to the Raspberry Pi 5 even thoughout fluctuations. It has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision making throughout the run.
 
 ### 3.2 Sensor and Camera
 
