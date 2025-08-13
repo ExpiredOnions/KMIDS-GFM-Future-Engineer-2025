@@ -63,7 +63,7 @@ void CameraModule::captureLoop() {
     while (running_) {
         cv::Mat frame;
         if (!cam_.getVideoFrame(frame, 1000)) {
-            std::cerr << "Timeout error" << std::endl;
+            std::cerr << "[CameraModule] Timeout error" << std::endl;
             continue;
         }
 
