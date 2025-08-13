@@ -1,4 +1,5 @@
 #include "lidar_module.h"
+#include "lidar_struct.h"
 
 #include <chrono>
 #include <csignal>
@@ -37,6 +38,8 @@ int main() {
     std::vector<RawLidarNode> lidarData;
     std::chrono::steady_clock::time_point latestLidarDataTimestamp;
 
+    std::vector<TimedLidarData> timedLidarDatas;
+
     if (!lidar.initialize()) return -1;
 
     lidar.printDeviceInfo();
@@ -48,7 +51,14 @@ int main() {
     while (!stop_flag) {
         if (!paused) {
             if (lidar.getData(lidarData, latestLidarDataTimestamp)) {
-                LidarModule::printScanData(lidarData);
+                // LidarModule::printScanData(lidarData);
+            }
+
+            if (lidar.getAllTimedLidarData(timedLidarDatas) && lidar.bufferSize() > 9) {
+                LidarModule::printScanData(timedLidarDatas[0].lidarData);
+
+                auto duration = timedLidarDatas[9].timestamp - timedLidarDatas[0].timestamp;
+                std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
             }
         }
 

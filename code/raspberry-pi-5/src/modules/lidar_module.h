@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "lidar_struct.h"
+#include "ring_buffer.hpp"
 
 /**
  * @brief Lidar module that manages scanning and data acquisition from a SLAMTEC LIDAR device.
@@ -76,7 +77,7 @@ public:
      *
      * @return true if data is available, false if no scan has been captured yet.
      */
-    bool getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp);
+    bool getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) const;
 
     /**
      * @brief Wait until new LIDAR scan data is available, then return it.
@@ -89,6 +90,10 @@ public:
      * @return true if data was successfully retrieved.
      */
     bool waitForData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp);
+
+    size_t bufferSize() const;
+
+    bool getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLidarData) const;
 
     /**
      * @brief Print information about the connected LIDAR device.
@@ -112,19 +117,18 @@ private:
      */
     void scanLoop();
 
-    sl::ILidarDriver *lidarDriver_;  ///< Pointer to the LIDAR driver instance.
-    sl::IChannel *serialChannel_;    ///< Pointer to the communication channel.
-    const char *serialPort_;         ///< Serial port used for LIDAR connection.
-    int baudRate_;                   ///< Baud rate for the communication.
+    sl::ILidarDriver *lidarDriver_;
+    sl::IChannel *serialChannel_;
+    const char *serialPort_;
+    int baudRate_;
 
-    bool initialized_;  ///< True if LIDAR is initialized successfully.
+    bool initialized_;
 
-    std::thread lidarThread_;    ///< Thread running the scan loop.
-    std::atomic<bool> running_;  ///< Indicates if scanning is active.
+    std::thread lidarThread_;
+    std::atomic<bool> running_;
 
-    std::mutex lidarDataMutex_;                 ///< Protects access to scan data.
-    std::condition_variable lidarDataUpdated_;  ///< Notifies waiting threads of new scan data.
+    mutable std::mutex lidarDataMutex_;
+    std::condition_variable lidarDataUpdated_;
 
-    std::vector<RawLidarNode> latestLidarData_;              ///< Latest scan points.
-    std::chrono::steady_clock::time_point latestTimestamp_;  ///< Timestamp of latest scan.
+    RingBuffer<TimedLidarData> lidarDataBuffer_{10};
 };

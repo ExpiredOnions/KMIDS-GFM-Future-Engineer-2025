@@ -14,8 +14,8 @@ target_include_directories(
   lidar_module
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
          ${CMAKE_SOURCE_DIR}/external/rplidar_sdk/sdk/include
-         ${CMAKE_SOURCE_DIR}/src/types)
-target_link_libraries(lidar_module PRIVATE rplidar_sdk)
+         ${CMAKE_SOURCE_DIR}/src/types ${CMAKE_SOURCE_DIR}/src/utils)
+target_link_libraries(lidar_module PRIVATE rplidar_sdk utils)
 
 # NOTE: camera_module
 

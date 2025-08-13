@@ -1,5 +1,6 @@
 #include "lidar_module.h"
 #include "hal/types.h"
+#include "lidar_struct.h"
 #include <cstdint>
 
 LidarModule::LidarModule(const char *serialPort, int baudRate)
@@ -105,21 +106,38 @@ void LidarModule::shutdown() {
     initialized_ = false;
 }
 
-bool LidarModule::getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) {
+bool LidarModule::getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) const {
     std::lock_guard<std::mutex> lock(lidarDataMutex_);
-    if (latestLidarData_.empty()) return false;
 
-    outLidarData = latestLidarData_;
-    outTimestamp = latestTimestamp_;
+    if (lidarDataBuffer_.empty()) return false;
+
+    TimedLidarData timedLidarData = lidarDataBuffer_.latest().value();
+    outLidarData = timedLidarData.lidarData;
+    outTimestamp = timedLidarData.timestamp;
+    return true;
+}
+
+size_t LidarModule::bufferSize() const {
+    std::lock_guard<std::mutex> lock(lidarDataMutex_);
+    return lidarDataBuffer_.size();
+}
+
+bool LidarModule::getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLidarData) const {
+    std::lock_guard<std::mutex> lock(lidarDataMutex_);
+
+    if (lidarDataBuffer_.empty()) return false;
+
+    outTimedLidarData = lidarDataBuffer_.get_all();
     return true;
 }
 
 bool LidarModule::waitForData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) {
     std::unique_lock<std::mutex> lock(lidarDataMutex_);
-    lidarDataUpdated_.wait(lock, [this] { return !latestLidarData_.empty(); });
+    lidarDataUpdated_.wait(lock, [this] { return !lidarDataBuffer_.empty(); });
 
-    outLidarData = latestLidarData_;
-    outTimestamp = latestTimestamp_;
+    TimedLidarData timedLidarData = lidarDataBuffer_.latest().value();
+    outLidarData = timedLidarData.lidarData;
+    outTimestamp = timedLidarData.timestamp;
     return true;
 }
 
@@ -145,8 +163,7 @@ void LidarModule::scanLoop() {
 
         {
             std::lock_guard<std::mutex> lock(lidarDataMutex_);
-            latestLidarData_ = std::move(temp);
-            latestTimestamp_ = std::chrono::steady_clock::now();
+            lidarDataBuffer_.push({std::move(temp), std::chrono::steady_clock::now()});
             lidarDataUpdated_.notify_all();
         }
     }
