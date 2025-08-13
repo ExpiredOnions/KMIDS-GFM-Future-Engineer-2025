@@ -9,6 +9,9 @@
 #include <opencv2/opencv.hpp>
 #include <thread>
 
+#include "camera_struct.h"
+#include "ring_buffer.hpp"
+
 /**
  * @brief Camera module that captures frames in a background thread.
  *
@@ -61,7 +64,28 @@ public:
      *
      * @return true if a frame is available, false otherwise.
      */
-    bool getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp);
+    bool getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) const;
+
+    /**
+     * @brief Get the current number of frames stored in the buffer.
+     *
+     * This function is thread-safe and returns how many frames are
+     * currently stored in the internal RingBuffer.
+     *
+     * @return The number of frames currently in the buffer.
+     */
+    size_t bufferSize() const;
+
+    /**
+     * @brief Retrieve all frames currently stored in the buffer along with their timestamps.
+     *
+     * This function is thread-safe. The frames are returned in order
+     * from oldest to newest.
+     *
+     * @param[out] outTimedFrames Vector to be filled with all frames and their timestamps.
+     * @return true if the buffer contains at least one frame, false if empty.
+     */
+    bool getAllTimedFrame(std::vector<TimedFrame> &outTimedFrames) const;
 
     /**
      * @brief Waits until a new frame is available, then returns it.
@@ -89,9 +113,8 @@ private:
     std::thread cameraThread_;
     std::atomic<bool> running_;
 
-    std::mutex frameMutex_;
+    mutable std::mutex frameMutex_;
     std::condition_variable frameUpdated_;
 
-    cv::Mat latestFrame_;
-    std::chrono::steady_clock::time_point latestTimestamp_;
+    RingBuffer<TimedFrame> frameBuffer_{30};
 };

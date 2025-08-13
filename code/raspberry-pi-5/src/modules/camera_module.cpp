@@ -41,21 +41,37 @@ void CameraModule::stop() {
     cam_.stopVideo();
 }
 
-bool CameraModule::getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) {
+bool CameraModule::getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) const {
     std::lock_guard<std::mutex> lock(frameMutex_);
-    if (latestFrame_.empty()) return false;
+    if (frameBuffer_.empty()) return false;
 
-    outFrame = latestFrame_.clone();
-    outTimestamp = latestTimestamp_;
+    TimedFrame timedFrame = frameBuffer_.latest().value();
+    outFrame = timedFrame.frame;
+    outTimestamp = timedFrame.timestamp;
+    return true;
+}
+
+size_t CameraModule::bufferSize() const {
+    std::lock_guard<std::mutex> lock(frameMutex_);
+    return frameBuffer_.size();
+}
+
+bool CameraModule::getAllTimedFrame(std::vector<TimedFrame> &outTimedFrames) const {
+    std::lock_guard<std::mutex> lock(frameMutex_);
+
+    if (frameBuffer_.empty()) return false;
+
+    outTimedFrames = frameBuffer_.get_all();
     return true;
 }
 
 bool CameraModule::waitForFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) {
     std::unique_lock<std::mutex> lock(frameMutex_);
-    frameUpdated_.wait(lock, [&] { return !latestFrame_.empty(); });
+    frameUpdated_.wait(lock, [&] { return !frameBuffer_.empty(); });
 
-    outFrame = latestFrame_.clone();
-    outTimestamp = latestTimestamp_;
+    TimedFrame timedFrame = frameBuffer_.latest().value();
+    outFrame = timedFrame.frame;
+    outTimestamp = timedFrame.timestamp;
     return true;
 }
 
@@ -69,8 +85,7 @@ void CameraModule::captureLoop() {
 
         {
             std::lock_guard<std::mutex> lock(frameMutex_);
-            latestFrame_ = frame;
-            latestTimestamp_ = std::chrono::steady_clock::now();
+            frameBuffer_.push({std::move(frame), std::chrono::steady_clock::now()});
         }
 
         frameUpdated_.notify_all();

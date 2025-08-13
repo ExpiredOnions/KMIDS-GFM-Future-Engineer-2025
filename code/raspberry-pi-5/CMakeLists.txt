@@ -13,6 +13,7 @@ pkg_check_modules(LIBCAMERA REQUIRED libcamera)
 # Add lccv external library for camera_module
 add_subdirectory(external/lccv)
 
+add_subdirectory(src/utils)
 add_subdirectory(src/modules)
 
 add_subdirectory(apps/test_camera)

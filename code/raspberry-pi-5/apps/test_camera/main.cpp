@@ -63,8 +63,10 @@ int main() {
 
     cv::Mat camImage;
     std::chrono::steady_clock::time_point latestFrameTimestamp;
-
     cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
+
+    std::vector<TimedFrame> timedFrames;
+    cv::namedWindow("Delayed Video", cv::WINDOW_FULLSCREEN);
 
     camera.start();
 
@@ -74,6 +76,13 @@ int main() {
         if (!paused) {
             if (camera.getFrame(camImage, latestFrameTimestamp)) {
                 cv::imshow("Video", camImage);
+            }
+
+            if (camera.getAllTimedFrame(timedFrames) && camera.bufferSize() > 29) {
+                cv::imshow("Delayed Video", timedFrames[0].frame);
+
+                auto duration = timedFrames[29].timestamp - timedFrames[0].timestamp;
+                std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
             }
         }
 
