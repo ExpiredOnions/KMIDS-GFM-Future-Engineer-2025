@@ -16,3 +16,4 @@ add_subdirectory(external/lccv)
 add_subdirectory(src/modules)
 
 add_subdirectory(apps/test_camera)
+add_subdirectory(apps/test_lidar)
