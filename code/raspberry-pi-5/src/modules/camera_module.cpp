@@ -2,7 +2,14 @@
 #include <iostream>
 
 CameraModule::CameraModule(CameraOptionCallback callback)
-    : running_(false) {
+    : logger_(nullptr)
+    , running_(false) {
+    callback(cam_);
+}
+
+CameraModule::CameraModule(Logger *logger, CameraOptionCallback callback)
+    : logger_(logger)
+    , running_(false) {
     callback(cam_);
 }
 
@@ -83,9 +90,19 @@ void CameraModule::captureLoop() {
             continue;
         }
 
+        TimedFrame timedFrame{std::move(frame), std::chrono::steady_clock::now()};
+
+        if (logger_) {
+            std::vector<uchar> buffer;
+            cv::imencode(".png", timedFrame.frame, buffer);
+
+            uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(timedFrame.timestamp.time_since_epoch()).count();
+            logger_->writeData(ts, buffer.data(), buffer.size());
+        }
+
         {
             std::lock_guard<std::mutex> lock(frameMutex_);
-            frameBuffer_.push({std::move(frame), std::chrono::steady_clock::now()});
+            frameBuffer_.push(std::move(timedFrame));
         }
 
         frameUpdated_.notify_all();

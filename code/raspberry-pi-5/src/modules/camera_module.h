@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "camera_struct.h"
+#include "logger.h"
 #include "ring_buffer.hpp"
 
 /**
@@ -36,6 +37,8 @@ public:
      * Sets up internal state but does not start capturing.
      */
     CameraModule(CameraOptionCallback callback);
+
+    CameraModule(Logger *logger, CameraOptionCallback callback);
 
     /**
      * @brief Destroy the camera module.
@@ -117,4 +120,6 @@ private:
     std::condition_variable frameUpdated_;
 
     RingBuffer<TimedFrame> frameBuffer_{30};
+
+    Logger *logger_;
 };
