@@ -1,5 +1,5 @@
 #include "lidar_module.h"
-#include "lidar_struct.h"
+#include "lidar_processor.h"
 
 #include <chrono>
 #include <csignal>
@@ -35,8 +35,8 @@ int main() {
 
     LidarModule lidar;
 
-    std::vector<RawLidarNode> lidarData;
-    std::chrono::steady_clock::time_point latestLidarDataTimestamp;
+    TimedLidarData timedLidarData;
+    std::chrono::steady_clock::time_point latestTimestamp;
 
     std::vector<TimedLidarData> timedLidarDatas;
 
@@ -46,25 +46,37 @@ int main() {
 
     if (!lidar.start()) return -1;
 
+    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
+
     std::thread(inputThread).detach();
 
     while (!stop_flag) {
         if (!paused) {
-            if (lidar.getData(lidarData, latestLidarDataTimestamp)) {
-                // LidarModule::printScanData(lidarData);
+            if (lidar.getData(timedLidarData)) {
+                if (timedLidarData.timestamp != latestTimestamp) {
+                    latestTimestamp = timedLidarData.timestamp;
+
+                    // LidarModule::printScanData(timedLidarData.lidarData);
+                    cv::Mat lidarMat = lidar_processor::visualizeLidarData(timedLidarData);
+
+                    cv::imshow("Video", lidarMat);
+                }
             }
 
-            if (lidar.getAllTimedLidarData(timedLidarDatas) && lidar.bufferSize() > 9) {
-                LidarModule::printScanData(timedLidarDatas[0].lidarData);
+            // if (lidar.getAllTimedLidarData(timedLidarDatas) && lidar.bufferSize() > 9) {
+            //     LidarModule::printScanData(timedLidarDatas[0].lidarData);
 
-                auto duration = timedLidarDatas[9].timestamp - timedLidarDatas[0].timestamp;
-                std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
-            }
+            //     auto duration = timedLidarDatas[9].timestamp - timedLidarDatas[0].timestamp;
+            //     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
+            // }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        cv::waitKey(10);
     }
 
     lidar.stop();
     lidar.shutdown();
+
+    cv::destroyAllWindows();
 }
