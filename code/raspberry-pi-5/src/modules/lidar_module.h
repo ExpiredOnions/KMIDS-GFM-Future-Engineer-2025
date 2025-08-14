@@ -1,5 +1,6 @@
 #pragma once
 
+#include "logger.h"
 #include "sl_lidar.h"
 #include "sl_lidar_driver.h"
 #include <atomic>
@@ -35,6 +36,8 @@ public:
      * @param baudRate Baud rate for the LIDAR communication (default 460800).
      */
     LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
+
+    LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
 
     /**
      * @brief Destroy the Lidar module.
@@ -131,4 +134,6 @@ private:
     std::condition_variable lidarDataUpdated_;
 
     RingBuffer<TimedLidarData> lidarDataBuffer_{10};
+
+    Logger *logger_;
 };

@@ -2,12 +2,23 @@
 #include "hal/types.h"
 #include "lidar_struct.h"
 #include <cstdint>
+#include <cstring>
 
 LidarModule::LidarModule(const char *serialPort, int baudRate)
     : lidarDriver_(nullptr)
     , serialChannel_(nullptr)
     , serialPort_(serialPort)
     , baudRate_(baudRate)
+    , logger_(nullptr)
+    , initialized_(false)
+    , running_(false) {}
+
+LidarModule::LidarModule(Logger *logger, const char *serialPort, int baudRate)
+    : lidarDriver_(nullptr)
+    , serialChannel_(nullptr)
+    , serialPort_(serialPort)
+    , baudRate_(baudRate)
+    , logger_(logger)
     , initialized_(false)
     , running_(false) {}
 
@@ -157,9 +168,16 @@ void LidarModule::scanLoop() {
             temp[i] = {angle, distance, quality};
         }
 
+        TimedLidarData timedScan{std::move(temp), std::chrono::steady_clock::now()};
+
+        if (logger_) {
+            uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(timedScan.timestamp.time_since_epoch()).count();
+            logger_->writeData(ts, timedScan.lidarData.data(), timedScan.lidarData.size() * sizeof(RawLidarNode));
+        }
+
         {
             std::lock_guard<std::mutex> lock(lidarDataMutex_);
-            lidarDataBuffer_.push({std::move(temp), std::chrono::steady_clock::now()});
+            lidarDataBuffer_.push(std::move(timedScan));
             lidarDataUpdated_.notify_all();
         }
     }
