@@ -58,8 +58,28 @@ int main() {
 
                     // LidarModule::printScanData(timedLidarData.lidarData);
 
+                    TimedLidarData filteredLidarData;
+                    filteredLidarData.timestamp = timedLidarData.timestamp;
+                    for (const auto &node : timedLidarData.lidarData) {
+                        if (node.distance >= 0.15f) {
+                            filteredLidarData.lidarData.push_back(node);
+                        }
+                    }
+
+                    auto lineSegments = lidar_processor::splitAndMerge(filteredLidarData);
+
                     cv::Mat lidarMat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
                     lidar_processor::drawLidarData(lidarMat, timedLidarData);
+
+                    for (size_t i = 0; i < lineSegments.size(); ++i) {
+                        const auto &lineSegment = lineSegments[i];
+
+                        std::srand(static_cast<unsigned int>(i));
+                        cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
+
+                        lidar_processor::drawLineSegment(lidarMat, lineSegment, 4.0f, color);
+                    }
+
                     cv::imshow("Video", lidarMat);
                 }
             }
