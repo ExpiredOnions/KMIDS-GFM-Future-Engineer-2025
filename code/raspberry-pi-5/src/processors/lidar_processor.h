@@ -6,20 +6,14 @@ namespace lidar_processor
 {
 
 /**
- * @brief Visualize LiDAR scan data as a 2D image.
+ * @brief Draw LiDAR scan points onto an existing image.
  *
- * Generates an OpenCV Mat image of the given LiDAR scan, where each point is plotted
- * according to its polar coordinates (angle, distance). The center of the image
- * represents the LiDAR sensor position.
- *
- * @param timedLidarDatas The LiDAR scan data with timestamp.
- * @param size The size of the square output image in pixels (default: 500).
- * @param scale The real-world distance in meters from the center to the edge of the image.
- *              For example, a value of 4.0 means the image covers a radius of 4 meters
- *              from the center to the edge.
- *
- * @return A cv::Mat containing the visualization of the LiDAR scan.
+ * @param img The cv::Mat to draw on. Must be already allocated with correct size and type.
+ * @param timedLidarDatas The LiDAR scan data to visualize.
+ * @param scale Meters-to-pixels scaling. For example, scale=4 means 4 meters = img.rows pixels.
  */
-cv::Mat visualizeLidarData(const TimedLidarData &timedLidarDatas, int size = 500, float scale = 4.0f);
+void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float scale = 4.0f);
+ *
+ */
 
 }  // namespace lidar_processor

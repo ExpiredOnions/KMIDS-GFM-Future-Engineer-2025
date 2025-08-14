@@ -57,8 +57,9 @@ int main() {
                     latestTimestamp = timedLidarData.timestamp;
 
                     // LidarModule::printScanData(timedLidarData.lidarData);
-                    cv::Mat lidarMat = lidar_processor::visualizeLidarData(timedLidarData);
 
+                    cv::Mat lidarMat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
+                    lidar_processor::drawLidarData(lidarMat, timedLidarData);
                     cv::imshow("Video", lidarMat);
                 }
             }
