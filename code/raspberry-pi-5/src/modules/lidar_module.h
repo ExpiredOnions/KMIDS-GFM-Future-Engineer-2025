@@ -70,26 +70,26 @@ public:
     /**
      * @brief Get the latest LIDAR scan data.
      *
-     * Thread-safe. Copies the latest scan points and timestamp into output parameters.
+     * Thread-safe. Copies the latest scan data (points and timestamp) into the provided
+     * output parameter.
      *
-     * @param[out] outLidarData Vector to receive the latest scan points.
-     * @param[out] outTimestamp Timestamp of the latest scan.
+     * @param[out] outTimedLidarData Structure to receive the latest scan points and timestamp.
      *
      * @return true if data is available, false if no scan has been captured yet.
      */
-    bool getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) const;
+    bool getData(TimedLidarData &outTimedLidarData) const;
 
     /**
      * @brief Wait until new LIDAR scan data is available, then return it.
      *
-     * This function blocks until new scan points are captured.
+     * This function blocks until a new scan is captured, then copies the scan data
+     * (points and timestamp) into the provided output parameter.
      *
-     * @param[out] outLidarData Vector to receive the latest scan points.
-     * @param[out] outTimestamp Timestamp of the latest scan.
+     * @param[out] outTimedLidarData Structure to receive the latest scan points and timestamp.
      *
      * @return true if data was successfully retrieved.
      */
-    bool waitForData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp);
+    bool waitForData(TimedLidarData &outTimedLidarData);
 
     size_t bufferSize() const;
 

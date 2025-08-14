@@ -106,14 +106,12 @@ void LidarModule::shutdown() {
     initialized_ = false;
 }
 
-bool LidarModule::getData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) const {
+bool LidarModule::getData(TimedLidarData &outTimedLidarData) const {
     std::lock_guard<std::mutex> lock(lidarDataMutex_);
 
     if (lidarDataBuffer_.empty()) return false;
 
-    TimedLidarData timedLidarData = lidarDataBuffer_.latest().value();
-    outLidarData = timedLidarData.lidarData;
-    outTimestamp = timedLidarData.timestamp;
+    outTimedLidarData = lidarDataBuffer_.latest().value();
     return true;
 }
 
@@ -131,13 +129,11 @@ bool LidarModule::getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLida
     return true;
 }
 
-bool LidarModule::waitForData(std::vector<RawLidarNode> &outLidarData, std::chrono::steady_clock::time_point &outTimestamp) {
+bool LidarModule::waitForData(TimedLidarData &outTimedLidarData) {
     std::unique_lock<std::mutex> lock(lidarDataMutex_);
     lidarDataUpdated_.wait(lock, [this] { return !lidarDataBuffer_.empty(); });
 
-    TimedLidarData timedLidarData = lidarDataBuffer_.latest().value();
-    outLidarData = timedLidarData.lidarData;
-    outTimestamp = timedLidarData.timestamp;
+    outTimedLidarData = lidarDataBuffer_.latest().value();
     return true;
 }
 
