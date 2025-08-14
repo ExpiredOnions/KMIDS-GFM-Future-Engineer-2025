@@ -1,5 +1,4 @@
 #include "camera_module.h"
-#include <iostream>
 
 CameraModule::CameraModule(CameraOptionCallback callback)
     : logger_(nullptr)

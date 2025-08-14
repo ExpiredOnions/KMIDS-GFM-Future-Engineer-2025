@@ -1,8 +1,4 @@
 #include "lidar_module.h"
-#include "hal/types.h"
-#include "lidar_struct.h"
-#include <cstdint>
-#include <cstring>
 
 LidarModule::LidarModule(const char *serialPort, int baudRate)
     : lidarDriver_(nullptr)

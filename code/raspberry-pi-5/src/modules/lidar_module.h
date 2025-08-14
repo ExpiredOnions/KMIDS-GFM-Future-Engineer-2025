@@ -1,6 +1,5 @@
 #pragma once
 
-#include "logger.h"
 #include "sl_lidar.h"
 #include "sl_lidar_driver.h"
 #include <atomic>
@@ -15,6 +14,7 @@
 #include <vector>
 
 #include "lidar_struct.h"
+#include "logger.h"
 #include "ring_buffer.hpp"
 
 /**

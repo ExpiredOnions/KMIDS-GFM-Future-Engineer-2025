@@ -1,10 +1,10 @@
 #pragma once
 
 #include "lccv.hpp"
-
 #include <atomic>
 #include <condition_variable>
 #include <functional>
+#include <iostream>
 #include <mutex>
 #include <opencv2/opencv.hpp>
 #include <thread>
