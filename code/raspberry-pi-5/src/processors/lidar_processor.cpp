@@ -12,10 +12,11 @@ cv::Mat visualizeLidarData(const TimedLidarData &timedLidarDatas, int size, floa
 
         float rad = node.angle * static_cast<float>(CV_PI) / 180.0f;
         int x = static_cast<int>(center.x + node.distance * (size / scale) * std::cos(rad));
-        int y = static_cast<int>(center.y - node.distance * (size / scale) * std::sin(rad));
+        int y = static_cast<int>(center.y + node.distance * (size / scale) * std::sin(rad));
 
         cv::circle(img, cv::Point(x, y), 1, cv::Scalar(255, 255, 255), -1);
     }
+    cv::circle(img, center, 5, cv::Scalar(168, 12, 173), -1);
     return img;
 }
 
