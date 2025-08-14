@@ -125,7 +125,7 @@ bool LidarModule::getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLida
 
     if (lidarDataBuffer_.empty()) return false;
 
-    outTimedLidarData = lidarDataBuffer_.get_all();
+    outTimedLidarData = lidarDataBuffer_.getAll();
     return true;
 }
 

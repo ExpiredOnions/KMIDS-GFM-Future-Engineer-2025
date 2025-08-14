@@ -33,7 +33,7 @@ public:
     }
 
     // Get a copy of all elements in order from oldest to newest
-    std::vector<T> get_all() const {
+    std::vector<T> getAll() const {
         std::vector<T> result;
         result.reserve(size_);
         for (size_t i = 0; i < size_; ++i) {

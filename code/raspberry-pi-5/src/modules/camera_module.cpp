@@ -61,7 +61,7 @@ bool CameraModule::getAllTimedFrame(std::vector<TimedFrame> &outTimedFrames) con
 
     if (frameBuffer_.empty()) return false;
 
-    outTimedFrames = frameBuffer_.get_all();
+    outTimedFrames = frameBuffer_.getAll();
     return true;
 }
 
