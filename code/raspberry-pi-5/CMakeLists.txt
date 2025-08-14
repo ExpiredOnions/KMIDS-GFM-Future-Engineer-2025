@@ -17,5 +17,7 @@ add_subdirectory(src/utils)
 add_subdirectory(src/modules)
 add_subdirectory(src/processors)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
+
 add_subdirectory(apps/test_camera)
 add_subdirectory(apps/test_lidar)
