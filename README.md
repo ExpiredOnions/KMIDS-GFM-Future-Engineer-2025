@@ -104,6 +104,7 @@ Motor: N20 Motor
 
 **Mounting:**
 - Installed using 3D-printed motor clamps screwed to a detachable motor plate.
+  <img src="g" alt="show motor plate" >
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
 
@@ -121,8 +122,9 @@ The fundamental principle of Ackermann geometry involves positioning the steerin
 
 While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvres and accurate alignment in narrower spaces.
 
-Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. By using CAD to design the mechanism, it gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
+Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
 
+<img src="" alt="GIF of steering" >
 
 ### S0004m Servo 
 <!-- link here -->
@@ -151,10 +153,14 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 - This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
 **Mounting:**
-- Screwed directly into the front of the chassis**.
+- Screwed directly into a platform plate in front of the chassis.
+  <img src="" alt="Servo screwed location" >
+  <img src="" alt="close up on the plate and screws" >
 - A custom servo horn is attached to the steering linkage.
-- The servo is screwed into a platform plate to prevent shifting.
-- At the front, positioned to allow for Ackermann steering geometry.
+  <img src="" alt="servo horn" >
+  ### Our custom-printed servo horn.
+  
+- It is positioned at the front, positioned to allow for Ackermann steering geometry.
 
 **Considerations** 
 We believe that while the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
@@ -170,9 +176,13 @@ Our chassis was designed with a focus on weight and modularity. The goal is for 
 Layout
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
 
-Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chasis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
+  <img src="" alt="Base chassis plate" >
 
-Dimensions:
+  <img src="" alt="diagram of the position of components" >
+
+Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
+
+Dimensions: 
 
 Software Used: FreeCAD
 
@@ -182,7 +192,8 @@ Software Used: FreeCAD
 ### 2.4 Mounting and Structure
 
 - Uses a differential geartrain
-- The servo is installed at the front centre of the chassis using **custom printed servo mounts**, typically included with robotics chassis kits.
+- The servo is installed at the front centre of the chassis using our **custom servo mounts**.
+  
 - A **custom printed servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
 - The servo is securely screwed into a platform plate.
 
@@ -213,7 +224,9 @@ Software Used: FreeCAD
 
 The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a 2x 18650 Lithium-Ion battery pack, connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks.
 
-The onboard processing unit, the Raspberry Pi 5, functions as the brain of the vehicle. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
+The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
+
+  <img src="" alt="Battery location" >
 
 ### **Extra: Uninterruptible Power Supply**
 
@@ -253,11 +266,13 @@ It is powered by a 2x18650 Li-ion battery pack and includes a built-in charging 
 
 **Reason for Selection:**
 - **Precise distance measurement** of obstacles within a wide radius
-- **360° scanning** makes it ideal for SLAM (Simultaneous Localization and Mapping).
-- **Compact size and lightweightness** allows easy fitting on our robot.
+- **360° scanning** makes it ideal for SLAM (Simultaneous Localisation and Mapping).
+- **Compact size and lightweightness** allow easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-The LIDAR's sensor driver has been custom-coded, to better fit our needs. [Code Link Here]
+The LIDAR's sensor driver has been custom-coded to better fit our needs. [Code Link Here]
+
+  <img src="" alt="LIDAR Mount" >
 
 ### Fish Eye Lens Camera
 
@@ -292,9 +307,9 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 - Detect and differentiate wall positions.
 
-- Identify pillar colors and types.
+- Identify pillar colours and types.
 
-- Recognize parking zones.
+- Recognise parking zones.
 
 - Track path lines and boundaries.
   
@@ -349,11 +364,16 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 ### 3.4 Circuit Diagram
 
-**Wiring Summary:**
->
+
 
 **Wiring Diagram:**
 > *[Include labeled wiring diagram image here]*
+
+  <img src="" alt="Wiring diagram pic" >
+  <img src="" alt="Wiring real pic" >
+  
+**Wiring Summary:**
+
 
 ---
 
@@ -477,13 +497,13 @@ NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and 
 
 | Component               | Specs                          | Qty | Source/Supplier        |
 |------------------------|---------------------------------|-----|------------------------|
-| N20 DC Motor + Encoder |                                 | 2   |    |
+| N20 DC Motor  |                                 | 2   |    |
 | S0004 Servo            |                                 | 1   |    |
 | Raspberry Pi Pico 2    | Microcontroller                 | 1   |    |
 | Raspberry Pi 5         | SBC                             | 1   | |
 | RPLidar C1             | 360° Lidar                      | 1   | SLAMTEC         |
 | 5MP Fish Eye Camera    | Wide-angle, IR-capable          | 1   | Cytron     |
-| Chassis Material       | PLA or Acrylic Sheet            | 1   | Local / 3D Printed     |
+| Chassis Material       | esun pla plus         | 1   | Local / 3D Printed     |
 | 3D Printed Mounts      | STL files included              | N/A | User-designed          |
 | Wires                  | Assorted lengths/connectors     | —   | Any electronics vendor |
 
