@@ -26,6 +26,8 @@ std::vector<LineSegment> getWalls(
     float collinearThreshold = 0.22f
 );
 
+std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength = 0.25);
+
 /**
  * @brief Draw LiDAR scan points onto an existing image.
  *

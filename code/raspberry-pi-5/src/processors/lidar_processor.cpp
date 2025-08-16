@@ -257,6 +257,20 @@ std::vector<LineSegment> getWalls(
     return mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
 }
 
+std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength) {
+    // TODO: Filter the wall out
+    std::vector<LineSegment> filteredSegments;
+
+    for (const auto &segment : lineSegments) {
+        float length = std::hypot(segment.x2 - segment.x1, segment.y2 - segment.y1);
+        if (length <= maxLength) {
+            filteredSegments.push_back(segment);
+        }
+    }
+
+    return filteredSegments;
+}
+
 void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float scale) {
     CV_Assert(!img.empty());
     CV_Assert(img.type() == CV_8UC3);  // make sure it's a 3-channel color image
