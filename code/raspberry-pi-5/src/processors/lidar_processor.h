@@ -1,5 +1,7 @@
 #include <opencv2/opencv.hpp>
+#include <optional>
 
+#include "direction.h"
 #include "lidar_struct.h"
 
 namespace lidar_processor
@@ -7,6 +9,41 @@ namespace lidar_processor
 
 struct LineSegment {
     float x1, y1, x2, y2;
+};
+
+// Container for all walls
+struct Walls {
+    // 4 directions × 2 WallSide = 8 possible walls
+    std::array<std::optional<LineSegment>, 4 * 2> walls;
+
+    // Set or get wall by Direction + RelativeSide (rotation-agnostic)
+    std::optional<LineSegment> &get(Direction dir, RelativeSide side) {
+        // Store Left = index 0, Right = index 1
+        return walls[static_cast<int>(dir) * 2 + static_cast<int>(side)];
+    }
+
+    const std::optional<LineSegment> &get(Direction dir, RelativeSide side) const {
+        return const_cast<Walls *>(this)->get(dir, side);
+    }
+
+    // Convert Left/Right to Inner/Outer once rotationDirection is known
+    std::optional<LineSegment> &get(Direction dir, WallSide side, RotationDirection rotation) {
+        // Map WallSide -> RelativeSide based on rotation
+        RelativeSide relSide;
+        switch (rotation) {
+        case RotationDirection::Clockwise:
+            relSide = (side == WallSide::Inner) ? RelativeSide::Right : RelativeSide::Left;
+            break;
+        case RotationDirection::CounterClockwise:
+            relSide = (side == WallSide::Inner) ? RelativeSide::Left : RelativeSide::Right;
+            break;
+        }
+        return get(dir, relSide);
+    }
+
+    const std::optional<LineSegment> &get(Direction dir, WallSide side, RotationDirection rotation) const {
+        return const_cast<Walls *>(this)->get(dir, side, rotation);
+    }
 };
 
 std::vector<LineSegment> getLines(
