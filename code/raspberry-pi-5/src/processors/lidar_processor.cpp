@@ -18,10 +18,11 @@ namespace
         const std::vector<cv::Point2f> &points,
         int start,
         int end,
-        float threshold,
         std::vector<LineSegment> &segments,
-        int minPointsPerSegment = 10,
-        float maxPointGap = 0.20f
+        float threshold,
+        int minPointsPerSegment,
+        float maxPointGap,
+        float minLength
     ) {
         if (end <= start + 1) return;
 
@@ -42,39 +43,36 @@ namespace
         }
 
         if (maxDist > threshold && index != -1) {
-            splitSegment(points, start, index, threshold, segments, minPointsPerSegment, maxPointGap);
-            splitSegment(points, index, end, threshold, segments, minPointsPerSegment, maxPointGap);
-        } else {
-            if (end - start >= minPointsPerSegment) {
-                // Check that consecutive points are not too far apart
-                bool validSegment = true;
-                for (int i = start; i < end; i++) {
-                    float gap = cv::norm(points[i + 1] - points[i]);
-                    if (gap > maxPointGap) {
-                        validSegment = false;
-                        break;
-                    }
-                }
+            splitSegment(points, start, index, segments, threshold, minPointsPerSegment, maxPointGap, minLength);
+            splitSegment(points, index, end, segments, threshold, minPointsPerSegment, maxPointGap, minLength);
+            return;
+        }
 
-                if (validSegment) {
-                    segments.push_back({x1, y1, x2, y2});
-                }
+        if (end - start < minPointsPerSegment) return;
+
+        for (int i = start; i < end; i++) {
+            float gap = cv::norm(points[i + 1] - points[i]);
+            if (gap > maxPointGap) {
+                splitSegment(points, start, i, segments, threshold, minPointsPerSegment, maxPointGap, minLength);
+                splitSegment(points, i + 1, end, segments, threshold, minPointsPerSegment, maxPointGap, minLength);
+                return;
             }
         }
+
+        float length = std::hypot(x2 - x1, y2 - y1);
+        if (length < minLength) return;
+
+        segments.push_back({x1, y1, x2, y2});
     }
 
     // --- Merge Step: Merge collinear & close segments ---
-    std::vector<LineSegment> mergeSegments(
-        const std::vector<LineSegment> &segments,
-        float angleThresholdDeg = 5.0f,
-        float gapThreshold = 0.10f
-    ) {
-        std::vector<LineSegment> merged;
-        if (segments.empty()) return merged;
+    std::vector<LineSegment> mergeSegments(const std::vector<LineSegment> &segments, float angleThresholdDeg, float gapThreshold) {
+        std::vector<LineSegment> mergedSegments;
+        if (segments.empty()) return mergedSegments;
 
-        merged.push_back(segments.front());
+        mergedSegments.push_back(segments.front());
         for (size_t i = 1; i < segments.size(); i++) {
-            auto &last = merged.back();
+            auto &last = mergedSegments.back();
             const auto &curr = segments[i];
 
             // Compute angles
@@ -82,21 +80,147 @@ namespace
             float angleCurr = std::atan2(curr.y2 - curr.y1, curr.x2 - curr.x1);
             float angleDiff = std::fabs(angleLast - angleCurr) * 180.0f / static_cast<float>(M_PI);
 
-            // If nearly collinear and endpoints are close → merge
+            // If nearly collinear and endpoints are close -> merge
             float endGap = std::hypot(curr.x1 - last.x2, curr.y1 - last.y2);
             if (angleDiff < angleThresholdDeg && endGap < gapThreshold) {
                 last.x2 = curr.x2;
                 last.y2 = curr.y2;
             } else {
-                merged.push_back(curr);
+                mergedSegments.push_back(curr);
             }
         }
-        return merged;
+
+        // --- Circular merge: check first and last segments ---
+        if (mergedSegments.size() > 1) {
+            auto &first = mergedSegments.front();
+            auto &last = mergedSegments.back();
+
+            float angleFirst = std::atan2(first.y2 - first.y1, first.x2 - first.x1);
+            float angleLast = std::atan2(last.y2 - last.y1, last.x2 - last.x1);
+            float angleDiff = std::fabs(angleFirst - angleLast);
+            if (angleDiff > M_PI) angleDiff = 2 * M_PI - angleDiff;
+            angleDiff = angleDiff * 180.0f / static_cast<float>(M_PI);
+
+            float gap1 = std::hypot(first.x1 - last.x2, first.y1 - last.y2);
+            float gap2 = std::hypot(first.x2 - last.x1, first.y2 - last.y1);
+            float endGap = std::min(gap1, gap2);
+
+            if (angleDiff < angleThresholdDeg && endGap < gapThreshold) {
+                // Merge last into first
+                first.x1 = last.x1;
+                first.y1 = last.y1;
+                mergedSegments.pop_back();
+            }
+        }
+
+        return mergedSegments;
+    }
+
+    std::vector<LineSegment> mergeAlignedSegments(
+        const std::vector<LineSegment> &segments,
+        float angleThresholdDeg,
+        float collinearThreshold
+    ) {
+        std::vector<LineSegment> mergedSegments = segments;
+        bool merged;
+
+        do {
+            merged = false;
+            std::vector<LineSegment> newSegments;
+            std::vector<bool> used(mergedSegments.size(), false);
+
+            for (size_t i = 0; i < mergedSegments.size(); ++i) {
+                if (used[i]) continue;
+
+                LineSegment current = mergedSegments[i];
+                cv::Point2f start(current.x1, current.y1);
+                cv::Point2f end(current.x2, current.y2);
+                cv::Point2f dir = end - start;
+                float mag = cv::norm(dir);
+                if (mag > 1e-6f) dir /= mag;
+
+                for (size_t j = i + 1; j < mergedSegments.size(); ++j) {
+                    if (used[j]) continue;
+                    LineSegment other = mergedSegments[j];
+
+                    // Check if lines are aligned & collinear
+                    float angle1 = std::atan2(current.y2 - current.y1, current.x2 - current.x1);
+                    float angle2 = std::atan2(other.y2 - other.y1, other.x2 - other.x1);
+                    float angleDiff = std::fabs(angle1 - angle2);
+                    if (angleDiff > M_PI) angleDiff = 2 * M_PI - angleDiff;
+                    angleDiff = angleDiff * 180.0f / static_cast<float>(M_PI);
+
+                    if (angleDiff > angleThresholdDeg) continue;
+
+                    cv::Point2f otherStart(other.x1, other.y1);
+                    cv::Point2f otherEnd(other.x2, other.y2);
+
+                    if (perpendicularDistance(otherStart.x, otherStart.y, current.x1, current.y1, current.x2, current.y2) >
+                            collinearThreshold &&
+                        perpendicularDistance(otherEnd.x, otherEnd.y, current.x1, current.y1, current.x2, current.y2) > collinearThreshold)
+                    {
+                        // Check intermediate points
+                        bool aligned = false;
+                        int numIntermediatePoints = 10;
+                        for (int k = 1; k < numIntermediatePoints; ++k) {
+                            float t = float(k) / float(numIntermediatePoints - 1);
+                            cv::Point2f pt = otherStart + t * (otherEnd - otherStart);
+                            if (perpendicularDistance(pt.x, pt.y, current.x1, current.y1, current.x2, current.y2) <= collinearThreshold) {
+                                aligned = true;
+                                break;
+                            }
+                        }
+                        if (!aligned) continue;
+                    }
+
+                    // Project endpoints onto current line direction to extend the segment
+                    std::vector<cv::Point2f> pts = {start, end, otherStart, otherEnd};
+                    auto proj = [&](const cv::Point2f &pt) { return (pt - start).dot(dir); };
+
+                    double minProj = proj(pts[0]);
+                    double maxProj = minProj;
+                    cv::Point2f minPt = pts[0], maxPt = pts[0];
+
+                    for (const auto &pt : pts) {
+                        double p = proj(pt);
+                        if (p < minProj) {
+                            minProj = p;
+                            minPt = pt;
+                        }
+                        if (p > maxProj) {
+                            maxProj = p;
+                            maxPt = pt;
+                        }
+                    }
+
+                    start = minPt;
+                    end = maxPt;
+
+                    used[j] = true;
+                    merged = true;
+                }
+
+                newSegments.push_back({start.x, start.y, end.x, end.y});
+            }
+
+            mergedSegments = std::move(newSegments);
+
+        } while (merged);
+
+        return mergedSegments;
     }
 
 }  // namespace
 
-std::vector<LineSegment> splitAndMerge(const TimedLidarData &timedLidarData, float splitThreshold) {
+std::vector<LineSegment> getLines(
+    const TimedLidarData &timedLidarData,
+    float splitThreshold,
+    int minPoints,
+    float maxPointGap,
+    float minLength,
+    float mergeAngleThreshold,
+    float mergeGapThreshold
+) {
     // Convert polar to Cartesian (in meters)
     std::vector<cv::Point2f> points;
     points.reserve(timedLidarData.lidarData.size());
@@ -109,11 +233,28 @@ std::vector<LineSegment> splitAndMerge(const TimedLidarData &timedLidarData, flo
 
     std::vector<LineSegment> rawSegments;
     if (!points.empty()) {
-        splitSegment(points, 0, points.size() - 1, splitThreshold, rawSegments);
+        splitSegment(points, 0, points.size() - 1, rawSegments, splitThreshold, minPoints, maxPointGap, minLength);
     }
 
-    // Merge collinear and close segments
-    return mergeSegments(rawSegments);
+    return mergeSegments(rawSegments, mergeAngleThreshold, mergeGapThreshold);
+}
+
+std::vector<LineSegment> getWalls(
+    const std::vector<LineSegment> &lineSegments,
+    float minLength,
+    float angleThresholdDeg,
+    float collinearThreshold
+) {
+    std::vector<LineSegment> filteredSegments;
+
+    for (const auto &segment : lineSegments) {
+        float length = std::hypot(segment.x2 - segment.x1, segment.y2 - segment.y1);
+        if (length >= minLength) {
+            filteredSegments.push_back(segment);
+        }
+    }
+
+    return mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
 }
 
 void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float scale) {

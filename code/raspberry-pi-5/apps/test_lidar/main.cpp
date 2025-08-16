@@ -66,7 +66,7 @@ int main() {
                         }
                     }
 
-                    auto lineSegments = lidar_processor::splitAndMerge(filteredLidarData);
+                    auto lineSegments = lidar_processor::getLines(filteredLidarData);
 
                     cv::Mat lidarMat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
                     lidar_processor::drawLidarData(lidarMat, timedLidarData);

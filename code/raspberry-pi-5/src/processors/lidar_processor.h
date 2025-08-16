@@ -9,7 +9,22 @@ struct LineSegment {
     float x1, y1, x2, y2;
 };
 
-std::vector<LineSegment> splitAndMerge(const TimedLidarData &timedLidarData, float splitThreshold = 0.02f);
+std::vector<LineSegment> getLines(
+    const TimedLidarData &timedLidarData,
+    float splitThreshold = 0.05f,
+    int minPoints = 10,
+    float maxPointGap = 0.10f,
+    float minLength = 0.10f,
+    float mergeAngleThreshold = 18.0f,
+    float mergeGapThreshold = 0.20f
+);
+
+std::vector<LineSegment> getWalls(
+    const std::vector<LineSegment> &lineSegments,
+    float minLength = 0.30f,
+    float angleThresholdDeg = 25.0f,
+    float collinearThreshold = 0.22f
+);
 
 /**
  * @brief Draw LiDAR scan points onto an existing image.
