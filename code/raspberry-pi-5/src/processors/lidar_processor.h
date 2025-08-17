@@ -7,34 +7,65 @@
 namespace lidar_processor
 {
 
+/**
+ * @brief Represents a 2D line segment in Cartesian coordinates.
+ */
 struct LineSegment {
     float x1, y1, x2, y2;
 
-    // Compute the Euclidean length of the segment
+    /**
+     * @brief Compute the Euclidean length of the segment.
+     * @return Length of the line segment.
+     */
     float length() const {
         float dx = x2 - x1;
         float dy = y2 - y1;
-        return std::hypot(dx, dy);  // sqrt(dx*dx + dy*dy)
+        return std::hypot(dx, dy);
     }
 };
 
+/**
+ * @brief Groups LiDAR-detected walls by relative robot position.
+ */
 struct RelativeWalls {
-    std::vector<LineSegment> frontWalls;
-    std::vector<LineSegment> rightWalls;
-    std::vector<LineSegment> backWalls;
-    std::vector<LineSegment> leftWalls;
+    std::vector<LineSegment> frontWalls;  ///< Candidate segments in front
+    std::vector<LineSegment> rightWalls;  ///< Candidate segments to the right
+    std::vector<LineSegment> backWalls;   ///< Candidate segments behind
+    std::vector<LineSegment> leftWalls;   ///< Candidate segments to the left
 };
 
+/**
+ * @brief Holds resolved single wall segments from candidate walls.
+ */
 struct ResolvedWalls {
-    std::optional<LineSegment> frontWall;
-    std::optional<LineSegment> rightWall;
-    std::optional<LineSegment> backWall;
-    std::optional<LineSegment> leftWall;
-
-    std::optional<LineSegment> farLeftWall;
-    std::optional<LineSegment> farRightWall;
+    std::optional<LineSegment> frontWall;     ///< Selected front wall
+    std::optional<LineSegment> rightWall;     ///< Selected right wall
+    std::optional<LineSegment> backWall;      ///< Selected back wall
+    std::optional<LineSegment> leftWall;      ///< Selected left wall
+    std::optional<LineSegment> farLeftWall;   ///< Selected far left wall
+    std::optional<LineSegment> farRightWall;  ///< Selected far right wall
 };
 
+/**
+ * @brief Extract line segments from timed LiDAR data by converting points to Cartesian coordinates,
+ *        splitting them based on deviation from a best-fit line, and merging approximately collinear segments.
+ *
+ * The function performs the following steps:
+ * 1. Filters out points with invalid distances or outside certain angular/distance ranges.
+ * 2. Converts the remaining polar coordinates (angle, distance) to Cartesian coordinates in meters.
+ * 3. Splits the points into candidate line segments using `splitSegment`, where a segment is split if any point
+ *    deviates from the best-fit line by more than `splitThreshold`.
+ * 4. Merges segments that are approximately collinear and close together using `mergeSegments`.
+ *
+ * @param timedLidarData LiDAR scan data with timestamps.
+ * @param splitThreshold Maximum perpendicular distance (meters) from a point to the best-fit line before splitting the segment.
+ * @param minPoints Minimum number of points required to form a segment.
+ * @param maxPointGap Maximum allowed distance between consecutive points within a segment.
+ * @param minLength Minimum length of a segment to keep after splitting.
+ * @param mergeAngleThreshold Maximum angle difference (degrees) between segments to merge them.
+ * @param mergeGapThreshold Maximum gap (meters) between segments to merge them.
+ * @return Vector of LineSegment representing the merged line segments extracted from the LiDAR data.
+ */
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
     float splitThreshold = 0.05f,
@@ -45,6 +76,17 @@ std::vector<LineSegment> getLines(
     float mergeGapThreshold = 0.20f
 );
 
+/**
+ * @brief Determine relative walls around the robot
+ *
+ * @param lineSegments Vector of detected line segments.
+ * @param targetDirection Robot's target movement direction.
+ * @param heading Robot's current heading in degrees.
+ * @param minLength Minimum length for a wall to be considered.
+ * @param angleThresholdDeg Maximum deviation from two walls to consider as aligned wall.
+ * @param collinearThreshold Maximum perpendicular distance to merge collinear segments.
+ * @return RelativeWalls struct grouping segments by relative position.
+ */
 RelativeWalls getRelativeWalls(
     const std::vector<LineSegment> &lineSegments,
     Direction targetDirection,
@@ -54,10 +96,31 @@ RelativeWalls getRelativeWalls(
     float collinearThreshold = 0.22f
 );
 
+/**
+ * @brief Determine the robot's turn direction based on relative walls.
+ *
+ * @param walls Resolved or candidate walls around the robot.
+ * @return Optional RotationDirection; empty if turn direction can't be determined.
+ */
 std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls);
 
+/**
+ * @brief Selects a single representative wall per side from relative walls.
+ *
+ * @param relativeWalls Candidate walls grouped by side.
+ * @return ResolvedWalls struct containing one wall per side if available.
+ */
 ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls);
 
+/**
+ * @brief Extract walls relevant for parking from relative walls.
+ *
+ * @param lineSegments Vector of detected line segments.
+ * @param targetDirection Robot's target movement direction.
+ * @param heading Robot's current heading in degrees.
+ * @param maxLength Maximum length of a wall to consider it a parking wall.
+ * @return Vector of LineSegment for parking walls.
+ */
 std::vector<LineSegment> getParkingWalls(
     const std::vector<LineSegment> &lineSegments,
     Direction targetDirection,
@@ -65,6 +128,15 @@ std::vector<LineSegment> getParkingWalls(
     float maxLength = 0.25f
 );
 
+/**
+ * @brief Detect traffic light points from LiDAR data and resolved walls.
+ *
+ * @param timedLidarData LiDAR scan data with timestamps.
+ * @param resolveWalls Resolved walls around the robot.
+ * @param turnDirection Optional turn direction of the robot (if has no value assume CLOCKWISE).
+ * @param distanceThreshold Maximum distance between points to cluster into a single traffic light point.
+ * @return Vector of 2D points representing detected traffic light locations.
+ */
 std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
     const ResolvedWalls resolveWalls,
@@ -98,6 +170,15 @@ void drawLineSegment(
     int thickness = 2
 );
 
+/**
+ * @brief Draw a traffic light point onto an image.
+ *
+ * @param img The cv::Mat to draw on. Must be preallocated.
+ * @param point 2D point representing the traffic light location.
+ * @param scale Meters-to-pixels scaling. For example, scale=4 means 4 meters = img.rows pixels.
+ * @param color Point color.
+ * @param radius Radius of the point in pixels.
+ */
 void drawTrafficLightPoint(
     cv::Mat &img,
     const cv::Point2f &point,
