@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+#include "camera_struct.h"
 #include "imu_struct.h"
 #include "lidar_processor.h"
 #include "lidar_struct.h"
@@ -44,9 +45,27 @@ float wrapHeading(float heading) {
     return heading;
 }
 
+TimedFrame reconstructTimedFrame(const LogEntry &entry) {
+    if (entry.data.empty()) {
+        throw std::runtime_error("Empty image entry data");
+    }
+
+    // Decode image from memory
+    cv::Mat frame = cv::imdecode(entry.data, cv::IMREAD_UNCHANGED);
+    if (frame.empty()) {
+        throw std::runtime_error("Failed to decode image from entry data");
+    }
+
+    // Convert timestamp in nanoseconds back to steady_clock::time_point
+    auto ts = std::chrono::nanoseconds(entry.timestamp);
+    std::chrono::steady_clock::time_point timestamp(ts);
+
+    return TimedFrame{std::move(frame), timestamp};
+}
+
 int main(int argc, char **argv) {
-    if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << " <lidar_log_file> <imu_log_file>" << std::endl;
+    if (argc < 4) {
+        std::cerr << "Usage: " << argv[0] << " <lidar_log_file> <imu_log_file> <camera_file>" << std::endl;
         return 1;
     }
 
@@ -75,7 +94,19 @@ int main(int argc, char **argv) {
     const auto &intialImuEntry = imuEntries[0];
     TimedImuData intialTimedImuData = reconstructTimedImu(intialImuEntry);
 
-    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
+    std::string cameraLogFile = argv[3];
+    LogReader cameraReader(cameraLogFile);
+    std::vector<LogEntry> cameraEntries;
+
+    if (!cameraReader.readAll(cameraEntries)) {
+        std::cerr << "Failed to read log file." << std::endl;
+        return 1;
+    }
+
+    std::cout << "Loaded " << cameraEntries.size() << " Camera log entries." << std::endl;
+
+    cv::namedWindow("Lidar View", cv::WINDOW_FULLSCREEN);
+    cv::namedWindow("Camera View", cv::WINDOW_FULLSCREEN);
 
     std::optional<RotationDirection> robotTurnDirection;
 
@@ -115,6 +146,9 @@ int main(int argc, char **argv) {
 
         float heading = timedImuData.euler.h;
 
+        const auto &cameraEntry = cameraEntries[i];
+        TimedFrame timedFrame = reconstructTimedFrame(cameraEntry);
+
         auto lineSegments = lidar_processor::getLines(filteredLidarData, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
 
@@ -125,7 +159,7 @@ int main(int argc, char **argv) {
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
-        cv::Mat lidarMat(1000, 1000, CV_8UC3, cv::Scalar(0, 0, 0));
+        cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
         lidar_processor::drawLidarData(lidarMat, timedLidarData, 6.0f);
 
         // for (size_t i = 0; i < lineSegments.size(); ++i) {
@@ -183,7 +217,8 @@ int main(int argc, char **argv) {
             std::cout << "N/A" << std::endl;
         }
 
-        cv::imshow("Video", lidarMat);
+        cv::imshow("Lidar View", lidarMat);
+        cv::imshow("Camera View", timedFrame.frame);
     }
 
     cv::destroyAllWindows();
