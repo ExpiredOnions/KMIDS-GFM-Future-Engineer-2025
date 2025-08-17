@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+#include "camera_processor.h"
 #include "camera_struct.h"
 #include "imu_struct.h"
 #include "lidar_processor.h"
@@ -159,6 +160,9 @@ int main(int argc, char **argv) {
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
+        cv::Mat maskRed, maskGreen, maskPink;
+        camera_processor::filterColors(timedFrame, maskRed, maskGreen, maskPink);
+
         cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
         lidar_processor::drawLidarData(lidarMat, timedLidarData, 6.0f);
 
@@ -218,7 +222,7 @@ int main(int argc, char **argv) {
         }
 
         cv::imshow("Lidar View", lidarMat);
-        cv::imshow("Camera View", timedFrame.frame);
+        cv::imshow("Camera View", maskRed);
     }
 
     cv::destroyAllWindows();
