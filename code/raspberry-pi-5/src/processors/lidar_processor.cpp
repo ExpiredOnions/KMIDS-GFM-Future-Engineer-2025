@@ -702,8 +702,18 @@ void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float sc
         }
     }
 
-    // Draw LiDAR origin
-    cv::circle(img, center, 5, cv::Scalar(173, 12, 168), -1);
+    // Draw LiDAR origin as an isosceles triangle
+    std::vector<cv::Point> triangle;
+
+    // size of the triangle in pixels
+    int size = 12;
+
+    // pointing upwards
+    triangle.push_back(cv::Point(center.x, center.y - size));                 // top vertex
+    triangle.push_back(cv::Point(center.x - size / 2, center.y + size / 2));  // bottom-left
+    triangle.push_back(cv::Point(center.x + size / 2, center.y + size / 2));  // bottom-right
+
+    cv::fillConvexPoly(img, triangle, cv::Scalar(173, 12, 168));
 }
 
 void drawLineSegment(cv::Mat &img, const LineSegment &segment, float scale, cv::Scalar color, int thickness) {
