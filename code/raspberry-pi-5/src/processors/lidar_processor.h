@@ -19,10 +19,10 @@ struct LineSegment {
 };
 
 struct RelativeWalls {
-    std::vector<LineSegment> front;
-    std::vector<LineSegment> right;
-    std::vector<LineSegment> back;
-    std::vector<LineSegment> left;
+    std::vector<LineSegment> frontWalls;
+    std::vector<LineSegment> rightWalls;
+    std::vector<LineSegment> backWalls;
+    std::vector<LineSegment> leftWalls;
 };
 
 // Container for all walls

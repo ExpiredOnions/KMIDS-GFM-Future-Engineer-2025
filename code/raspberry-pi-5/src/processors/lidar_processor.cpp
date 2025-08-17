@@ -357,13 +357,13 @@ RelativeWalls getRelativeWalls(
         float perpDistance = perpendicularDistance(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
 
         if (perpAngleTargetFrame >= 315.0f || perpAngleTargetFrame < 45.0f) {
-            relativeWalls.right.push_back(segment);
+            relativeWalls.rightWalls.push_back(segment);
         } else if (perpAngleTargetFrame >= 45.0f && perpAngleTargetFrame < 135.0f) {
-            relativeWalls.front.push_back(segment);
+            relativeWalls.frontWalls.push_back(segment);
         } else if (perpAngleTargetFrame >= 135.0f && perpAngleTargetFrame < 225.0f) {
-            relativeWalls.left.push_back(segment);
+            relativeWalls.leftWalls.push_back(segment);
         } else {
-            relativeWalls.back.push_back(segment);
+            relativeWalls.backWalls.push_back(segment);
         }
     }
 
@@ -371,13 +371,13 @@ RelativeWalls getRelativeWalls(
 }
 
 std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
-    if (walls.front.empty()) return std::nullopt;
-    if (walls.left.empty() && walls.right.empty()) return std::nullopt;
+    if (walls.frontWalls.empty()) return std::nullopt;
+    if (walls.leftWalls.empty() && walls.rightWalls.empty()) return std::nullopt;
 
     // Pick the highest front line
-    const LineSegment *frontLine = &walls.front[0];
+    const LineSegment *frontLine = &walls.frontWalls[0];
     float frontMidY = (frontLine->y1 + frontLine->y2) / 2.0f;
-    for (const auto &line : walls.front) {
+    for (const auto &line : walls.frontWalls) {
         float midY = (line.y1 + line.y2) / 2.0f;
         if (midY > frontMidY) {
             frontLine = &line;
@@ -400,7 +400,7 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
     }
 
     // Check left walls
-    for (const auto &leftLine : walls.left) {
+    for (const auto &leftLine : walls.leftWalls) {
         float leftHigherX, leftHigherY;
         if (leftLine.y1 < leftLine.y2) {
             leftHigherX = leftLine.x1;
@@ -429,7 +429,7 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
     }
 
     // Check right walls
-    for (const auto &rightLine : walls.right) {
+    for (const auto &rightLine : walls.rightWalls) {
         float rightHigherX, rightHigherY;
         if (rightLine.y1 < rightLine.y2) {
             rightHigherX = rightLine.x1;

@@ -130,19 +130,19 @@ int main(int argc, char **argv) {
         //     lidar_processor::drawLineSegment(lidarMat, lineSegment, 4.0f, color);
         // }
 
-        for (auto &lineSegment : relativeWalls.left) {
+        for (auto &lineSegment : relativeWalls.leftWalls) {
             cv::Scalar color(0, 0, 255);
             lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.right) {
+        for (auto &lineSegment : relativeWalls.rightWalls) {
             cv::Scalar color(0, 255, 255);
             lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.front) {
+        for (auto &lineSegment : relativeWalls.frontWalls) {
             cv::Scalar color(0, 255, 0);
             lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.back) {
+        for (auto &lineSegment : relativeWalls.backWalls) {
             cv::Scalar color(255, 255, 0);
             lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
         }
