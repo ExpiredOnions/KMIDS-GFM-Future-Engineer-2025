@@ -502,6 +502,29 @@ ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls) {
         resolveWalls.backWall = newWall;
     }
 
+    for (auto &newWall : relativeWalls.leftWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (newDist <= 1.20f) continue;
+        if (newDist >= 3.20f) continue;
+        if (resolveWalls.farLeftWall.has_value()) {
+            LineSegment curWall = resolveWalls.farLeftWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist >= newDist) continue;
+        }
+        resolveWalls.farLeftWall = newWall;
+    }
+    for (auto &newWall : relativeWalls.rightWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (newDist <= 1.20f) continue;
+        if (newDist >= 3.20f) continue;
+        if (resolveWalls.farRightWall.has_value()) {
+            LineSegment curWall = resolveWalls.farRightWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist >= newDist) continue;
+        }
+        resolveWalls.farRightWall = newWall;
+    }
+
     return resolveWalls;
 }
 
@@ -530,6 +553,129 @@ std::vector<LineSegment> getParkingWalls(
     }
 
     return filteredSegments;
+}
+
+std::vector<cv::Point2f> getTrafficLightPoints(
+    const TimedLidarData &timedLidarData,
+    const ResolvedWalls resolveWalls,
+    std::optional<RotationDirection> turnDirection,
+    float distanceThreshold
+) {
+    // Convert polar to Cartesian (in meters)
+    std::vector<cv::Point2f> points;
+    points.reserve(timedLidarData.lidarData.size());
+
+    for (const auto &node : timedLidarData.lidarData) {
+        // TODO: Change this value to fit the actual robot
+        if (node.distance < 0.005) continue;
+        if (node.distance > 3.200) continue;
+        if (node.angle > 5 && node.angle < 175 && node.distance > 0.700) continue;
+
+        float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
+
+        float lidarX = node.distance * std::sin(rad);
+        float lidarY = node.distance * std::cos(rad);
+        float x, y;
+        lidarToCartesian(lidarX, lidarY, x, y);
+
+        points.emplace_back(x, y);
+    }
+
+    std::vector<cv::Point2f> filteredPoints;
+    for (auto &point : points) {
+        if (not resolveWalls.frontWall) return {};
+        float frontDistance = perpendicularDistance(
+            point.x,
+            point.y,
+            resolveWalls.frontWall->x1,
+            resolveWalls.frontWall->y1,
+            resolveWalls.frontWall->x2,
+            resolveWalls.frontWall->y2
+        );
+
+        std::optional<LineSegment> outerWall, innerWall, farOuterWall;
+        if (turnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            outerWall = resolveWalls.leftWall;
+            innerWall = resolveWalls.rightWall;
+
+            farOuterWall = resolveWalls.farRightWall;
+        } else {
+            outerWall = resolveWalls.rightWall;
+            innerWall = resolveWalls.leftWall;
+
+            farOuterWall = resolveWalls.farLeftWall;
+        }
+
+        float outerDistance;
+        if (outerWall) {
+            outerDistance = perpendicularDistance(point.x, point.y, outerWall->x1, outerWall->y1, outerWall->x2, outerWall->y2);
+        } else if (innerWall) {
+            outerDistance = 1.00f - perpendicularDistance(point.x, point.y, innerWall->x1, innerWall->y1, innerWall->x2, innerWall->y2);
+        } else {
+            return {};
+        }
+
+        // TODO: Clean up this magic number
+        const float outerEdge = 0.30f;
+        const float innerEdge = 0.70f;
+
+        if (farOuterWall) {
+            float outerFarDistance =
+                perpendicularDistance(point.x, point.y, farOuterWall->x1, farOuterWall->y1, farOuterWall->x2, farOuterWall->y2);
+
+            if (frontDistance < outerEdge or frontDistance > 3.00f - outerEdge or outerDistance < outerEdge or outerFarDistance < outerEdge)
+                continue;
+            if (frontDistance > innerEdge and outerDistance > innerEdge and outerFarDistance > innerEdge) continue;
+        } else {
+            if (frontDistance < outerEdge or frontDistance > 3.00f - outerEdge or outerDistance < outerEdge or
+                outerDistance > 3.00f - outerEdge)
+                continue;
+            if (frontDistance > innerEdge and outerDistance > innerEdge) continue;
+        }
+
+        filteredPoints.push_back(point);
+    }
+
+    std::vector<cv::Point2f> averages;
+    if (filteredPoints.empty()) return averages;
+
+    std::vector<cv::Point2f> currentCluster;
+    currentCluster.push_back(filteredPoints[0]);
+
+    for (size_t i = 1; i < filteredPoints.size(); ++i) {
+        cv::Point2f p1 = currentCluster.back();
+        cv::Point2f p2 = filteredPoints[i];
+
+        float dist = std::hypot(p2.x - p1.x, p2.y - p1.y);
+
+        if (dist < distanceThreshold) {
+            currentCluster.push_back(p2);
+        } else {
+            // compute average for current cluster
+            float sumX = 0, sumY = 0;
+            for (auto &p : currentCluster) {
+                sumX += p.x;
+                sumY += p.y;
+            }
+            averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
+
+            // start new cluster
+            currentCluster.clear();
+            currentCluster.push_back(p2);
+        }
+    }
+
+    // handle last cluster
+    if (!currentCluster.empty()) {
+        float sumX = 0, sumY = 0;
+        for (auto &p : currentCluster) {
+            sumX += p.x;
+            sumY += p.y;
+        }
+        averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
+    }
+
+    return averages;
 }
 
 void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float scale) {
@@ -572,6 +718,18 @@ void drawLineSegment(cv::Mat &img, const LineSegment &segment, float scale, cv::
     int y2 = static_cast<int>(center.y - segment.y2 * (img.rows / scale));
 
     cv::line(img, cv::Point(x1, y1), cv::Point(x2, y2), color, thickness);
+}
+
+void drawTrafficLightPoint(cv::Mat &img, const cv::Point2f &point, float scale, cv::Scalar color, int radius) {
+    CV_Assert(!img.empty());
+    CV_Assert(img.type() == CV_8UC3);  // ensure 3-channel image
+
+    cv::Point center(img.cols / 2, img.rows / 2);
+
+    int x = static_cast<int>(center.x + point.x * (img.cols / scale));
+    int y = static_cast<int>(center.y - point.y * (img.rows / scale));
+
+    cv::circle(img, cv::Point(x, y), radius, color, cv::FILLED);
 }
 
 }  // namespace lidar_processor

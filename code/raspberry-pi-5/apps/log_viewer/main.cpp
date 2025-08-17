@@ -77,6 +77,8 @@ int main(int argc, char **argv) {
 
     cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
 
+    std::optional<RotationDirection> robotTurnDirection;
+
     size_t i = 0;
     while (true) {
         int key = cv::waitKey(0);  // waits for key press
@@ -115,8 +117,13 @@ int main(int argc, char **argv) {
 
         auto lineSegments = lidar_processor::getLines(filteredLidarData, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
+
+        auto newRobotTurnDirecton = lidar_processor::getTurnDirection(relativeWalls);
+        if (newRobotTurnDirecton) robotTurnDirection = newRobotTurnDirecton;
+
         auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
+        auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
         cv::Mat lidarMat(1000, 1000, CV_8UC3, cv::Scalar(0, 0, 0));
         lidar_processor::drawLidarData(lidarMat, timedLidarData, 6.0f);
@@ -135,20 +142,26 @@ int main(int argc, char **argv) {
             cv::Scalar color(0, 0, 255);
             lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, 6.0f, color);
         }
-
         if (resolveWalls.rightWall) {
             cv::Scalar color(0, 255, 255);
             lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, 6.0f, color);
         }
-
         if (resolveWalls.frontWall) {
             cv::Scalar color(0, 255, 0);
             lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, 6.0f, color);
         }
-
         if (resolveWalls.backWall) {
             cv::Scalar color(255, 255, 0);
             lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, 6.0f, color);
+        }
+
+        if (resolveWalls.farLeftWall) {
+            cv::Scalar color(0, 0, 100);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farLeftWall, 6.0f, color);
+        }
+        if (resolveWalls.farRightWall) {
+            cv::Scalar color(0, 100, 100);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farRightWall, 6.0f, color);
         }
 
         for (auto &parkingWall : parkingWalls) {
@@ -156,7 +169,19 @@ int main(int argc, char **argv) {
             lidar_processor::drawLineSegment(lidarMat, parkingWall, 6.0f, color);
         }
 
-        auto robotTurnDirection = lidar_processor::getTurnDirection(relativeWalls);
+        for (auto &trafficLightPoint : trafficLightPoints) {
+            lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, 6.0f);
+        }
+
+        if (robotTurnDirection) {
+            if (*robotTurnDirection == RotationDirection::CLOCKWISE) {
+                std::cout << "CLOCKWISE" << std::endl;
+            } else if (*robotTurnDirection == RotationDirection::COUNTER_CLOCKWISE) {
+                std::cout << "COUNTER_CLOCKWISE" << std::endl;
+            }
+        } else {
+            std::cout << "N/A" << std::endl;
+        }
 
         cv::imshow("Video", lidarMat);
     }

@@ -30,6 +30,9 @@ struct ResolvedWalls {
     std::optional<LineSegment> rightWall;
     std::optional<LineSegment> backWall;
     std::optional<LineSegment> leftWall;
+
+    std::optional<LineSegment> farLeftWall;
+    std::optional<LineSegment> farRightWall;
 };
 
 std::vector<LineSegment> getLines(
@@ -62,6 +65,13 @@ std::vector<LineSegment> getParkingWalls(
     float maxLength = 0.25f
 );
 
+std::vector<cv::Point2f> getTrafficLightPoints(
+    const TimedLidarData &timedLidarData,
+    const ResolvedWalls resolveWalls,
+    std::optional<RotationDirection> turnDirection,
+    float distanceThreshold = 0.05f
+);
+
 /**
  * @brief Draw LiDAR scan points onto an existing image.
  *
@@ -86,6 +96,14 @@ void drawLineSegment(
     float scale = 4.0f,
     cv::Scalar color = cv::Scalar(0, 255, 0),
     int thickness = 2
+);
+
+void drawTrafficLightPoint(
+    cv::Mat &img,
+    const cv::Point2f &point,
+    float scale = 4.0f,
+    cv::Scalar color = cv::Scalar(255, 0, 0),
+    int radius = 6
 );
 
 }  // namespace lidar_processor
