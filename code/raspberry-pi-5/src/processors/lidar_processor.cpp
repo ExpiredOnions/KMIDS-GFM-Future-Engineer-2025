@@ -460,6 +460,51 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
     return std::nullopt;  // unknown if no rule matched
 }
 
+ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls) {
+    ResolvedWalls resolveWalls;
+
+    for (auto &newWall : relativeWalls.leftWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (newDist > 1.20f) continue;
+        if (resolveWalls.leftWall.has_value()) {
+            LineSegment curWall = resolveWalls.leftWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist <= newDist) continue;
+        }
+        resolveWalls.leftWall = newWall;
+    }
+    for (auto &newWall : relativeWalls.rightWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (newDist > 1.20f) continue;
+        if (resolveWalls.rightWall.has_value()) {
+            LineSegment curWall = resolveWalls.rightWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist <= newDist) continue;
+        }
+        resolveWalls.rightWall = newWall;
+    }
+    for (auto &newWall : relativeWalls.frontWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (resolveWalls.frontWall.has_value()) {
+            LineSegment curWall = resolveWalls.frontWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist >= newDist) continue;
+        }
+        resolveWalls.frontWall = newWall;
+    }
+    for (auto &newWall : relativeWalls.backWalls) {
+        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        if (resolveWalls.backWall.has_value()) {
+            LineSegment curWall = resolveWalls.backWall.value();
+            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            if (curDist >= newDist) continue;
+        }
+        resolveWalls.backWall = newWall;
+    }
+
+    return resolveWalls;
+}
+
 std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength) {
     // TODO: Filter the wall out
     std::vector<LineSegment> filteredSegments;

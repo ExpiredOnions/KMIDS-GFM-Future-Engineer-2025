@@ -115,6 +115,7 @@ int main(int argc, char **argv) {
 
         auto lineSegments = lidar_processor::getLines(filteredLidarData, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
+        auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
         auto parkingWallSegments = lidar_processor::getParkingWalls(lineSegments);
 
         cv::Mat lidarMat(1000, 1000, CV_8UC3, cv::Scalar(0, 0, 0));
@@ -130,21 +131,24 @@ int main(int argc, char **argv) {
         //     lidar_processor::drawLineSegment(lidarMat, lineSegment, 4.0f, color);
         // }
 
-        for (auto &lineSegment : relativeWalls.leftWalls) {
+        if (resolveWalls.leftWall) {
             cv::Scalar color(0, 0, 255);
-            lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.rightWalls) {
+
+        if (resolveWalls.rightWall) {
             cv::Scalar color(0, 255, 255);
-            lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.frontWalls) {
+
+        if (resolveWalls.frontWall) {
             cv::Scalar color(0, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, 6.0f, color);
         }
-        for (auto &lineSegment : relativeWalls.backWalls) {
+
+        if (resolveWalls.backWall) {
             cv::Scalar color(255, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, lineSegment, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, 6.0f, color);
         }
 
         auto robotTurnDirection = lidar_processor::getTurnDirection(relativeWalls);

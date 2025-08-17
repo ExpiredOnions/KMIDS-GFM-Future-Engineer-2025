@@ -25,6 +25,13 @@ struct RelativeWalls {
     std::vector<LineSegment> leftWalls;
 };
 
+struct ResolvedWalls {
+    std::optional<LineSegment> frontWall;
+    std::optional<LineSegment> rightWall;
+    std::optional<LineSegment> backWall;
+    std::optional<LineSegment> leftWall;
+};
+
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
     float splitThreshold = 0.05f,
@@ -45,6 +52,8 @@ RelativeWalls getRelativeWalls(
 );
 
 std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls);
+
+ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls);
 
 std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength = 0.25);
 
