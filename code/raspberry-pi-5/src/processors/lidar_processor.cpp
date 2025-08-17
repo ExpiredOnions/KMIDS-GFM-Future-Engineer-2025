@@ -1,4 +1,5 @@
 #include "lidar_processor.h"
+#include "direction.h"
 
 namespace lidar_processor
 {
@@ -6,11 +7,87 @@ namespace lidar_processor
 namespace
 {
 
-    // --- Helper: Perpendicular distance from point to line ---
+    /**
+     * @brief Convert LiDAR coordinates to standard Cartesian coordinates.
+     *
+     * The LiDAR is mounted rotated 90° clockwise relative to the normal coordinate system.
+     * This function rotates the LiDAR coordinates counterclockwise by 90° to align them
+     * with the standard (X, Y) axes. It also applies any necessary sign flips.
+     *
+     * @param lidarX X-coordinate from the LiDAR (distance * sin(angle)).
+     * @param lidarY Y-coordinate from the LiDAR (distance * cos(angle)).
+     * @param x Reference to store the converted X-coordinate.
+     * @param y Reference to store the converted Y-coordinate.
+     */
+    inline void lidarToCartesian(float lidarX, float lidarY, float &x, float &y) {
+        x = lidarY;   // LiDAR Y becomes standard X
+        y = -lidarX;  // LiDAR X becomes negative standard Y
+    }
+
+    /**
+     * @brief Compute the perpendicular distance from a point to a line.
+     *
+     * This function calculates the shortest Euclidean distance from a point (x, y)
+     * to the infinite line defined by two points (x1, y1) and (x2, y2).
+     *
+     * @param x   X-coordinate of the point.
+     * @param y   Y-coordinate of the point.
+     * @param x1  X-coordinate of the first point on the line.
+     * @param y1  Y-coordinate of the first point on the line.
+     * @param x2  X-coordinate of the second point on the line.
+     * @param y2  Y-coordinate of the second point on the line.
+     *
+     * @return The perpendicular distance from the point to the line.
+     *         Returns 0.0f if the line points are nearly identical.
+     */
     float perpendicularDistance(float x, float y, float x1, float y1, float x2, float y2) {
         float num = std::fabs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
         float den = std::hypot(x2 - x1, y2 - y1);
         return (den > 1e-6f) ? num / den : 0.0f;
+    }
+
+    /**
+     * @brief Compute the perpendicular direction from a line to a point.
+     *
+     * This function calculates the angle (in degrees) of the perpendicular vector
+     * from a line (defined by (x1, y1) → (x2, y2)) to a point (x, y).
+     * The perpendicular is taken as a 90° counterclockwise rotation of the line’s
+     * direction vector, and its orientation is flipped if the point lies on the
+     * opposite side of the line. The angle is normalized to [0, 360).
+     *
+     * @param x   X-coordinate of the point.
+     * @param y   Y-coordinate of the point.
+     * @param x1  X-coordinate of the first point on the line.
+     * @param y1  Y-coordinate of the first point on the line.
+     * @param x2  X-coordinate of the second point on the line.
+     * @param y2  Y-coordinate of the second point on the line.
+     *
+     * @return The angle of the perpendicular direction in degrees (0 ≤ angle < 360),
+     *         measured relative to the positive X-axis.
+     */
+    float perpendicularDirection(float x, float y, float x1, float y1, float x2, float y2) {
+        // Line vector
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+
+        if (dx == 0.0f && dy == 0.0f) throw std::invalid_argument("Zero-length line segment");
+
+        // Perpendicular vector (rotate CCW)
+        float perpX = -dy;
+        float perpY = dx;
+
+        // Side test using cross product
+        float cross = dx * (y - y1) - dy * (x - x1);
+        if (cross < 0) {
+            perpX = -perpX;
+            perpY = -perpY;
+        }
+
+        // Angle in degrees, normalized to [0,360)
+        float angle = std::atan2(perpY, perpX) * 180.0f / static_cast<float>(M_PI);
+        angle = std::fmod(angle + 180.0f + 360.0f, 360.0f);
+
+        return angle;
     }
 
     // --- Recursive Split Step ---
@@ -226,9 +303,19 @@ std::vector<LineSegment> getLines(
     points.reserve(timedLidarData.lidarData.size());
 
     for (const auto &node : timedLidarData.lidarData) {
-        if (node.distance <= 0) continue;
+        // TODO: Change this value to fit the actual robot
+        if (node.distance < 0.005) continue;
+        if (node.distance > 3.200) continue;
+        if (node.angle > 5 && node.angle < 175 && node.distance > 0.700) continue;
+
         float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
-        points.emplace_back(node.distance * std::cos(rad), -node.distance * std::sin(rad));
+
+        float lidarX = node.distance * std::sin(rad);
+        float lidarY = node.distance * std::cos(rad);
+        float x, y;
+        lidarToCartesian(lidarX, lidarY, x, y);
+
+        points.emplace_back(x, y);
     }
 
     std::vector<LineSegment> rawSegments;
@@ -239,8 +326,10 @@ std::vector<LineSegment> getLines(
     return mergeSegments(rawSegments, mergeAngleThreshold, mergeGapThreshold);
 }
 
-std::vector<LineSegment> getWalls(
+RelativeWalls getRelativeWalls(
     const std::vector<LineSegment> &lineSegments,
+    Direction targetDirection,
+    float heading,
     float minLength,
     float angleThresholdDeg,
     float collinearThreshold
@@ -254,7 +343,121 @@ std::vector<LineSegment> getWalls(
         }
     }
 
-    return mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
+    std::vector<LineSegment> mergedSegments = mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
+
+    RelativeWalls relativeWalls;
+
+    for (const auto &segment : mergedSegments) {
+        // Angle of the segment’s perpendicular relative to the robot’s forward direction
+        float perpAngleRobotFrame = perpendicularDirection(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+
+        // Angle of the segment’s perpendicular relative to the target direction frame
+        float perpAngleTargetFrame = std::fmod(perpAngleRobotFrame - (heading - targetDirection.toHeading()) + 360.0f, 360.0f);
+
+        float perpDistance = perpendicularDistance(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+
+        if (perpAngleTargetFrame >= 315.0f || perpAngleTargetFrame < 45.0f) {
+            relativeWalls.right.push_back(segment);
+        } else if (perpAngleTargetFrame >= 45.0f && perpAngleTargetFrame < 135.0f) {
+            relativeWalls.front.push_back(segment);
+        } else if (perpAngleTargetFrame >= 135.0f && perpAngleTargetFrame < 225.0f) {
+            relativeWalls.left.push_back(segment);
+        } else {
+            relativeWalls.back.push_back(segment);
+        }
+    }
+
+    return relativeWalls;
+}
+
+std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
+    if (walls.front.empty()) return std::nullopt;
+    if (walls.left.empty() && walls.right.empty()) return std::nullopt;
+
+    // Pick the highest front line
+    const LineSegment *frontLine = &walls.front[0];
+    float frontMidY = (frontLine->y1 + frontLine->y2) / 2.0f;
+    for (const auto &line : walls.front) {
+        float midY = (line.y1 + line.y2) / 2.0f;
+        if (midY > frontMidY) {
+            frontLine = &line;
+            frontMidY = midY;
+        }
+    }
+
+    // Determine left and right points of the front line
+    float frontLeftX, frontLeftY, frontRightX, frontRightY;
+    if (frontLine->x1 < frontLine->x2) {
+        frontLeftX = frontLine->x1;
+        frontLeftY = frontLine->y1;
+        frontRightX = frontLine->x2;
+        frontRightY = frontLine->y2;
+    } else {
+        frontLeftX = frontLine->x2;
+        frontLeftY = frontLine->y2;
+        frontRightX = frontLine->x1;
+        frontRightY = frontLine->y1;
+    }
+
+    // Check left walls
+    for (const auto &leftLine : walls.left) {
+        float leftHigherX, leftHigherY;
+        if (leftLine.y1 < leftLine.y2) {
+            leftHigherX = leftLine.x1;
+            leftHigherY = leftLine.y1;
+        } else {
+            leftHigherX = leftLine.x2;
+            leftHigherY = leftLine.y2;
+        }
+
+        // Check for left wall that is far away in x direction from front wall
+        float dir = perpendicularDirection(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2);
+        if (dir > 90.0f && dir < 270.0f) {
+            if (perpendicularDistance(0.0f, 0.0f, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2) > 1.70f)
+                return RotationDirection::COUNTER_CLOCKWISE;
+
+            continue;
+        }
+
+        if (perpendicularDistance(leftHigherX, leftHigherY, frontLine->x1, frontLine->y1, frontLine->x2, frontLine->y2) < 0.25f)
+            return RotationDirection::CLOCKWISE;
+
+        if (perpendicularDistance(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2) > 0.30f) {
+            float dir = perpendicularDirection(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2);
+            if (dir > 270.0f || dir < 90.0f) return RotationDirection::COUNTER_CLOCKWISE;
+        }
+    }
+
+    // Check right walls
+    for (const auto &rightLine : walls.right) {
+        float rightHigherX, rightHigherY;
+        if (rightLine.y1 < rightLine.y2) {
+            rightHigherX = rightLine.x1;
+            rightHigherY = rightLine.y1;
+        } else {
+            rightHigherX = rightLine.x2;
+            rightHigherY = rightLine.y2;
+        }
+
+        // Check for right wall that is far away in x direction from front wall
+        float dir = perpendicularDirection(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2);
+        if (dir > 270.0f || dir < 90.0f) {
+            if (perpendicularDistance(0.0f, 0.0f, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2) > 1.70f)
+                return RotationDirection::CLOCKWISE;
+
+            continue;
+        }
+
+        if (perpendicularDistance(rightHigherX, rightHigherY, frontLine->x1, frontLine->y1, frontLine->x2, frontLine->y2) < 0.25f)
+            return RotationDirection::COUNTER_CLOCKWISE;
+
+        if (perpendicularDistance(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2) > 0.30f) {
+            float dir = perpendicularDirection(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2);
+            if (dir > 90.0f && dir < 270.0f) return RotationDirection::CLOCKWISE;
+        }
+    }
+
+    return std::nullopt;  // unknown if no rule matched
 }
 
 std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength) {
@@ -281,16 +484,22 @@ void drawLidarData(cv::Mat &img, const TimedLidarData &timedLidarDatas, float sc
         if (node.distance <= 0) continue;
 
         float rad = node.angle * static_cast<float>(CV_PI) / 180.0f;
-        int x = static_cast<int>(center.x + node.distance * (img.rows / scale) * std::cos(rad));
-        int y = static_cast<int>(center.y + node.distance * (img.rows / scale) * std::sin(rad));
 
-        if (x >= 0 && x < img.cols && y >= 0 && y < img.rows) {
-            cv::circle(img, cv::Point(x, y), 1, cv::Scalar(255, 255, 255), -1);
+        float lidarX = node.distance * std::sin(rad);
+        float lidarY = node.distance * std::cos(rad);
+        float x, y;
+        lidarToCartesian(lidarX, lidarY, x, y);
+
+        int cvX = static_cast<int>(center.x + x * (img.rows / scale));
+        int cvY = static_cast<int>(center.y - y * (img.rows / scale));
+
+        if (cvX >= 0 && cvX < img.cols && cvY >= 0 && cvY < img.rows) {
+            cv::circle(img, cv::Point(cvX, cvY), 1, cv::Scalar(255, 255, 255), -1);
         }
     }
 
     // Draw LiDAR origin
-    cv::circle(img, center, 5, cv::Scalar(168, 12, 173), -1);
+    cv::circle(img, center, 5, cv::Scalar(173, 12, 168), -1);
 }
 
 void drawLineSegment(cv::Mat &img, const LineSegment &segment, float scale, cv::Scalar color, int thickness) {

@@ -9,6 +9,20 @@ namespace lidar_processor
 
 struct LineSegment {
     float x1, y1, x2, y2;
+
+    // Compute the Euclidean length of the segment
+    float length() const {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        return std::hypot(dx, dy);  // sqrt(dx*dx + dy*dy)
+    }
+};
+
+struct RelativeWalls {
+    std::vector<LineSegment> front;
+    std::vector<LineSegment> right;
+    std::vector<LineSegment> back;
+    std::vector<LineSegment> left;
 };
 
 // Container for all walls
@@ -31,11 +45,11 @@ struct Walls {
         // Map WallSide -> RelativeSide based on rotation
         RelativeSide relSide;
         switch (rotation) {
-        case RotationDirection::Clockwise:
-            relSide = (side == WallSide::Inner) ? RelativeSide::Right : RelativeSide::Left;
+        case RotationDirection::CLOCKWISE:
+            relSide = (side == WallSide::INNER) ? RelativeSide::RIGHT : RelativeSide::LEFT;
             break;
-        case RotationDirection::CounterClockwise:
-            relSide = (side == WallSide::Inner) ? RelativeSide::Left : RelativeSide::Right;
+        case RotationDirection::COUNTER_CLOCKWISE:
+            relSide = (side == WallSide::INNER) ? RelativeSide::LEFT : RelativeSide::RIGHT;
             break;
         }
         return get(dir, relSide);
@@ -56,12 +70,16 @@ std::vector<LineSegment> getLines(
     float mergeGapThreshold = 0.20f
 );
 
-std::vector<LineSegment> getWalls(
+RelativeWalls getRelativeWalls(
     const std::vector<LineSegment> &lineSegments,
+    Direction targetDirection,
+    float heading,
     float minLength = 0.30f,
     float angleThresholdDeg = 25.0f,
     float collinearThreshold = 0.22f
 );
+
+std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls);
 
 std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength = 0.25);
 
