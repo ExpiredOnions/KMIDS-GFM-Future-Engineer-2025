@@ -55,7 +55,12 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls);
 
 ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls);
 
-std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength = 0.25);
+std::vector<LineSegment> getParkingWalls(
+    const std::vector<LineSegment> &lineSegments,
+    Direction targetDirection,
+    float heading,
+    float maxLength = 0.25f
+);
 
 /**
  * @brief Draw LiDAR scan points onto an existing image.

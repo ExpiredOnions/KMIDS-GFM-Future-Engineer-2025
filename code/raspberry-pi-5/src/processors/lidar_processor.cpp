@@ -505,13 +505,26 @@ ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls) {
     return resolveWalls;
 }
 
-std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength) {
-    // TODO: Filter the wall out
+std::vector<LineSegment> getParkingWalls(
+    const std::vector<LineSegment> &lineSegments,
+    Direction targetDirection,
+    float heading,
+    float maxLength
+) {
     std::vector<LineSegment> filteredSegments;
 
     for (const auto &segment : lineSegments) {
-        float length = std::hypot(segment.x2 - segment.x1, segment.y2 - segment.y1);
-        if (length <= maxLength) {
+        // Angle of the segment’s perpendicular relative to the robot’s forward direction
+        float perpAngleRobotFrame = perpendicularDirection(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+
+        // Angle of the segment’s perpendicular relative to the target direction frame
+        float perpAngleTargetFrame = std::fmod(perpAngleRobotFrame - (heading - targetDirection.toHeading()) + 360.0f, 360.0f);
+
+        if (not((perpAngleTargetFrame > 45.0f && perpAngleTargetFrame < 135.0f) ||
+                (perpAngleTargetFrame > 225.0f && perpAngleTargetFrame < 315.0f)))
+            continue;
+
+        if (segment.length() <= maxLength) {
             filteredSegments.push_back(segment);
         }
     }

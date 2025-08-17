@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
         auto lineSegments = lidar_processor::getLines(filteredLidarData, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
         auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
-        auto parkingWallSegments = lidar_processor::getParkingWalls(lineSegments);
+        auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
 
         cv::Mat lidarMat(1000, 1000, CV_8UC3, cv::Scalar(0, 0, 0));
         lidar_processor::drawLidarData(lidarMat, timedLidarData, 6.0f);
@@ -149,6 +149,11 @@ int main(int argc, char **argv) {
         if (resolveWalls.backWall) {
             cv::Scalar color(255, 255, 0);
             lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, 6.0f, color);
+        }
+
+        for (auto &parkingWall : parkingWalls) {
+            cv::Scalar color(146, 22, 199);
+            lidar_processor::drawLineSegment(lidarMat, parkingWall, 6.0f, color);
         }
 
         auto robotTurnDirection = lidar_processor::getTurnDirection(relativeWalls);
