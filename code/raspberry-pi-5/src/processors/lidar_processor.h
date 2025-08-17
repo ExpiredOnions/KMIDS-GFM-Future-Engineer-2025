@@ -25,41 +25,6 @@ struct RelativeWalls {
     std::vector<LineSegment> leftWalls;
 };
 
-// Container for all walls
-struct Walls {
-    // 4 directions × 2 WallSide = 8 possible walls
-    std::array<std::optional<LineSegment>, 4 * 2> walls;
-
-    // Set or get wall by Direction + RelativeSide (rotation-agnostic)
-    std::optional<LineSegment> &get(Direction dir, RelativeSide side) {
-        // Store Left = index 0, Right = index 1
-        return walls[static_cast<int>(dir) * 2 + static_cast<int>(side)];
-    }
-
-    const std::optional<LineSegment> &get(Direction dir, RelativeSide side) const {
-        return const_cast<Walls *>(this)->get(dir, side);
-    }
-
-    // Convert Left/Right to Inner/Outer once rotationDirection is known
-    std::optional<LineSegment> &get(Direction dir, WallSide side, RotationDirection rotation) {
-        // Map WallSide -> RelativeSide based on rotation
-        RelativeSide relSide;
-        switch (rotation) {
-        case RotationDirection::CLOCKWISE:
-            relSide = (side == WallSide::INNER) ? RelativeSide::RIGHT : RelativeSide::LEFT;
-            break;
-        case RotationDirection::COUNTER_CLOCKWISE:
-            relSide = (side == WallSide::INNER) ? RelativeSide::LEFT : RelativeSide::RIGHT;
-            break;
-        }
-        return get(dir, relSide);
-    }
-
-    const std::optional<LineSegment> &get(Direction dir, WallSide side, RotationDirection rotation) const {
-        return const_cast<Walls *>(this)->get(dir, side, rotation);
-    }
-};
-
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
     float splitThreshold = 0.05f,
