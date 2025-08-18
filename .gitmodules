@@ -7,3 +7,6 @@
 [submodule "pico-sdk"]
 	path = code/raspberry-pi-pico-2/external/pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk.git
+[submodule "BNO08x_Pico_Library"]
+	path = code/raspberry-pi-pico-2/external/BNO08x_Pico_Library
+	url = https://github.com/robotcopper/BNO08x_Pico_Library.git
