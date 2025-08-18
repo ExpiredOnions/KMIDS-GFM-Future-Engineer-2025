@@ -163,8 +163,10 @@ int main(int argc, char **argv) {
         cv::Mat maskRed, maskGreen, maskPink;
         camera_processor::filterColors(timedFrame, maskRed, maskGreen, maskPink);
 
+        const float SCALE = 6.0f;
+
         cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
-        lidar_processor::drawLidarData(lidarMat, timedLidarData, 6.0f);
+        lidar_processor::drawLidarData(lidarMat, timedLidarData, SCALE);
 
         // for (size_t i = 0; i < lineSegments.size(); ++i) {
         //     const auto &lineSegment = lineSegments[i];
@@ -172,43 +174,43 @@ int main(int argc, char **argv) {
         //     std::srand(static_cast<unsigned int>(i));
         //     cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
 
-        //     // lidar_processor::drawLineSegment(lidarMat, lineSegment, 4.0f);
-        //     lidar_processor::drawLineSegment(lidarMat, lineSegment, 4.0f, color);
+        //     // lidar_processor::drawLineSegment(lidarMat, lineSegment, SCALE);
+        //     lidar_processor::drawLineSegment(lidarMat, lineSegment, SCALE, color);
         // }
 
         if (resolveWalls.leftWall) {
             cv::Scalar color(0, 0, 255);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, SCALE, color);
         }
         if (resolveWalls.rightWall) {
             cv::Scalar color(0, 255, 255);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, SCALE, color);
         }
         if (resolveWalls.frontWall) {
             cv::Scalar color(0, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, SCALE, color);
         }
         if (resolveWalls.backWall) {
             cv::Scalar color(255, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, SCALE, color);
         }
 
         if (resolveWalls.farLeftWall) {
             cv::Scalar color(0, 0, 100);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farLeftWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farLeftWall, SCALE, color);
         }
         if (resolveWalls.farRightWall) {
             cv::Scalar color(0, 100, 100);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farRightWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farRightWall, SCALE, color);
         }
 
         for (auto &parkingWall : parkingWalls) {
             cv::Scalar color(146, 22, 199);
-            lidar_processor::drawLineSegment(lidarMat, parkingWall, 6.0f, color);
+            lidar_processor::drawLineSegment(lidarMat, parkingWall, SCALE, color);
         }
 
         for (auto &trafficLightPoint : trafficLightPoints) {
-            lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, 6.0f);
+            lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, SCALE);
         }
 
         if (robotTurnDirection) {
