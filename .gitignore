@@ -1,5 +1,6 @@
 # Ignore build directory
 /code/raspberry-pi-5/build/
+/code/raspberry-pi-pico-2/build/
 
 # Ignore CMake generated files
 CMakeFiles/
