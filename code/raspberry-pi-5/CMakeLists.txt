@@ -8,10 +8,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Find package for lccv
 find_package(OpenCV REQUIRED)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBCAMERA REQUIRED libcamera)
+pkg_check_modules(LIBCAMERA libcamera)
 
 # Add lccv external library for camera_module
-add_subdirectory(external/lccv)
+if(LIBCAMERA_FOUND)
+  add_subdirectory(external/lccv)
+endif()
 
 add_subdirectory(src/utils)
 add_subdirectory(src/modules)
