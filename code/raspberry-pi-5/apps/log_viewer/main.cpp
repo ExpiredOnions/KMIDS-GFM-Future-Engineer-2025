@@ -160,8 +160,7 @@ int main(int argc, char **argv) {
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
-        cv::Mat maskRed, maskGreen, maskPink;
-        camera_processor::filterColors(timedFrame, maskRed, maskGreen, maskPink);
+        auto colorMasks = camera_processor::filterColors(timedFrame);
 
         const float SCALE = 6.0f;
 
@@ -224,7 +223,11 @@ int main(int argc, char **argv) {
         }
 
         cv::imshow("Lidar View", lidarMat);
-        cv::imshow("Camera View", maskRed);
+
+        cv::Mat cameraMat = timedFrame.frame.clone();
+        camera_processor::drawColorMasks(cameraMat, colorMasks);
+
+        cv::imshow("Camera View", cameraMat);
     }
 
     cv::destroyAllWindows();

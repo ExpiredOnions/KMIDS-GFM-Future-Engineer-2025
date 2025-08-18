@@ -25,13 +25,65 @@ const cv::Scalar lowerPink2Light(171, 255, 255);
 const cv::Scalar upperPink2Light(171, 255, 255);
 
 /**
- * @brief Filter an input image into separate masks for red, green, and pink colors.
+ * @brief Stores information about a single contour.
  *
- * @param input The input BGR image (cv::Mat).
- * @param maskRed Output mask for red pixels (CV_8UC1).
- * @param maskGreen Output mask for green pixels (CV_8UC1).
- * @param maskPink Output mask for pink/magenta pixels (CV_8UC1).
+ * Contains the geometric centroid and area of a contour.
+ * The area is represented as a double to preserve the
+ * subpixel precision provided by OpenCV’s cv::contourArea().
  */
-void filterColors(const TimedFrame &timedFrame, cv::Mat &maskRed, cv::Mat &maskGreen, cv::Mat &maskPink);
+struct ContourInfo {
+    cv::Point2f centroid;  ///< Centroid of the contour (x, y) in image coordinates.
+    double area;           ///< Area of the contour in pixels (double precision).
+};
+
+/**
+ * @brief Stores information about all valid contours of a single color.
+ *
+ * Contains:
+ * - The binary mask for the color.
+ * - A list of contour information (centroid and area) for
+ *   contours above the specified area threshold.
+ */
+struct ColorInfo {
+    std::vector<ContourInfo> contours;  ///< All contours that passed the area threshold.
+    cv::Mat mask;                       ///< Binary mask representing the color.
+};
+
+/**
+ * @brief Stores filtered results for multiple colors.
+ *
+ * Holds the masks and contour information for:
+ * - Red
+ * - Green
+ */
+struct ColorMasks {
+    ColorInfo red;    ///< Results for red color range.
+    ColorInfo green;  ///< Results for green color range.
+};
+
+/**
+ * @brief Filters an input frame for red, green, and pink colors and extracts contours.
+ *
+ * The input frame is converted to HSV color space, thresholded into binary masks
+ * for each target color (red, green, pink), and processed to extract contour
+ * centroids and areas. Contours smaller than the given area threshold are discarded.
+ *
+ * @param timedFrame Input frame with timestamp and image data.
+ * @param areaThreshold Minimum area threshold (in pixels) to filter out small/noisy contours.
+ * @return ColorMasks A struct containing masks and contour info for red, green, and pink.
+ */
+ColorMasks filterColors(const TimedFrame &timedFrame, double areaThreshold = 300.0);
+
+/**
+ * @brief Draws ColorMasks on an image.
+ *
+ * - Overlays the mask for each color with semi-transparent color.
+ * - Draws the centroids as circles.
+ * - Annotates each centroid with its area and position.
+ *
+ * @param img The image to draw on (CV_8UC3).
+ * @param colors The ColorMasks containing masks and contours.
+ */
+void drawColorMasks(cv::Mat &img, const ColorMasks &colors);
 
 }  // namespace camera_processor
