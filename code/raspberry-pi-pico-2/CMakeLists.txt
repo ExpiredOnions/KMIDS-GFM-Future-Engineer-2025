@@ -13,6 +13,7 @@ pico_sdk_init()
 
 add_subdirectory(external/BNO08x_Pico_Library)
 
+add_subdirectory(src/utils)
 add_subdirectory(src/controllers)
 
 add_executable(gfm_pico_2 src/main.cpp)
