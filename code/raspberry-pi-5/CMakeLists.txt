@@ -16,6 +16,7 @@ if(LIBCAMERA_FOUND)
 endif()
 
 add_subdirectory(src/utils)
+add_subdirectory(src/i2c_master)
 add_subdirectory(src/modules)
 add_subdirectory(src/processors)
 
@@ -23,4 +24,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
 
 add_subdirectory(apps/test_camera)
 add_subdirectory(apps/test_lidar)
+add_subdirectory(apps/test_i2c)
 add_subdirectory(apps/log_viewer)
