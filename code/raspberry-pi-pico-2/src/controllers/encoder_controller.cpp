@@ -1,5 +1,7 @@
 #include "encoder_controller.h"
 
+#include <hardware/gpio.h>
+
 // Static instance pointer
 EncoderController *EncoderController::instance_ = nullptr;
 

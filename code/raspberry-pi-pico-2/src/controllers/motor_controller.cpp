@@ -1,5 +1,8 @@
 #include "motor_controller.h"
 
+#include <hardware/gpio.h>
+#include <hardware/pwm.h>
+
 MotorController::MotorController(uint pinIn1, uint pinIn2, uint pinPwm)
     : pinIn1_(pinIn1)
     , pinIn2_(pinIn2)

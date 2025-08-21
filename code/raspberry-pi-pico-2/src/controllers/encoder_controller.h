@@ -1,31 +1,79 @@
 #pragma once
 
-#include "hardware/gpio.h"
-#include "pico/stdlib.h"
 #include <atomic>
-#include <stdio.h>
+#include <pico/types.h>
 
+/**
+ * @brief Controller class for a quadrature rotary encoder on the Raspberry Pi Pico.
+ *
+ * Handles encoder counting using GPIO interrupts, and provides
+ * convenient methods to get the current count, angle, and reset the encoder.
+ */
 class EncoderController
 {
 public:
+    /**
+     * @brief Construct a new EncoderController object.
+     *
+     * @param pinA GPIO pin connected to encoder channel A
+     * @param pinB GPIO pin connected to encoder channel B
+     * @param pulsesPerRev Number of encoder pulses per motor revolution
+     * @param gearRatio Optional gear ratio (default 1)
+     */
     EncoderController(uint pinA, uint pinB, int pulsesPerRev, int gearRatio = 1);
 
-    void begin();             // Initialize GPIO and interrupts
-    long getCount() const;    // Current raw encoder value
-    double getAngle() const;  // Current angle in degrees
-    void reset();             // Reset encoder count
+    /**
+     * @brief Initialize the encoder GPIO pins and attach interrupts.
+     *
+     * Must be called before using other methods.
+     */
+    void begin();
+
+    /**
+     * @brief Get the current raw encoder count.
+     *
+     * @return long The encoder tick count
+     */
+    long getCount() const;
+
+    /**
+     * @brief Get the current angle in degrees.
+     *
+     * Computes the angle based on pulses per revolution and gear ratio.
+     *
+     * @return double Current angle in degrees
+     */
+    double getAngle() const;
+
+    /**
+     * @brief Reset the encoder count to zero.
+     */
+    void reset();
 
 private:
-    void handleInterrupt();  // Non-static ISR logic
+    /**
+     * @brief Internal handler for GPIO interrupts.
+     *
+     * Updates encoder count based on the quadrature signal.
+     */
+    void handleInterrupt();
 
-    static void encoderISR(uint gpio, uint32_t events);  // Static ISR wrapper
+    /**
+     * @brief Static wrapper for the ISR required by the Pico SDK.
+     *
+     * Calls the instance's handleInterrupt() method.
+     *
+     * @param gpio GPIO pin number that triggered the interrupt
+     * @param events Event flags (rise/fall)
+     */
+    static void encoderISR(uint gpio, uint32_t events);
 
-    uint pinA_;
-    uint pinB_;
-    int pulsesPerRev_;
-    int gearRatio_;
+    uint pinA_;        /**< GPIO pin for encoder channel A */
+    uint pinB_;        /**< GPIO pin for encoder channel B */
+    int pulsesPerRev_; /**< Encoder pulses per revolution */
+    int gearRatio_;    /**< Optional gear ratio */
 
-    static EncoderController *instance_;  // Singleton instance for ISR
-    volatile int lastEncoded_;
-    std::atomic<long> encoderValue_;
+    static EncoderController *instance_; /**< Singleton instance for ISR access */
+    volatile int lastEncoded_;           /**< Last encoder state for ISR calculation */
+    std::atomic<long> encoderValue_;     /**< Current encoder count (thread-safe) */
 };
