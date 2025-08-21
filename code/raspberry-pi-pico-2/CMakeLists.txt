@@ -13,8 +13,10 @@ pico_sdk_init()
 
 add_subdirectory(external/BNO08x_Pico_Library)
 
+add_subdirectory(src/controllers)
+
 add_executable(gfm_pico_2 src/main.cpp)
-target_link_libraries(gfm_pico_2 pico_stdlib BNO08x_Pico_Library)
+target_link_libraries(gfm_pico_2 pico_stdlib bno085_controller)
 
 pico_enable_stdio_usb(gfm_pico_2 1)
 pico_enable_stdio_uart(gfm_pico_2 0)
