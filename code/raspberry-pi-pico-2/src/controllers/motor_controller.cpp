@@ -28,18 +28,18 @@ void MotorController::begin() {
     pwm_set_enabled(sliceNum_, true);
 }
 
-void MotorController::setSpeed(float speed) {
-    if (speed > 100.0f) speed = 100.0f;
-    if (speed < -100.0f) speed = -100.0f;
+void MotorController::setPower(float power) {
+    if (power > 100.0f) power = 100.0f;
+    if (power < -100.0f) power = -100.0f;
 
-    if (speed >= 0) {
+    if (power >= 0) {
         gpio_put(pinIn1_, 1);
         gpio_put(pinIn2_, 0);
-        updatePwm(speed / 100.0f);
+        updatePwm(power / 100.0f);
     } else {
         gpio_put(pinIn1_, 0);
         gpio_put(pinIn2_, 1);
-        updatePwm(-speed / 100.0f);
+        updatePwm(-power / 100.0f);
     }
 }
 

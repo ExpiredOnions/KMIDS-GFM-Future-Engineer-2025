@@ -28,13 +28,13 @@ public:
     void begin();
 
     /**
-     * @brief Set motor speed.
+     * @brief Set motor power.
      *
      * Positive values move the motor forward, negative values reverse it.
      *
-     * @param speed Motor speed percentage (-100.0 to 100.0)
+     * @param power Motor power percentage (-100.0 to 100.0)
      */
-    void setSpeed(float speed);
+    void setPower(float power);
 
     /**
      * @brief Stop the motor.
