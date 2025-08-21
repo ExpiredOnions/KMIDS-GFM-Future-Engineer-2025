@@ -20,9 +20,9 @@ constexpr size_t EULER_ANGLE_SIZE = sizeof(imu_euler_float_t);
 constexpr size_t IMU_DATA_SIZE = ACCEL_DATA_SIZE + EULER_ANGLE_SIZE;
 
 // Motor / Steering info
-constexpr size_t MOTOR_PERCENT_SIZE = sizeof(float);
+constexpr size_t MOTOR_SPEED_SIZE = sizeof(double);
 constexpr size_t STEERING_PERCENT_SIZE = sizeof(float);
-constexpr size_t MOVEMENT_INFO_SIZE = MOTOR_PERCENT_SIZE + STEERING_PERCENT_SIZE;
+constexpr size_t MOVEMENT_INFO_SIZE = MOTOR_SPEED_SIZE + STEERING_PERCENT_SIZE;
 
 // Memory addresses
 constexpr size_t COMMAND_ADDR = 0;
@@ -49,11 +49,9 @@ namespace Command
 
 // Status flags as a single byte
 struct StatusFlags {
+    uint8_t is_running : 1;
     uint8_t imu_ready : 1;
-    uint8_t motor_enabled : 1;
-    uint8_t movement_done : 1;
-    uint8_t error_flag : 1;
-    uint8_t reserved : 4;  // remaining bits
+    uint8_t reserved : 6;  // unused bits
 };
 static_assert(sizeof(StatusFlags) == 1, "StatusFlags must be 1 byte");
 

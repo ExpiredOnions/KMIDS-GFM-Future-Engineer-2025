@@ -1,15 +1,37 @@
-#include "bno085_controller.h"
+#include <hardware/gpio.h>
+#include <hardware/i2c.h>
+#include <pico/stdio.h>
 
-#define I2C_PORT i2c0
-#define SDA_PIN 16
-#define SCL_PIN 17
+#include "bno085_controller.h"
+#include "i2c_slave.h"
+
+const uint I2C0_SDA_PIN = 4;
+const uint I2C0_SCL_PIN = 5;
+
+const uint I2C1_SDA_PIN = 2;
+const uint I2C1_SCL_PIN = 3;
+const uint I2C1_BAUDRATE = 400000;  // 400 kHz
+const uint I2C1_SLAVE_ADDR = 0x39;
 
 int main() {
+    // Initialize stdio (optional, for debugging via UART)
     stdio_init_all();
 
-    Bno085Controller imu(I2C_PORT, SDA_PIN, SCL_PIN);
+    Bno085Controller imu(i2c0, I2C0_SDA_PIN, I2C0_SCL_PIN);
 
-    printf("BNO08x Test Start\n");
+    gpio_init(I2C1_SDA_PIN);
+    gpio_init(I2C1_SCL_PIN);
+    gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C1_SDA_PIN);
+    gpio_pull_up(I2C1_SCL_PIN);
+    i2c_init(i2c1, I2C1_BAUDRATE);
+
+    // Initialize I2C slave on I2C1, address 0x39
+    i2c_slave_init(i2c1, I2C1_SLAVE_ADDR, i2c_slave::handler);
+
+    // Initialize I2C slave context
+    i2c_slave::context_init();
 
     if (!imu.begin()) {
         while (1)
@@ -21,19 +43,25 @@ int main() {
 
     TimedImuData data;
 
+    double motor_speed = 0.0;
+    float steering_percent = 0.0f;
+
+    // Set initial status
+    i2c_slave::set_is_running(true);
+    i2c_slave::set_is_imu_ready(false);
+
     while (true) {
         if (imu.update(data)) {
-            printf(
-                "Euler: H=%.2f° P=%.2f° R=%.2f° | "
-                "Accel: X=%.2f Y=%.2f Z=%.2f\n",
-                data.euler.h,
-                data.euler.p,
-                data.euler.r,
-                data.accel.x,
-                data.accel.y,
-                data.accel.z
-            );
+            i2c_slave::set_imu_data(&data.accel, &data.euler);
+            i2c_slave::set_is_imu_ready(true);
         }
-        sleep_ms(100);
+
+        // Simulate movement info
+        motor_speed = 0.76789;
+        steering_percent = 0.71237f;
+
+        i2c_slave::set_movement_info(motor_speed, steering_percent);
     }
+
+    return 0;
 }

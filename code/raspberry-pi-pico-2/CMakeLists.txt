@@ -15,10 +15,11 @@ add_subdirectory(external/BNO08x_Pico_Library)
 
 add_subdirectory(src/utils)
 add_subdirectory(src/controllers)
+add_subdirectory(src/i2c_slave)
 
 add_executable(gfm_pico_2 src/main.cpp)
 target_link_libraries(gfm_pico_2 pico_stdlib bno085_controller
-                      encoder_controller motor_controller)
+                      motor_speed_controller i2c_slave)
 
 pico_enable_stdio_usb(gfm_pico_2 1)
 pico_enable_stdio_uart(gfm_pico_2 0)
