@@ -20,3 +20,11 @@ target_include_directories(encoder_controller
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(encoder_controller PRIVATE pico_stdlib hardware_i2c)
+
+# NOTE: motor_controller
+
+add_library(motor_controller STATIC motor_controller.cpp motor_controller.h)
+
+target_include_directories(motor_controller PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(motor_controller PRIVATE pico_stdlib hardware_pwm)
