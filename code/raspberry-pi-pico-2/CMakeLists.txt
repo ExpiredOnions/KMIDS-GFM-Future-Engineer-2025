@@ -17,7 +17,8 @@ add_subdirectory(src/utils)
 add_subdirectory(src/controllers)
 
 add_executable(gfm_pico_2 src/main.cpp)
-target_link_libraries(gfm_pico_2 pico_stdlib bno085_controller)
+target_link_libraries(gfm_pico_2 pico_stdlib bno085_controller
+                      encoder_controller motor_controller)
 
 pico_enable_stdio_usb(gfm_pico_2 1)
 pico_enable_stdio_uart(gfm_pico_2 0)
