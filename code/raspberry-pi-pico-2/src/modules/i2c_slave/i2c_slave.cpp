@@ -80,26 +80,26 @@ bool get_is_imu_ready() {
 
 /** ---------------- IMU Helpers ---------------- */
 
-void set_imu_data(const imu_accel_float_t *accel, const imu_euler_float_t *euler) {
-    memcpy(&context.mem[IMU_DATA_ADDR], accel, ACCEL_DATA_SIZE);
-    memcpy(&context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], euler, EULER_ANGLE_SIZE);
+void set_imu_data(const imu_accel_float_t &accel, const imu_euler_float_t &euler) {
+    memcpy(&context.mem[IMU_DATA_ADDR], &accel, ACCEL_DATA_SIZE);
+    memcpy(&context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], &euler, EULER_ANGLE_SIZE);
 }
 
-void get_imu_data(imu_accel_float_t *accel, imu_euler_float_t *euler) {
-    memcpy(accel, &context.mem[IMU_DATA_ADDR], ACCEL_DATA_SIZE);
-    memcpy(euler, &context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], EULER_ANGLE_SIZE);
+void get_imu_data(imu_accel_float_t &outAccel, imu_euler_float_t &outEuler) {
+    memcpy(&outAccel, &context.mem[IMU_DATA_ADDR], ACCEL_DATA_SIZE);
+    memcpy(&outEuler, &context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], EULER_ANGLE_SIZE);
 }
 
 /** ---------------- Motor / Steering Helpers ---------------- */
 
-void set_movement_info(double motor_speed, float steering_percent) {
-    memcpy(&context.mem[MOVEMENT_INFO_ADDR], &motor_speed, MOTOR_SPEED_SIZE);
-    memcpy(&context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], &steering_percent, STEERING_PERCENT_SIZE);
+void set_movement_info(double motorSpeed, float steeringPercent) {
+    memcpy(&context.mem[MOVEMENT_INFO_ADDR], &motorSpeed, MOTOR_SPEED_SIZE);
+    memcpy(&context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], &steeringPercent, STEERING_PERCENT_SIZE);
 }
 
-void get_movement_info(double *motor_speed, float *steering_percent) {
-    memcpy(motor_speed, &context.mem[MOVEMENT_INFO_ADDR], MOTOR_SPEED_SIZE);
-    memcpy(steering_percent, &context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], STEERING_PERCENT_SIZE);
+void get_movement_info(double &outMotorSpeed, float &outSteeringPercent) {
+    memcpy(&outMotorSpeed, &context.mem[MOVEMENT_INFO_ADDR], MOTOR_SPEED_SIZE);
+    memcpy(&outSteeringPercent, &context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], STEERING_PERCENT_SIZE);
 }
 
 }  // namespace i2c_slave

@@ -105,18 +105,18 @@ bool get_is_imu_ready();
 /**
  * @brief Store IMU accelerometer and Euler angle data in I2C memory.
  *
- * @param accel Pointer to accelerometer data structure.
- * @param euler Pointer to Euler angle data structure.
+ * @param accel Reference to accelerometer data structure
+ * @param euler Reference to Euler angle data structure
  */
-void set_imu_data(const imu_accel_float_t *accel, const imu_euler_float_t *euler);
+void set_imu_data(const imu_accel_float_t &accel, const imu_euler_float_t &euler);
 
 /**
  * @brief Retrieve IMU accelerometer and Euler angle data from I2C memory.
  *
- * @param accel Pointer to accelerometer data structure to fill.
- * @param euler Pointer to Euler angle data structure to fill.
+ * @param outAccel Reference to an accelerometer data structure to fill
+ * @param outEuler Reference to an Euler angle data structure to fill
  */
-void get_imu_data(imu_accel_float_t *accel, imu_euler_float_t *euler);
+void get_imu_data(imu_accel_float_t &outAccel, imu_euler_float_t &outEuler);
 ///@}
 
 /** @name Movement Info Helpers
@@ -126,18 +126,18 @@ void get_imu_data(imu_accel_float_t *accel, imu_euler_float_t *euler);
 /**
  * @brief Store motor speed and steering percentage in I2C memory.
  *
- * @param motor_speed Motor speed as double.
- * @param steering_percent Steering percentage as float (-100.0 to 100.0).
+ * @param motorSpeed Motor speed as double.
+ * @param steeringPercent Steering percentage as float (-100.0 to 100.0).
  */
-void set_movement_info(double motor_speed, float steering_percent);
+void set_movement_info(double motorSpeed, float steeringPercent);
 
 /**
  * @brief Retrieve motor speed and steering percentage from I2C memory.
  *
- * @param motor_speed Pointer to store motor speed.
- * @param steering_percent Pointer to store steering percentage.
+ * @param outMotorSpeed Reference to a double to store motor speed
+ * @param outSteeringPercent Reference to a float to store steering percentage
  */
-void get_movement_info(double *motor_speed, float *steering_percent);
+void get_movement_info(double &outMotorSpeed, float &outSteeringPercent);
 ///@}
 
 }  // namespace i2c_slave

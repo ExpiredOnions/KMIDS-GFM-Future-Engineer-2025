@@ -44,24 +44,24 @@ int main() {
     imu_accel_float_t accel;
     imu_euler_float_t euler;
 
-    double motor_speed = 0.0;
-    float steering_percent = 0.0f;
+    double motorSpeed = 0.0;
+    float steeringPercent = 0.0f;
 
     // Set initial status
     i2c_slave::set_is_running(true);
     i2c_slave::set_is_imu_ready(false);
 
     while (true) {
-            i2c_slave::set_imu_data(&data.accel, &data.euler);
         if (imu.update(accel, euler)) {
+            i2c_slave::set_imu_data(accel, euler);
             i2c_slave::set_is_imu_ready(true);
         }
 
         // Simulate movement info
-        motor_speed = 0.76789;
-        steering_percent = 0.71237f;
+        motorSpeed = 0.76789;
+        steeringPercent = 0.71237f;
 
-        i2c_slave::set_movement_info(motor_speed, steering_percent);
+        i2c_slave::set_movement_info(motorSpeed, steeringPercent);
     }
 
     return 0;
