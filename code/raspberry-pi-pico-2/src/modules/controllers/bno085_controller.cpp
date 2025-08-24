@@ -43,7 +43,7 @@ bool Bno085Controller::enableAccelerometer(uint interval_ms) {
     return true;
 }
 
-bool Bno085Controller::update(imu_accel_float_t &accel, imu_euler_float_t &euler) {
+bool Bno085Controller::update(ImuAccel &accel, ImuEuler &euler) {
     if (imu_.getSensorEvent()) {
         switch (imu_.getSensorEventID()) {
         case SENSOR_REPORTID_ROTATION_VECTOR:

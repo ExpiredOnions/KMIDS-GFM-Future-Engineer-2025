@@ -69,7 +69,7 @@ bool I2CMaster::get_imu_ready(bool &imu_ready) {
 }
 
 /** IMU operations */
-bool I2CMaster::read_imu(imu_accel_float_t &accel, imu_euler_float_t &euler) {
+bool I2CMaster::read_imu(ImuAccel &accel, ImuEuler &euler) {
     uint8_t buffer[pico_i2c_mem_addr::IMU_DATA_SIZE];
     if (!read_register(pico_i2c_mem_addr::IMU_DATA_ADDR, buffer, sizeof(buffer))) return false;
 

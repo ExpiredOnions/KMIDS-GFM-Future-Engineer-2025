@@ -80,12 +80,12 @@ bool get_is_imu_ready() {
 
 /** ---------------- IMU Helpers ---------------- */
 
-void set_imu_data(const imu_accel_float_t &accel, const imu_euler_float_t &euler) {
+void set_imu_data(const ImuAccel &accel, const ImuEuler &euler) {
     memcpy(&context.mem[IMU_DATA_ADDR], &accel, ACCEL_DATA_SIZE);
     memcpy(&context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], &euler, EULER_ANGLE_SIZE);
 }
 
-void get_imu_data(imu_accel_float_t &outAccel, imu_euler_float_t &outEuler) {
+void get_imu_data(ImuAccel &outAccel, ImuEuler &outEuler) {
     memcpy(&outAccel, &context.mem[IMU_DATA_ADDR], ACCEL_DATA_SIZE);
     memcpy(&outEuler, &context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], EULER_ANGLE_SIZE);
 }

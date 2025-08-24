@@ -25,12 +25,12 @@ TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
 TimedImuData reconstructTimedImu(const LogEntry &entry) {
     TimedImuData imuData{};
 
-    if (entry.data.size() < sizeof(imu_accel_float_t) + sizeof(imu_euler_float_t)) {
+    if (entry.data.size() < sizeof(ImuAccel) + sizeof(ImuEuler)) {
         throw std::runtime_error("Invalid IMU entry data size");
     }
 
-    std::memcpy(&imuData.accel, entry.data.data(), sizeof(imu_accel_float_t));
-    std::memcpy(&imuData.euler, entry.data.data() + sizeof(imu_accel_float_t), sizeof(imu_euler_float_t));
+    std::memcpy(&imuData.accel, entry.data.data(), sizeof(ImuAccel));
+    std::memcpy(&imuData.euler, entry.data.data() + sizeof(ImuAccel), sizeof(ImuEuler));
 
     // Convert timestamp in nanoseconds back to steady_clock::time_point
     auto ts = std::chrono::nanoseconds(entry.timestamp);

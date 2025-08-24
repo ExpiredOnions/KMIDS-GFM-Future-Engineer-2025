@@ -108,7 +108,7 @@ bool get_is_imu_ready();
  * @param accel Reference to accelerometer data structure
  * @param euler Reference to Euler angle data structure
  */
-void set_imu_data(const imu_accel_float_t &accel, const imu_euler_float_t &euler);
+void set_imu_data(const ImuAccel &accel, const ImuEuler &euler);
 
 /**
  * @brief Retrieve IMU accelerometer and Euler angle data from I2C memory.
@@ -116,7 +116,7 @@ void set_imu_data(const imu_accel_float_t &accel, const imu_euler_float_t &euler
  * @param outAccel Reference to an accelerometer data structure to fill
  * @param outEuler Reference to an Euler angle data structure to fill
  */
-void get_imu_data(imu_accel_float_t &outAccel, imu_euler_float_t &outEuler);
+void get_imu_data(ImuAccel &outAccel, ImuEuler &outEuler);
 ///@}
 
 /** @name Movement Info Helpers

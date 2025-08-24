@@ -60,12 +60,12 @@ public:
      * Updates the provided accelerometer and Euler angle structures with
      * the latest available readings.
      *
-     * @param accel Reference to an imu_accel_float_t struct to store accelerometer data
-     * @param euler Reference to an imu_euler_float_t struct to store Euler angle data
+     * @param accel Reference to an ImuAccel struct to store accelerometer data
+     * @param euler Reference to an ImuEuler struct to store Euler angle data
      * @return true if new data was available
      * @return false if no new data was available
      */
-    bool update(imu_accel_float_t &accel, imu_euler_float_t &euler);
+    bool update(ImuAccel &accel, ImuEuler &euler);
 
     /**
      * @brief Perform a tare (zeroing) operation on the IMU.

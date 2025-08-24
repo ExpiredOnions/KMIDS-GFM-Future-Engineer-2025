@@ -15,8 +15,8 @@ constexpr size_t COMMAND_SIZE = 1;  // 1 byte
 constexpr size_t STATUS_SIZE = 1;   // 1 byte, represented by StatusFlags struct
 
 // IMU data sizes
-constexpr size_t ACCEL_DATA_SIZE = sizeof(imu_accel_float_t);
-constexpr size_t EULER_ANGLE_SIZE = sizeof(imu_euler_float_t);
+constexpr size_t ACCEL_DATA_SIZE = sizeof(ImuAccel);
+constexpr size_t EULER_ANGLE_SIZE = sizeof(ImuEuler);
 constexpr size_t IMU_DATA_SIZE = ACCEL_DATA_SIZE + EULER_ANGLE_SIZE;
 
 // Motor / Steering info

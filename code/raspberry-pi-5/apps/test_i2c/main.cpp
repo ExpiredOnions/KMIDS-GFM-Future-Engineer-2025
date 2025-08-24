@@ -12,8 +12,8 @@ int main() {
     uint8_t status = 0;
     if (master.read_status(status)) printf("Status: 0x%X\n", status);
 
-    imu_accel_float_t accel;
-    imu_euler_float_t euler;
+    ImuAccel accel;
+    ImuEuler euler;
     if (master.read_imu(accel, euler)) {
         printf("Accel: %.2f %.2f %.2f\n", accel.x, accel.y, accel.z);
         printf("Euler: %.2f %.2f %.2f\n", euler.h, euler.r, euler.p);

@@ -41,8 +41,8 @@ int main() {
     imu.enableRotation(8);
     imu.enableAccelerometer(8);
 
-    imu_accel_float_t accel;
-    imu_euler_float_t euler;
+    ImuAccel accel;
+    ImuEuler euler;
 
     double motorSpeed = 0.0;
     float steeringPercent = 0.0f;

@@ -26,7 +26,7 @@ public:
     bool get_imu_ready(bool &imu_ready);
 
     /** IMU operations */
-    bool read_imu(imu_accel_float_t &accel, imu_euler_float_t &euler);
+    bool read_imu(ImuAccel &accel, ImuEuler &euler);
 
     /** Movement operations */
     bool read_movement(double &motor_speed, float &steering_percent);

@@ -2,16 +2,16 @@
 
 #include <thread>
 
-struct imu_accel_float_t {
+struct ImuAccel {
     float x, y, z;
 };
 
-struct imu_euler_float_t {
+struct ImuEuler {
     float h, r, p;
 };
 
 struct TimedImuData {
-    imu_accel_float_t accel;
-    imu_euler_float_t euler;
+    ImuAccel accel;
+    ImuEuler euler;
     std::chrono::steady_clock::time_point timestamp;
 };
