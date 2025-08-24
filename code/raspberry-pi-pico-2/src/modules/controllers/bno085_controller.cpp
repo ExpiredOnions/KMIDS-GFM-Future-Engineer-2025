@@ -43,23 +43,19 @@ bool Bno085Controller::enableAccelerometer(uint interval_ms) {
     return true;
 }
 
-bool Bno085Controller::update(TimedImuData &data) {
+bool Bno085Controller::update(imu_accel_float_t &accel, imu_euler_float_t &euler) {
     if (imu_.getSensorEvent()) {
-        auto now = std::chrono::steady_clock::now();
-
         switch (imu_.getSensorEventID()) {
         case SENSOR_REPORTID_ROTATION_VECTOR:
-            data.euler.h = imu_.getYaw() * 180.0f / M_PI;
-            data.euler.p = imu_.getPitch() * 180.0f / M_PI;
-            data.euler.r = imu_.getRoll() * 180.0f / M_PI;
-            data.timestamp = now;
+            euler.h = imu_.getYaw() * 180.0f / M_PI;
+            euler.p = imu_.getPitch() * 180.0f / M_PI;
+            euler.r = imu_.getRoll() * 180.0f / M_PI;
             return true;
 
         case SENSOR_REPORTID_ACCELEROMETER:
-            data.accel.x = imu_.getAccelX();
-            data.accel.y = imu_.getAccelY();
-            data.accel.z = imu_.getAccelZ();
-            data.timestamp = now;
+            accel.x = imu_.getAccelX();
+            accel.y = imu_.getAccelY();
+            accel.z = imu_.getAccelZ();
             return true;
 
         default:

@@ -41,7 +41,8 @@ int main() {
     imu.enableRotation(8);
     imu.enableAccelerometer(8);
 
-    TimedImuData data;
+    imu_accel_float_t accel;
+    imu_euler_float_t euler;
 
     double motor_speed = 0.0;
     float steering_percent = 0.0f;
@@ -51,8 +52,8 @@ int main() {
     i2c_slave::set_is_imu_ready(false);
 
     while (true) {
-        if (imu.update(data)) {
             i2c_slave::set_imu_data(&data.accel, &data.euler);
+        if (imu.update(accel, euler)) {
             i2c_slave::set_is_imu_ready(true);
         }
 

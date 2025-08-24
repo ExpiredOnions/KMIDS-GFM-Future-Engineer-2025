@@ -57,14 +57,15 @@ public:
     /**
      * @brief Poll the IMU for new sensor data.
      *
-     * Fills the provided TimedImuData struct with the latest accelerometer and/or
-     * rotation vector readings, along with a timestamp.
+     * Updates the provided accelerometer and Euler angle structures with
+     * the latest available readings.
      *
-     * @param data Reference to a TimedImuData struct to fill
+     * @param accel Reference to an imu_accel_float_t struct to store accelerometer data
+     * @param euler Reference to an imu_euler_float_t struct to store Euler angle data
      * @return true if new data was available
      * @return false if no new data was available
      */
-    bool update(TimedImuData &data);
+    bool update(imu_accel_float_t &accel, imu_euler_float_t &euler);
 
     /**
      * @brief Perform a tare (zeroing) operation on the IMU.
