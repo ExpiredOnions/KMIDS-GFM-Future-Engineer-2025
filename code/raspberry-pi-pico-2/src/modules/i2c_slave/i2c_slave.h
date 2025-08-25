@@ -42,6 +42,16 @@ extern context_t context;
 void contextInit();
 
 /**
+ * @brief Initialize an I2C peripheral with specified pins and baudrate.
+ *
+ * @param i2c Pointer to I2C instance (i2c0 or i2c1)
+ * @param sdaPin GPIO pin number for SDA
+ * @param sclPin GPIO pin number for SCL
+ * @param baudrate I2C baudrate (Hz)
+ */
+void i2cInit(i2c_inst_t *i2c, uint sdaPin, uint sclPin, uint baudrate);
+
+/**
  * @brief Handle I2C slave events.
  *
  * This function should be registered as the I2C event handler. It processes

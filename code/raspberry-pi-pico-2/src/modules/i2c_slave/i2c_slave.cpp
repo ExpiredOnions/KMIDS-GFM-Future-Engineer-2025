@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstring>
+#include <hardware/gpio.h>
 
 #include "i2c_slave.h"
 
@@ -14,6 +15,19 @@ void contextInit() {
     std::fill_n(context.mem, MEM_SIZE, 0);
     context.mem_address = 0;
     context.mem_address_written = false;
+}
+
+void i2cInit(i2c_inst_t *i2c, uint sdaPin, uint sclPin, uint baudrate) {
+    gpio_init(sdaPin);
+    gpio_init(sclPin);
+
+    gpio_set_function(sdaPin, GPIO_FUNC_I2C);
+    gpio_set_function(sclPin, GPIO_FUNC_I2C);
+
+    gpio_pull_up(sdaPin);
+    gpio_pull_up(sclPin);
+
+    i2c_init(i2c, baudrate);
 }
 
 void handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
