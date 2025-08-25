@@ -119,6 +119,25 @@ void setImuData(const ImuAccel &accel, const ImuEuler &euler);
 void getImuData(ImuAccel &outAccel, ImuEuler &outEuler);
 ///@}
 
+/** @name Encoder Angle Helpers
+ *  Functions to set and get encoder angle data.
+ */
+///@{
+/**
+ * @brief Store encoder angle in I2C memory.
+ *
+ * @param angle Encoder angle in degrees (or ticks if raw).
+ */
+void setEncoderAngle(double angle);
+
+/**
+ * @brief Retrieve encoder angle from I2C memory.
+ *
+ * @param outAngle Reference to a double to store the encoder angle
+ */
+void getEncoderAngle(double &outAngle);
+///@}
+
 /** @name Movement Info Helpers
  *  Functions to set and get motor and steering data.
  */

@@ -90,6 +90,16 @@ void getImuData(ImuAccel &outAccel, ImuEuler &outEuler) {
     memcpy(&outEuler, &context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], EULER_ANGLE_SIZE);
 }
 
+/** ---------------- Encoder Angle Helpers ---------------- */
+
+void setEncoderAngle(double angle) {
+    memcpy(&context.mem[ENCODER_ANGLE_ADDR], &angle, ENCODER_ANGLE_SIZE);
+}
+
+void getEncoderAngle(double &outAngle) {
+    memcpy(&outAngle, &context.mem[ENCODER_ANGLE_ADDR], ENCODER_ANGLE_SIZE);
+}
+
 /** ---------------- Motor / Steering Helpers ---------------- */
 
 void setMovementInfo(double motorSpeed, float steeringPercent) {

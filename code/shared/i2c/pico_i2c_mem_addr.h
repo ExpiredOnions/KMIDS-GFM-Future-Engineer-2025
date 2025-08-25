@@ -19,6 +19,9 @@ constexpr size_t ACCEL_DATA_SIZE = sizeof(ImuAccel);
 constexpr size_t EULER_ANGLE_SIZE = sizeof(ImuEuler);
 constexpr size_t IMU_DATA_SIZE = ACCEL_DATA_SIZE + EULER_ANGLE_SIZE;
 
+// Encoder angle sizes
+constexpr size_t ENCODER_ANGLE_SIZE = sizeof(double);
+
 // Motor / Steering info
 constexpr size_t MOTOR_SPEED_SIZE = sizeof(double);
 constexpr size_t STEERING_PERCENT_SIZE = sizeof(float);
@@ -28,7 +31,8 @@ constexpr size_t MOVEMENT_INFO_SIZE = MOTOR_SPEED_SIZE + STEERING_PERCENT_SIZE;
 constexpr size_t COMMAND_ADDR = 0;
 constexpr size_t STATUS_ADDR = COMMAND_ADDR + COMMAND_SIZE;
 constexpr size_t IMU_DATA_ADDR = STATUS_ADDR + STATUS_SIZE;
-constexpr size_t MOVEMENT_INFO_ADDR = IMU_DATA_ADDR + IMU_DATA_SIZE;
+constexpr size_t ENCODER_ANGLE_ADDR = IMU_DATA_ADDR + IMU_DATA_SIZE;
+constexpr size_t MOVEMENT_INFO_ADDR = ENCODER_ANGLE_ADDR + ENCODER_ANGLE_SIZE;
 
 static_assert(MOVEMENT_INFO_ADDR + MOVEMENT_INFO_SIZE <= MEM_SIZE, "Memory allocation exceeds buffer size");
 
