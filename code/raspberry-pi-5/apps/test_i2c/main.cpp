@@ -3,25 +3,30 @@
 #include <cstdio>
 
 int main() {
-    I2CMaster master(0x39);
-    if (!master.is_initialized()) return -1;
+    I2cMaster master(0x39);
+    if (!master.isInitialized()) return -1;
 
     uint8_t cmd = 0;
-    if (master.read_command(cmd)) printf("Command read: 0x%X\n", cmd);
+    if (master.readCommand(cmd)) printf("Command read: 0x%X\n", cmd);
 
     uint8_t status = 0;
-    if (master.read_status(status)) printf("Status: 0x%X\n", status);
+    if (master.readStatus(status)) printf("Status: 0x%X\n", status);
 
     ImuAccel accel;
     ImuEuler euler;
-    if (master.read_imu(accel, euler)) {
+    if (master.readImu(accel, euler)) {
         printf("Accel: %.2f %.2f %.2f\n", accel.x, accel.y, accel.z);
         printf("Euler: %.2f %.2f %.2f\n", euler.h, euler.r, euler.p);
     }
 
+    double encoderAngle;
+    if (master.readEncoder(encoderAngle)) {
+        printf("Encoder Angle: %.2f\n", encoderAngle);
+    }
+
     double motor_speed;
     float steering;
-    if (master.read_movement(motor_speed, steering)) {
+    if (master.readMovement(motor_speed, steering)) {
         printf("Motor speed: %.2f, Steering: %.2f\n", motor_speed, steering);
     }
 

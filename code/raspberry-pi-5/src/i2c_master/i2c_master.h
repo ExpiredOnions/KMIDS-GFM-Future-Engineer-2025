@@ -8,33 +8,35 @@
 /**
  * @brief Pi-side I2C master to communicate with Pico 2.
  */
-class I2CMaster
+class I2cMaster
 {
 public:
-    explicit I2CMaster(uint8_t slave_addr);
-    ~I2CMaster();
+    explicit I2cMaster(uint8_t slave_addr);
+    ~I2cMaster();
 
-    bool is_initialized() const;
+    bool isInitialized() const;
 
     /** Command operations */
-    bool send_command(uint8_t command);
-    bool read_command(uint8_t &command);
+    bool sendCommand(uint8_t command);
+    bool readCommand(uint8_t &command);
 
     /** Status operations */
-    bool read_status(uint8_t &status);
-    bool get_is_running(bool &is_running);
-    bool get_imu_ready(bool &imu_ready);
+    bool readStatus(uint8_t &status);
+    bool getIsRunning(bool &isRunning);
+    bool getImuReady(bool &imuReady);
 
     /** IMU operations */
-    bool read_imu(ImuAccel &accel, ImuEuler &euler);
+    bool readImu(ImuAccel &accel, ImuEuler &euler);
+
+    bool readEncoder(double &angle);
 
     /** Movement operations */
-    bool read_movement(double &motor_speed, float &steering_percent);
+    bool readMovement(double &motorSpeed, float &steeringPercent);
 
 private:
     int fd_;
-    uint8_t slave_addr_;
+    uint8_t slaveAddr_;
 
-    bool write_register(uint8_t reg, const uint8_t *data, size_t len);
-    bool read_register(uint8_t reg, uint8_t *data, size_t len);
+    bool writeRegister(uint8_t reg, const uint8_t *data, size_t len);
+    bool readRegister(uint8_t reg, uint8_t *data, size_t len);
 };
