@@ -6,8 +6,14 @@
 /**
  * @brief Controller class for a quadrature rotary encoder on the Raspberry Pi Pico.
  *
- * Handles encoder counting using GPIO interrupts, and provides
- * convenient methods to get the current count, angle, and reset the encoder.
+ * This class handles a single quadrature encoder using GPIO interrupts.
+ * It maintains a thread-safe tick count and provides convenient methods
+ * to get the current count or the angle in degrees based on pulses per revolution
+ * and optional gear ratio.
+ *
+ * @note Currently, this class is implemented as a singleton because the
+ *       GPIO interrupt service routine requires a static pointer to the instance.
+ *       Only one EncoderController instance should be created at a time.
  */
 class EncoderController
 {
