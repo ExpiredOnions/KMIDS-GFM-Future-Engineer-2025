@@ -26,7 +26,7 @@ int main() {
 
     double motor_speed;
     float steering;
-    if (master.readMovement(motor_speed, steering)) {
+    if (master.readMovementInfo(motor_speed, steering)) {
         printf("Motor speed: %.2f, Steering: %.2f\n", motor_speed, steering);
     }
 

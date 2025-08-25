@@ -42,57 +42,77 @@ bool I2cMaster::sendCommand(uint8_t command) {
     return write(fd_, cmd_buf, sizeof(cmd_buf)) != -1;
 }
 
-bool I2cMaster::readCommand(uint8_t &command) {
+bool I2cMaster::readCommand(uint8_t &outCommand) {
     uint8_t buf = 0;
     if (!readRegister(pico_i2c_mem_addr::COMMAND_ADDR, &buf, 1)) return false;
-    command = buf;
+    outCommand = buf;
     return true;
 }
 
 /** Status operations */
-bool I2cMaster::readStatus(uint8_t &status) {
-    return readRegister(pico_i2c_mem_addr::STATUS_ADDR, &status, 1);
+bool I2cMaster::readStatus(uint8_t &outStatus) {
+    return readRegister(pico_i2c_mem_addr::STATUS_ADDR, &outStatus, 1);
 }
 
-bool I2cMaster::getIsRunning(bool &isRunning) {
+bool I2cMaster::getIsRunning(bool &outIsRunning) {
     uint8_t status = 0;
     if (!readStatus(status)) return false;
-    isRunning = (status & 0x01) != 0;
+    outIsRunning = (status & 0x01) != 0;
     return true;
 }
 
-bool I2cMaster::getImuReady(bool &imuReady) {
+bool I2cMaster::getImuReady(bool &outImuReady) {
     uint8_t status = 0;
     if (!readStatus(status)) return false;
-    imuReady = (status & 0x02) != 0;
+    outImuReady = (status & 0x02) != 0;
     return true;
 }
 
 /** IMU operations */
-bool I2cMaster::readImu(ImuAccel &accel, ImuEuler &euler) {
+bool I2cMaster::readImu(ImuAccel &outAccel, ImuEuler &outEuler) {
     uint8_t buffer[pico_i2c_mem_addr::IMU_DATA_SIZE];
     if (!readRegister(pico_i2c_mem_addr::IMU_DATA_ADDR, buffer, sizeof(buffer))) return false;
 
-    memcpy(&accel, buffer, pico_i2c_mem_addr::ACCEL_DATA_SIZE);
-    memcpy(&euler, buffer + pico_i2c_mem_addr::ACCEL_DATA_SIZE, pico_i2c_mem_addr::EULER_ANGLE_SIZE);
+    memcpy(&outAccel, buffer, pico_i2c_mem_addr::ACCEL_DATA_SIZE);
+    memcpy(&outEuler, buffer + pico_i2c_mem_addr::ACCEL_DATA_SIZE, pico_i2c_mem_addr::EULER_ANGLE_SIZE);
     return true;
 }
 
-bool I2cMaster::readEncoder(double &angle) {
+bool I2cMaster::writeImu(const ImuAccel &accel, const ImuEuler &euler) {
+    uint8_t buffer[pico_i2c_mem_addr::IMU_DATA_SIZE];
+    memcpy(buffer, &accel, pico_i2c_mem_addr::ACCEL_DATA_SIZE);
+    memcpy(buffer + pico_i2c_mem_addr::ACCEL_DATA_SIZE, &euler, pico_i2c_mem_addr::EULER_ANGLE_SIZE);
+    return writeRegister(pico_i2c_mem_addr::IMU_DATA_ADDR, buffer, sizeof(buffer));
+}
+
+/** Encoder operations */
+bool I2cMaster::readEncoder(double &outAngle) {
     uint8_t buffer[pico_i2c_mem_addr::ENCODER_ANGLE_SIZE];
     if (!readRegister(pico_i2c_mem_addr::ENCODER_ANGLE_ADDR, buffer, sizeof(buffer))) return false;
 
-    memcpy(&angle, buffer, pico_i2c_mem_addr::ENCODER_ANGLE_SIZE);
-
+    memcpy(&outAngle, buffer, pico_i2c_mem_addr::ENCODER_ANGLE_SIZE);
     return true;
 }
 
+bool I2cMaster::writeEncoder(double angle) {
+    uint8_t buffer[pico_i2c_mem_addr::ENCODER_ANGLE_SIZE];
+    memcpy(buffer, &angle, pico_i2c_mem_addr::ENCODER_ANGLE_SIZE);
+    return writeRegister(pico_i2c_mem_addr::ENCODER_ANGLE_ADDR, buffer, sizeof(buffer));
+}
+
 /** Movement operations */
-bool I2cMaster::readMovement(double &motorSpeed, float &steeringPercent) {
+bool I2cMaster::readMovementInfo(double &outMotorSpeed, float &outSteeringPercent) {
     uint8_t buffer[pico_i2c_mem_addr::MOVEMENT_INFO_SIZE];
     if (!readRegister(pico_i2c_mem_addr::MOVEMENT_INFO_ADDR, buffer, sizeof(buffer))) return false;
 
-    memcpy(&motorSpeed, buffer, pico_i2c_mem_addr::MOTOR_SPEED_SIZE);
-    memcpy(&steeringPercent, buffer + pico_i2c_mem_addr::MOTOR_SPEED_SIZE, pico_i2c_mem_addr::STEERING_PERCENT_SIZE);
+    memcpy(&outMotorSpeed, buffer, pico_i2c_mem_addr::MOTOR_SPEED_SIZE);
+    memcpy(&outSteeringPercent, buffer + pico_i2c_mem_addr::MOTOR_SPEED_SIZE, pico_i2c_mem_addr::STEERING_PERCENT_SIZE);
     return true;
+}
+
+bool I2cMaster::writeMovementInfo(double motorSpeed, float steeringPercent) {
+    uint8_t buffer[pico_i2c_mem_addr::MOVEMENT_INFO_SIZE];
+    memcpy(buffer, &motorSpeed, pico_i2c_mem_addr::MOTOR_SPEED_SIZE);
+    memcpy(buffer + pico_i2c_mem_addr::MOTOR_SPEED_SIZE, &steeringPercent, pico_i2c_mem_addr::STEERING_PERCENT_SIZE);
+    return writeRegister(pico_i2c_mem_addr::MOVEMENT_INFO_ADDR, buffer, sizeof(buffer));
 }
