@@ -17,7 +17,7 @@ void contextInit() {
     context.mem_address_written = false;
 }
 
-void i2cInit(i2c_inst_t *i2c, uint sdaPin, uint sclPin, uint baudrate) {
+void i2cInit(i2c_inst_t *i2c, uint8_t slaveAddr, uint sdaPin, uint sclPin, uint baudrate) {
     gpio_init(sdaPin);
     gpio_init(sclPin);
 
@@ -28,6 +28,8 @@ void i2cInit(i2c_inst_t *i2c, uint sdaPin, uint sclPin, uint baudrate) {
     gpio_pull_up(sclPin);
 
     i2c_init(i2c, baudrate);
+
+    i2c_slave_init(i2c, slaveAddr, i2c_slave::handler);
 }
 
 void handler(i2c_inst_t *i2c, i2c_slave_event_t event) {

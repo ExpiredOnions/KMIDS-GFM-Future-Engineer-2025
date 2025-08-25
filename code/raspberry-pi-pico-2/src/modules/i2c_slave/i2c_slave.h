@@ -49,7 +49,7 @@ void contextInit();
  * @param sclPin GPIO pin number for SCL
  * @param baudrate I2C baudrate (Hz)
  */
-void i2cInit(i2c_inst_t *i2c, uint sdaPin, uint sclPin, uint baudrate);
+void i2cInit(i2c_inst_t *i2c, uint8_t slaveAddr, uint sdaPin, uint sclPin, uint baudrate);
 
 /**
  * @brief Handle I2C slave events.

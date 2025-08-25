@@ -51,7 +51,7 @@ int main() {
     Bno085Controller imu(i2c0, I2C0_SDA_PIN, I2C0_SCL_PIN);
 
     i2c_slave::contextInit();
-    i2c_slave::i2cInit(i2c1, I2C1_SDA_PIN, I2C1_SCL_PIN, I2C1_BAUDRATE);
+    i2c_slave::i2cInit(i2c1, I2C1_SLAVE_ADDR, I2C1_SDA_PIN, I2C1_SCL_PIN, I2C1_BAUDRATE);
 
     MotorController motor(MOTOR_IN1_PIN, MOTOR_IN2_PIN);
     EncoderController encoder(ENCODER_A_PIN, ENCODER_B_PIN, ENCODER_PULSE_PER_REV, ENCODER_GEAR_RATIO);
