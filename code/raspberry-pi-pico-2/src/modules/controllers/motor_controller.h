@@ -3,7 +3,7 @@
 #include <pico/types.h>
 
 /**
- * @brief Controller class for a single DC motor using L298N with PWM speed control.
+ * @brief Controller class for a single DC motor using L298N mini with PWM speed control.
  *
  * Allows setting motor speed in both directions and optional braking.
  * Uses hardware PWM on the Raspberry Pi Pico for smooth speed control.
@@ -14,16 +14,15 @@ public:
     /**
      * @brief Construct a new MotorController object.
      *
-     * @param pinIn1 GPIO pin connected to L298N IN1 (direction)
-     * @param pinIn2 GPIO pin connected to L298N IN2 (direction)
-     * @param pinPwm GPIO pin connected to L298N EN (PWM speed)
+     * @param pinIn1 GPIO pin connected to L298N IN1 (PWM & direction)
+     * @param pinIn2 GPIO pin connected to L298N IN2 (PWM & direction)
      */
-    MotorController(uint pinIn1, uint pinIn2, uint pinPwm);
+    MotorController(uint pinIn1, uint pinIn2);
 
     /**
      * @brief Initialize motor control pins and configure PWM.
      *
-     * Must be called before using setSpeed() or stop().
+     * Must be called before using setPower() or stop().
      */
     void begin();
 
@@ -46,16 +45,20 @@ public:
     void stop(bool brake = false);
 
 private:
-    uint pinIn1_;   /**< GPIO pin for L298N IN1 */
-    uint pinIn2_;   /**< GPIO pin for L298N IN2 */
-    uint pinPwm_;   /**< GPIO pin for L298N EN (PWM) */
-    uint sliceNum_; /**< PWM slice number */
-    uint channel_;  /**< PWM channel number */
+    uint pinIn1_;     /**< GPIO pin for L298N IN1 */
+    uint pinIn2_;     /**< GPIO pin for L298N IN2 */
+    uint sliceIn1_;   /**< PWM slice number for IN1 */
+    uint sliceIn2_;   /**< PWM slice number for IN2 */
+    uint channelIn1_; /**< PWM channel number for IN1 */
+    uint channelIn2_; /**< PWM channel number for IN2 */
 
     /**
-     * @brief Update the PWM duty cycle to control motor speed.
+     * @brief Update the PWM duty cycle on a given pin.
      *
+     * @param pin GPIO pin to update
+     * @param slice PWM slice number
+     * @param channel PWM channel number
      * @param duty Duty cycle as a fraction (0.0 to 1.0)
      */
-    void updatePwm(float duty);
+    void updatePwm(uint pin, uint slice, uint channel, float duty);
 };

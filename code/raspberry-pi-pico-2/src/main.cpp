@@ -1,9 +1,13 @@
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
 #include <pico/stdio.h>
+#include <pico/time.h>
 
 #include "bno085_controller.h"
+#include "encoder_controller.h"
 #include "i2c_slave.h"
+#include "motor_controller.h"
+#include "motor_speed_controller.h"
 
 const uint I2C0_SDA_PIN = 4;
 const uint I2C0_SCL_PIN = 5;
@@ -33,6 +37,14 @@ int main() {
     // Initialize I2C slave context
     i2c_slave::context_init();
 
+    MotorController motor(6, 7);
+    motor.begin();
+
+    EncoderController encoder(10, 11, 28, 50);
+    encoder.begin();
+
+    MotorSpeedController motorPid(motor, encoder);
+
     if (!imu.begin()) {
         while (1)
             tight_loop_contents();
@@ -51,6 +63,8 @@ int main() {
     i2c_slave::set_is_running(true);
     i2c_slave::set_is_imu_ready(false);
 
+    auto lastPrint = std::chrono::steady_clock::now();
+    const auto printInterval = std::chrono::milliseconds(100);  // print every 0.5s
     while (true) {
         if (imu.update(accel, euler)) {
             i2c_slave::set_imu_data(accel, euler);
@@ -61,7 +75,17 @@ int main() {
         motorSpeed = 0.76789;
         steeringPercent = 0.71237f;
 
-        i2c_slave::set_movement_info(motorSpeed, steeringPercent);
+        motorPid.update();
+        motorPid.setTargetRPS(-1.0);
+
+        sleep_ms(1);
+
+        // Only print every 0.5 seconds
+        auto now = std::chrono::steady_clock::now();
+        if (now - lastPrint >= printInterval) {
+            printf("%.4f\n", motorPid.getPower());
+            lastPrint = now;
+        }
     }
 
     return 0;
