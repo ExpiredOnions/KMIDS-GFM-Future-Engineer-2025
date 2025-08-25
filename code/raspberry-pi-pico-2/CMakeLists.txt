@@ -14,7 +14,8 @@ pico_sdk_init()
 add_subdirectory(external/BNO08x_Pico_Library)
 
 add_subdirectory(src/utils)
-add_subdirectory(src/modules/controllers)
+add_subdirectory(src/modules/controllers/bno085)
+add_subdirectory(src/modules/controllers/motor)
 add_subdirectory(src/modules/i2c_slave)
 
 add_executable(gfm_pico_2 src/main.cpp)
