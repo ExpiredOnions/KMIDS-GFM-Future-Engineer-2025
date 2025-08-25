@@ -39,7 +39,7 @@ extern context_t context;
  * This function resets the context state and prepares the I2C slave hardware
  * to receive events from the master device.
  */
-void context_init();
+void contextInit();
 
 /**
  * @brief Handle I2C slave events.
@@ -60,13 +60,13 @@ void handler(i2c_inst_t *i2c, i2c_slave_event_t event);
  * @brief Retrieve the current command from I2C memory.
  * @return The command byte.
  */
-uint8_t get_command();
+uint8_t getCommand();
 
 /**
  * @brief Set the current command in I2C memory.
  * @param command The command byte to set.
  */
-void set_command(uint8_t command);
+void setCommand(uint8_t command);
 ///@}
 
 /** @name Status Helpers
@@ -75,27 +75,27 @@ void set_command(uint8_t command);
 ///@{
 /**
  * @brief Set the "is running" flag.
- * @param is_running True if the system is running, false otherwise.
+ * @param isRunning True if the system is running, false otherwise.
  */
-void set_is_running(bool is_running);
+void setIsRunning(bool isRunning);
 
 /**
  * @brief Get the "is running" flag.
  * @return True if the system is running, false otherwise.
  */
-bool get_is_running();
+bool getIsRunning();
 
 /**
  * @brief Set the "IMU ready" flag.
  * @param ready True if IMU is ready, false otherwise.
  */
-void set_is_imu_ready(bool ready);
+void setIsImuReady(bool ready);
 
 /**
  * @brief Get the "IMU ready" flag.
  * @return True if IMU is ready, false otherwise.
  */
-bool get_is_imu_ready();
+bool getIsImuReady();
 ///@}
 
 /** @name IMU Data Helpers
@@ -108,7 +108,7 @@ bool get_is_imu_ready();
  * @param accel Reference to accelerometer data structure
  * @param euler Reference to Euler angle data structure
  */
-void set_imu_data(const ImuAccel &accel, const ImuEuler &euler);
+void setImuData(const ImuAccel &accel, const ImuEuler &euler);
 
 /**
  * @brief Retrieve IMU accelerometer and Euler angle data from I2C memory.
@@ -116,7 +116,7 @@ void set_imu_data(const ImuAccel &accel, const ImuEuler &euler);
  * @param outAccel Reference to an accelerometer data structure to fill
  * @param outEuler Reference to an Euler angle data structure to fill
  */
-void get_imu_data(ImuAccel &outAccel, ImuEuler &outEuler);
+void getImuData(ImuAccel &outAccel, ImuEuler &outEuler);
 ///@}
 
 /** @name Movement Info Helpers
@@ -129,7 +129,7 @@ void get_imu_data(ImuAccel &outAccel, ImuEuler &outEuler);
  * @param motorSpeed Motor speed as double.
  * @param steeringPercent Steering percentage as float (-100.0 to 100.0).
  */
-void set_movement_info(double motorSpeed, float steeringPercent);
+void setMovementInfo(double motorSpeed, float steeringPercent);
 
 /**
  * @brief Retrieve motor speed and steering percentage from I2C memory.
@@ -137,7 +137,7 @@ void set_movement_info(double motorSpeed, float steeringPercent);
  * @param outMotorSpeed Reference to a double to store motor speed
  * @param outSteeringPercent Reference to a float to store steering percentage
  */
-void get_movement_info(double &outMotorSpeed, float &outSteeringPercent);
+void getMovementInfo(double &outMotorSpeed, float &outSteeringPercent);
 ///@}
 
 }  // namespace i2c_slave

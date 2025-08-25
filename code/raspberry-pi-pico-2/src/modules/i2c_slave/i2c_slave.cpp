@@ -10,7 +10,7 @@ using namespace pico_i2c_mem_addr;
 
 context_t context;
 
-void context_init() {
+void contextInit() {
     std::fill_n(context.mem, MEM_SIZE, 0);
     context.mem_address = 0;
     context.mem_address_written = false;
@@ -48,56 +48,56 @@ void handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
 
 /** ---------------- Command Helpers ---------------- */
 
-uint8_t get_command() {
+uint8_t getCommand() {
     return context.mem[COMMAND_ADDR];
 }
 
-void set_command(uint8_t command) {
+void setCommand(uint8_t command) {
     context.mem[COMMAND_ADDR] = command;
 }
 
 /** ---------------- Status Helpers ---------------- */
 
-void set_is_running(bool is_running) {
+void setIsRunning(bool isRunning) {
     auto *status = reinterpret_cast<StatusFlags *>(&context.mem[STATUS_ADDR]);
-    status->is_running = is_running ? 1 : 0;
+    status->is_running = isRunning ? 1 : 0;
 }
 
-bool get_is_running() {
+bool getIsRunning() {
     auto *status = reinterpret_cast<StatusFlags *>(&context.mem[STATUS_ADDR]);
     return status->is_running;
 }
 
-void set_is_imu_ready(bool ready) {
+void setIsImuReady(bool ready) {
     auto *status = reinterpret_cast<StatusFlags *>(&context.mem[STATUS_ADDR]);
     status->imu_ready = ready ? 1 : 0;
 }
 
-bool get_is_imu_ready() {
+bool getIsImuReady() {
     auto *status = reinterpret_cast<StatusFlags *>(&context.mem[STATUS_ADDR]);
     return status->imu_ready;
 }
 
 /** ---------------- IMU Helpers ---------------- */
 
-void set_imu_data(const ImuAccel &accel, const ImuEuler &euler) {
+void setImuData(const ImuAccel &accel, const ImuEuler &euler) {
     memcpy(&context.mem[IMU_DATA_ADDR], &accel, ACCEL_DATA_SIZE);
     memcpy(&context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], &euler, EULER_ANGLE_SIZE);
 }
 
-void get_imu_data(ImuAccel &outAccel, ImuEuler &outEuler) {
+void getImuData(ImuAccel &outAccel, ImuEuler &outEuler) {
     memcpy(&outAccel, &context.mem[IMU_DATA_ADDR], ACCEL_DATA_SIZE);
     memcpy(&outEuler, &context.mem[IMU_DATA_ADDR + ACCEL_DATA_SIZE], EULER_ANGLE_SIZE);
 }
 
 /** ---------------- Motor / Steering Helpers ---------------- */
 
-void set_movement_info(double motorSpeed, float steeringPercent) {
+void setMovementInfo(double motorSpeed, float steeringPercent) {
     memcpy(&context.mem[MOVEMENT_INFO_ADDR], &motorSpeed, MOTOR_SPEED_SIZE);
     memcpy(&context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], &steeringPercent, STEERING_PERCENT_SIZE);
 }
 
-void get_movement_info(double &outMotorSpeed, float &outSteeringPercent) {
+void getMovementInfo(double &outMotorSpeed, float &outSteeringPercent) {
     memcpy(&outMotorSpeed, &context.mem[MOVEMENT_INFO_ADDR], MOTOR_SPEED_SIZE);
     memcpy(&outSteeringPercent, &context.mem[MOVEMENT_INFO_ADDR + MOTOR_SPEED_SIZE], STEERING_PERCENT_SIZE);
 }
