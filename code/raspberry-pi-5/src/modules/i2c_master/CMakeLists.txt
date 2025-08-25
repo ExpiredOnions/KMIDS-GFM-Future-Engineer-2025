@@ -1,3 +1,5 @@
+# NOTE: i2c_master
+
 find_library(WIRINGPI_LIBRARY wiringPi)
 if(WIRINGPI_LIBRARY)
   set(WIRINGPI_FOUND TRUE)

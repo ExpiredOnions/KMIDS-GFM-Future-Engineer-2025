@@ -16,7 +16,6 @@ if(LIBCAMERA_FOUND)
 endif()
 
 add_subdirectory(src/utils)
-add_subdirectory(src/i2c_master)
 add_subdirectory(src/modules)
 add_subdirectory(src/processors)
 
