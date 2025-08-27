@@ -23,7 +23,7 @@ public:
      * @param Ki Integral gain for PID
      * @param Kd Derivative gain for PID
      */
-    MotorSpeedController(MotorController &motor, EncoderController &encoder, double Kp = 30.0, double Ki = 30.0, double Kd = 0.04);
+    MotorSpeedController(MotorController &motor, EncoderController &encoder, double Kp = 120.0, double Ki = 0.0, double Kd = 0.0);
 
     /**
      * @brief Set the desired motor speed in revolutions per second (RPS).

@@ -30,6 +30,21 @@ void MotorSpeedController::update() {
     double error = targetRPS_ - currentRPS_;
     power_ = pid_.update(error, dt);
 
+    if (targetRPS_ > 0.0) {
+        // Ensure forward bias
+        if (power_ > 0.0 && power_ < 30.0) {
+            power_ = 30.0;
+        }
+    } else if (targetRPS_ < 0.0) {
+        // Ensure reverse bias
+        if (power_ < 0.0 && power_ > -30.0) {
+            power_ = -30.0;
+        }
+    } else {
+        // Target = 0 → full stop
+        power_ = 0.0;
+    }
+
     // Apply to motor
     motor_.setPower((float)power_);
 }

@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstdio>
+#include <hardware/gpio.h>
 #include <pico/time.h>
 
 #include "bno085_controller.h"
@@ -9,6 +10,8 @@
 #include "motor_controller.h"
 #include "motor_speed_controller.h"
 #include "servo_controller.h"
+
+const uint MOSFET_PIN = 19;
 
 const uint I2C0_SDA_PIN = 4;
 const uint I2C0_SCL_PIN = 5;
@@ -24,9 +27,9 @@ const uint MOTOR_IN2_PIN = 7;
 const uint ENCODER_A_PIN = 10;
 const uint ENCODER_B_PIN = 11;
 const int ENCODER_PULSE_PER_REV = 28;
-const int ENCODER_GEAR_RATIO = 50;
+const int ENCODER_GEAR_RATIO = 100;
 
-const uint SERVO_PIN = 22;
+const uint SERVO_PIN = 15;
 const float SERVO_MAX_ANGLE = 90.0f;
 const uint16_t SERVO_MIN_PULSE_US = 1000;
 const uint16_t SERVO_MAX_PULSE_US = 2000;
@@ -46,6 +49,11 @@ float toSteeringAngle(float steeringPercent) {
 }
 
 int main() {
+    gpio_init(MOSFET_PIN);
+    gpio_set_dir(MOSFET_PIN, GPIO_OUT);
+
+    gpio_put(MOSFET_PIN, 1);
+
     stdio_init_all();
 
     Bno085Controller imu(i2c0, I2C0_SDA_PIN, I2C0_SCL_PIN);
@@ -59,15 +67,12 @@ int main() {
 
     ServoController servo(SERVO_PIN, SERVO_MAX_ANGLE, SERVO_MIN_PULSE_US, SERVO_MAX_PULSE_US, SERVO_FREQ_HZ);
 
-    double motorSpeed = 0.0;
-    float steeringPercent = 0.0f;
-
     motor.begin();
     encoder.begin();
-    motorPid.setTargetRPS(motorSpeed);
+    motorPid.setTargetRPS(0.0);
 
     servo.begin();
-    servo.setAngle(toSteeringAngle(steeringPercent));
+    servo.setAngle(toSteeringAngle(0.0f));
 
     while (!imu.begin()) {
         sleep_ms(1000);
@@ -82,6 +87,11 @@ int main() {
     ImuAccel accel;
     ImuEuler euler;
 
+    double motorSpeed = 1001.0;
+    float steeringPercent = 0.0f;
+
+    uint32_t lastPidUpdate = 0;
+    const uint32_t pidInterval = 8;
     while (true) {
         i2c_slave::setIsRunning(true);
         if (imu.update(accel, euler)) {
@@ -92,10 +102,28 @@ int main() {
 
         i2c_slave::getMovementInfo(motorSpeed, steeringPercent);
 
-        motorPid.setTargetRPS(motorSpeed);
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+        if (now - lastPidUpdate >= pidInterval) {
+            // TODO: Make this a proper protocol
+            if (motorSpeed >= 1002.0) {
+                motorPid.setTargetRPS(0.0);
+                motor.stop(true);
+            } else if (motorSpeed >= 1001.0) {
+                motorPid.setTargetRPS(0.0);
+                motor.stop(false);
+            } else {
+                motorPid.setTargetRPS(motorSpeed);
+            }
+
+            motorPid.update();
+            lastPidUpdate = now;
+        }
+
         servo.setAngle(toSteeringAngle(steeringPercent));
 
-        sleep_ms(1);
+        // printf("%.2f\n", motorPid.getPower());
+
+        tight_loop_contents();
     }
 
     while (true)
