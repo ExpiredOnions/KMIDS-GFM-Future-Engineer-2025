@@ -52,28 +52,27 @@ int main() {
 
             std::cout << "Status: running=" << running << ", imu_ready=" << imuReady << std::endl;
 
-            if (imuReady) {
-                ImuAccel accel;
-                ImuEuler euler;
-                if (pico2.getImuData(accel, euler)) {
-                    std::cout << "Accel: x=" << accel.x << " y=" << accel.y << " z=" << accel.z << std::endl;
-                    std::cout << "Euler: h=" << euler.h << " r=" << euler.r << " p=" << euler.p << std::endl;
-                }
-            }
+            TimedPico2Data pico2Data;
+            if (pico2.getData(pico2Data)) {
+                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(pico2Data.timestamp.time_since_epoch()).count();
 
-            double encoderAngle = 0.0;
-            if (pico2.getEncoderAngle(encoderAngle)) {
-                std::cout << "Encoder Angle: " << encoderAngle << std::endl;
+                std::cout << "Timestamp: " << ms << " ms" << std::endl;
+                std::cout << "Accel: x=" << pico2Data.accel.x << " y=" << pico2Data.accel.y << " z=" << pico2Data.accel.z << std::endl;
+                std::cout << "Euler: h=" << pico2Data.euler.h << " r=" << pico2Data.euler.r << " p=" << pico2Data.euler.p << std::endl;
+                std::cout << "Encoder Angle: " << pico2Data.encoderAngle << std::endl;
             }
 
             // Optional: send zero movement
             pico2.setMovementInfo(0.0f, 0.0f);
+            // pico2.setMovementInfo(4.5f, 0.0f);
 
             std::cout << "-----------------------------" << std::endl;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
+
+    pico2.setMovementInfo(0.0f, 0.0f);
 
     pico2.shutdown();
     std::cout << "[Main] Pico2 module shutdown.\n";
