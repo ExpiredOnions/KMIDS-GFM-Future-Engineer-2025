@@ -1,6 +1,7 @@
 #include "pico2_module.h"
 
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <thread>
 
@@ -48,7 +49,18 @@ bool Pico2Module::getImuData(ImuAccel &outAccel, ImuEuler &outEuler) const {
     if (!status_.imu_ready) return false;
 
     outAccel = latestAccel_;
-    outEuler = latestEuler_;
+
+    // Convert angles from [-180, 180] to [0, 360]
+    auto normalize360 = [](float angle) -> float {
+        float a = std::fmod(angle, 360.0f);
+        if (a < 0.0f) a += 360.0f;
+        return a;
+    };
+
+    outEuler.h = normalize360(latestEuler_.h);
+    outEuler.r = normalize360(latestEuler_.r);
+    outEuler.p = normalize360(latestEuler_.p);
+
     return true;
 }
 
