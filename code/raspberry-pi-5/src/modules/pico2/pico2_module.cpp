@@ -99,7 +99,7 @@ void Pico2Module::pollingLoop() {
 
         if (imuOk && encOk) {
             // Wrap Euler heading into [0,360)
-            euler.h = std::fmod(euler.h, 360.0f);
+            euler.h = std::fmod(-euler.h, 360.0f);
             if (euler.h < 0) euler.h += 360.0f;
 
             TimedPico2Data sample{steady_clock::now(), accel, euler, encoderAngle};
