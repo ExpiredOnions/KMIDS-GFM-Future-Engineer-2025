@@ -90,20 +90,29 @@ int main() {
     double motorSpeed = 1001.0;
     float steeringPercent = 0.0f;
 
-    uint32_t lastPidUpdate = 0;
-    const uint32_t pidInterval = 8;
+    uint32_t lastImuUpdate = 0;
+    const uint32_t imuInterval = 2;
+
+    uint32_t lastMotorPidUpdate = 0;
+    const uint32_t motorPidInterval = 8;
     while (true) {
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+
         i2c_slave::setIsRunning(true);
-        if (imu.update(accel, euler)) {
-            i2c_slave::setImuData(accel, euler);
+
+        if (now - lastImuUpdate >= imuInterval) {
+            if (imu.update(accel, euler)) {
+                i2c_slave::setImuData(accel, euler);
+            }
+
+            lastImuUpdate = now;
         }
 
         i2c_slave::setEncoderAngle(encoder.getAngle());
 
         i2c_slave::getMovementInfo(motorSpeed, steeringPercent);
 
-        uint32_t now = to_ms_since_boot(get_absolute_time());
-        if (now - lastPidUpdate >= pidInterval) {
+        if (now - lastMotorPidUpdate >= motorPidInterval) {
             // TODO: Make this a proper protocol
             if (motorSpeed >= 1002.0) {
                 motorPid.setTargetRPS(0.0);
@@ -116,7 +125,7 @@ int main() {
             }
 
             motorPid.update();
-            lastPidUpdate = now;
+            lastMotorPidUpdate = now;
         }
 
         servo.setAngle(toSteeringAngle(steeringPercent));
