@@ -93,10 +93,10 @@ public:
      */
     bool clearTare();
 
+    BNO08x imu_; /**< Internal BNO08x object */
 private:
     i2c_inst_t *i2c_; /**< Pointer to the I2C instance */
     uint sdaPin_;     /**< SDA GPIO pin */
     uint sclPin_;     /**< SCL GPIO pin */
     uint8_t address_; /**< I2C address of the IMU */
-    BNO08x imu_;      /**< Internal BNO08x object */
 };

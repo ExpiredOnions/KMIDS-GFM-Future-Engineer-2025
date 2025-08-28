@@ -78,6 +78,10 @@ int main() {
         sleep_ms(1000);
     }
 
+    // FIXME:
+    imu.imu_.setCalibrationConfig(0b0000000);
+    sleep_ms(1000);
+
     i2c_slave::setIsRunning(false);
     i2c_slave::setIsImuReady(true);
 
@@ -101,8 +105,15 @@ int main() {
         i2c_slave::setIsRunning(true);
 
         if (now - lastImuUpdate >= imuInterval) {
+            // FIXME:
+            if (imu.imu_.wasReset()) {
+                imu.enableRotation(8);
+                imu.enableAccelerometer(8);
+            }
+
             if (imu.update(accel, euler)) {
                 i2c_slave::setImuData(accel, euler);
+                // printf("Euler angles: H: %.2f°, P: %.2f°, R: %.2f°\n", euler.h, euler.p, euler.r);
             }
 
             lastImuUpdate = now;
