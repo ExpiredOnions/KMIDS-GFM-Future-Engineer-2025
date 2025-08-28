@@ -3,20 +3,12 @@
 #include "lidar_struct.h"
 #include "pico2_struct.h"
 #include "ring_buffer.hpp"
+#include "robot_pose_struct.h"
 
 #include <optional>
 
 namespace combined_processor
 {
-
-/**
- * @brief Delta robot pose computed from Pico2 between the latest LIDAR timestamp and previous Pico2 data.
- */
-struct RobotDeltaPose {
-    float deltaX;  ///< Change in X (meters)
-    float deltaY;  ///< Change in Y (meters)
-    float deltaH;  ///< Change in heading (degrees, 0-360)
-};
 
 /**
  * @brief Approximate the robot's movement since the LIDAR scan using Pico2 data.
