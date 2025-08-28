@@ -1,3 +1,3 @@
 add_subdirectory(lidar)
 add_subdirectory(camera)
-add_subdirectory(pico2)
+add_subdirectory(combined)

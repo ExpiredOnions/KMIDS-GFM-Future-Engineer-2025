@@ -1,7 +1,7 @@
+#include "combined_processor.h"
 #include "lidar_module.h"
 #include "lidar_processor.h"
 #include "pico2_module.h"
-#include "pico2_processor.h"
 
 #include <atomic>
 #include <chrono>
@@ -102,7 +102,7 @@ int main() {
 
             // pico2.setMovementInfo(4.5f, 100.0f);
 
-            auto deltaPose = pico2_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
+            auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 
             std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH
                       << " deg" << std::endl;

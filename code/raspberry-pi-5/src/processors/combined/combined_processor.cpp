@@ -1,9 +1,9 @@
-#include "pico2_processor.h"
+#include "combined_processor.h"
 
 #include <cmath>
 #include <iostream>
 
-namespace pico2_processor
+namespace combined_processor
 {
 
 constexpr float WHEEL_DIAMETER = 0.055f;
@@ -60,4 +60,4 @@ RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const s
     return deltaPose;
 }
 
-}  // namespace pico2_processor
+}  // namespace combined_processor

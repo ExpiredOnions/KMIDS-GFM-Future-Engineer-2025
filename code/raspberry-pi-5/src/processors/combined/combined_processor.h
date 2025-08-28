@@ -6,7 +6,7 @@
 
 #include <optional>
 
-namespace pico2_processor
+namespace combined_processor
 {
 
 /**
@@ -30,4 +30,4 @@ struct RobotDeltaPose {
  */
 RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const std::vector<TimedPico2Data> &timedPico2Datas);
 
-}  // namespace pico2_processor
+}  // namespace combined_processor
