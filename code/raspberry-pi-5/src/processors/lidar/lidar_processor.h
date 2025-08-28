@@ -22,6 +22,54 @@ struct LineSegment {
         float dy = y2 - y1;
         return std::hypot(dx, dy);
     }
+
+    /**
+     * @brief Compute the perpendicular distance from a point to this line.
+     *
+     * @param x   X-coordinate of the point.
+     * @param y   Y-coordinate of the point.
+     * @return The perpendicular distance from the point to the infinite line.
+     *         Returns 0.0f if the line points are nearly identical.
+     */
+    float perpendicularDistance(float x, float y) const {
+        float num = std::fabs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
+        float den = std::hypot(x2 - x1, y2 - y1);
+        return (den > 1e-6f) ? num / den : 0.0f;
+    }
+
+    /**
+     * @brief Compute the perpendicular direction from this line to a point.
+     *
+     * @param x   X-coordinate of the point.
+     * @param y   Y-coordinate of the point.
+     * @return The angle of the perpendicular direction in degrees (0 ≤ angle < 360),
+     *         measured relative to the positive X-axis.
+     * @throws std::invalid_argument if the line segment has zero length.
+     */
+    float perpendicularDirection(float x, float y) const {
+        // Line vector
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+
+        if (dx == 0.0f && dy == 0.0f) throw std::invalid_argument("Zero-length line segment");
+
+        // Perpendicular vector (rotate CCW)
+        float perpX = -dy;
+        float perpY = dx;
+
+        // Side test using cross product
+        float cross = dx * (y - y1) - dy * (x - x1);
+        if (cross < 0) {
+            perpX = -perpX;
+            perpY = -perpY;
+        }
+
+        // Angle in degrees, normalized to [0,360)
+        float angle = std::atan2(perpY, perpX) * 180.0f / static_cast<float>(M_PI);
+        angle = std::fmod(angle + 180.0f + 360.0f, 360.0f);
+
+        return angle;
+    }
 };
 
 /**

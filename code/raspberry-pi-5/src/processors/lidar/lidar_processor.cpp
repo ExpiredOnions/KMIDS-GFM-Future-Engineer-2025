@@ -231,9 +231,8 @@ namespace
                     cv::Point2f otherStart(other.x1, other.y1);
                     cv::Point2f otherEnd(other.x2, other.y2);
 
-                    if (perpendicularDistance(otherStart.x, otherStart.y, current.x1, current.y1, current.x2, current.y2) >
-                            collinearThreshold &&
-                        perpendicularDistance(otherEnd.x, otherEnd.y, current.x1, current.y1, current.x2, current.y2) > collinearThreshold)
+                    if (current.perpendicularDistance(otherStart.x, otherStart.y) > collinearThreshold &&
+                        current.perpendicularDistance(otherEnd.x, otherEnd.y) > collinearThreshold)
                     {
                         // Check intermediate points
                         bool aligned = false;
@@ -241,7 +240,7 @@ namespace
                         for (int k = 1; k < numIntermediatePoints; ++k) {
                             float t = float(k) / float(numIntermediatePoints - 1);
                             cv::Point2f pt = otherStart + t * (otherEnd - otherStart);
-                            if (perpendicularDistance(pt.x, pt.y, current.x1, current.y1, current.x2, current.y2) <= collinearThreshold) {
+                            if (current.perpendicularDistance(pt.x, pt.y) <= collinearThreshold) {
                                 aligned = true;
                                 break;
                             }
@@ -348,12 +347,12 @@ RelativeWalls getRelativeWalls(
 
     for (const auto &segment : mergedSegments) {
         // Angle of the segment’s perpendicular relative to the robot’s forward direction
-        float perpAngleRobotFrame = perpendicularDirection(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+        float perpAngleRobotFrame = segment.perpendicularDirection(0.0f, 0.0f);
 
         // Angle of the segment’s perpendicular relative to the target direction frame
         float perpAngleTargetFrame = std::fmod(perpAngleRobotFrame - (heading - targetDirection.toHeading()) + 360.0f, 360.0f);
 
-        float perpDistance = perpendicularDistance(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+        float perpDistance = segment.perpendicularDistance(0.0f, 0.0f);
 
         if (perpAngleTargetFrame >= 315.0f || perpAngleTargetFrame < 45.0f) {
             relativeWalls.rightWalls.push_back(segment);
@@ -410,19 +409,17 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
         }
 
         // Check for left wall that is far away in x direction from front wall
-        float dir = perpendicularDirection(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2);
+        float dir = leftLine.perpendicularDirection(frontLeftX, frontLeftY);
         if (dir > 90.0f && dir < 270.0f) {
-            if (perpendicularDistance(0.0f, 0.0f, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2) > 1.70f)
-                return RotationDirection::COUNTER_CLOCKWISE;
+            if (leftLine.perpendicularDistance(0.0f, 0.0f) > 1.70f) return RotationDirection::COUNTER_CLOCKWISE;
 
             continue;
         }
 
-        if (perpendicularDistance(leftHigherX, leftHigherY, frontLine->x1, frontLine->y1, frontLine->x2, frontLine->y2) < 0.25f)
-            return RotationDirection::CLOCKWISE;
+        if (frontLine->perpendicularDistance(leftHigherX, leftHigherY) < 0.25f) return RotationDirection::CLOCKWISE;
 
-        if (perpendicularDistance(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2) > 0.30f) {
-            float dir = perpendicularDirection(frontLeftX, frontLeftY, leftLine.x1, leftLine.y1, leftLine.x2, leftLine.y2);
+        if (leftLine.perpendicularDistance(frontLeftX, frontLeftY) > 0.30f) {
+            float dir = leftLine.perpendicularDirection(frontLeftX, frontLeftY);
             if (dir > 270.0f || dir < 90.0f) return RotationDirection::COUNTER_CLOCKWISE;
         }
     }
@@ -439,19 +436,17 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
         }
 
         // Check for right wall that is far away in x direction from front wall
-        float dir = perpendicularDirection(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2);
+        float dir = rightLine.perpendicularDirection(frontRightX, frontRightY);
         if (dir > 270.0f || dir < 90.0f) {
-            if (perpendicularDistance(0.0f, 0.0f, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2) > 1.70f)
-                return RotationDirection::CLOCKWISE;
+            if (rightLine.perpendicularDistance(0.0f, 0.0f) > 1.70f) return RotationDirection::CLOCKWISE;
 
             continue;
         }
 
-        if (perpendicularDistance(rightHigherX, rightHigherY, frontLine->x1, frontLine->y1, frontLine->x2, frontLine->y2) < 0.25f)
-            return RotationDirection::COUNTER_CLOCKWISE;
+        if (frontLine->perpendicularDistance(rightHigherX, rightHigherY) < 0.25f) return RotationDirection::COUNTER_CLOCKWISE;
 
-        if (perpendicularDistance(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2) > 0.30f) {
-            float dir = perpendicularDirection(frontRightX, frontRightY, rightLine.x1, rightLine.y1, rightLine.x2, rightLine.y2);
+        if (rightLine.perpendicularDistance(frontRightX, frontRightY) > 0.30f) {
+            float dir = rightLine.perpendicularDirection(frontRightX, frontRightY);
             if (dir > 90.0f && dir < 270.0f) return RotationDirection::CLOCKWISE;
         }
     }
@@ -463,62 +458,62 @@ ResolvedWalls resolveWalls(const RelativeWalls &relativeWalls) {
     ResolvedWalls resolveWalls;
 
     for (auto &newWall : relativeWalls.leftWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (newDist > 1.20f) continue;
         if (resolveWalls.leftWall.has_value()) {
             LineSegment curWall = resolveWalls.leftWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist <= newDist) continue;
         }
         resolveWalls.leftWall = newWall;
     }
     for (auto &newWall : relativeWalls.rightWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (newDist > 1.20f) continue;
         if (resolveWalls.rightWall.has_value()) {
             LineSegment curWall = resolveWalls.rightWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist <= newDist) continue;
         }
         resolveWalls.rightWall = newWall;
     }
     for (auto &newWall : relativeWalls.frontWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (resolveWalls.frontWall.has_value()) {
             LineSegment curWall = resolveWalls.frontWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist >= newDist) continue;
         }
         resolveWalls.frontWall = newWall;
     }
     for (auto &newWall : relativeWalls.backWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (resolveWalls.backWall.has_value()) {
             LineSegment curWall = resolveWalls.backWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist >= newDist) continue;
         }
         resolveWalls.backWall = newWall;
     }
 
     for (auto &newWall : relativeWalls.leftWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (newDist <= 1.20f) continue;
         if (newDist >= 3.20f) continue;
         if (resolveWalls.farLeftWall.has_value()) {
             LineSegment curWall = resolveWalls.farLeftWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist >= newDist) continue;
         }
         resolveWalls.farLeftWall = newWall;
     }
     for (auto &newWall : relativeWalls.rightWalls) {
-        float newDist = perpendicularDistance(0.0f, 0.0f, newWall.x1, newWall.y1, newWall.x2, newWall.y2);
+        float newDist = newWall.perpendicularDistance(0.0f, 0.0f);
         if (newDist <= 1.20f) continue;
         if (newDist >= 3.20f) continue;
         if (resolveWalls.farRightWall.has_value()) {
             LineSegment curWall = resolveWalls.farRightWall.value();
-            float curDist = perpendicularDistance(0.0f, 0.0f, curWall.x1, curWall.y1, curWall.x2, curWall.y2);
+            float curDist = curWall.perpendicularDistance(0.0f, 0.0f);
             if (curDist >= newDist) continue;
         }
         resolveWalls.farRightWall = newWall;
@@ -537,7 +532,7 @@ std::vector<LineSegment> getParkingWalls(
 
     for (const auto &segment : lineSegments) {
         // Angle of the segment’s perpendicular relative to the robot’s forward direction
-        float perpAngleRobotFrame = perpendicularDirection(0.0f, 0.0f, segment.x1, segment.y1, segment.x2, segment.y2);
+        float perpAngleRobotFrame = segment.perpendicularDirection(0.0f, 0.0f);
 
         // Angle of the segment’s perpendicular relative to the target direction frame
         float perpAngleTargetFrame = std::fmod(perpAngleRobotFrame - (heading - targetDirection.toHeading()) + 360.0f, 360.0f);
@@ -583,14 +578,7 @@ std::vector<cv::Point2f> getTrafficLightPoints(
     std::vector<cv::Point2f> filteredPoints;
     for (auto &point : points) {
         if (not resolveWalls.frontWall) return {};
-        float frontDistance = perpendicularDistance(
-            point.x,
-            point.y,
-            resolveWalls.frontWall->x1,
-            resolveWalls.frontWall->y1,
-            resolveWalls.frontWall->x2,
-            resolveWalls.frontWall->y2
-        );
+        float frontDistance = resolveWalls.frontWall->perpendicularDistance(point.x, point.y);
 
         std::optional<LineSegment> outerWall, innerWall, farOuterWall;
         if (turnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
@@ -607,9 +595,9 @@ std::vector<cv::Point2f> getTrafficLightPoints(
 
         float outerDistance;
         if (outerWall) {
-            outerDistance = perpendicularDistance(point.x, point.y, outerWall->x1, outerWall->y1, outerWall->x2, outerWall->y2);
+            outerDistance = outerWall->perpendicularDistance(point.x, point.y);
         } else if (innerWall) {
-            outerDistance = 1.00f - perpendicularDistance(point.x, point.y, innerWall->x1, innerWall->y1, innerWall->x2, innerWall->y2);
+            outerDistance = 1.00f - innerWall->perpendicularDistance(point.x, point.y);
         } else {
             return {};
         }
@@ -619,8 +607,7 @@ std::vector<cv::Point2f> getTrafficLightPoints(
         const float innerEdge = 0.70f;
 
         if (farOuterWall) {
-            float outerFarDistance =
-                perpendicularDistance(point.x, point.y, farOuterWall->x1, farOuterWall->y1, farOuterWall->x2, farOuterWall->y2);
+            float outerFarDistance = farOuterWall->perpendicularDistance(point.x, point.y);
 
             if (frontDistance < outerEdge or frontDistance > 3.00f - outerEdge or outerDistance < outerEdge or outerFarDistance < outerEdge)
                 continue;
