@@ -2,6 +2,8 @@
 /code/raspberry-pi-5/build/
 /code/raspberry-pi-pico-2/build/
 
+/code/raspberry-pi-5/log/
+
 # Ignore CMake generated files
 CMakeFiles/
 CMakeCache.txt
