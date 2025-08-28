@@ -27,5 +27,5 @@ add_library(motor_speed_controller STATIC motor_speed_controller.cpp
 target_include_directories(motor_speed_controller
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(motor_speed_controller PUBLIC motor_controller
-                                                    encoder_controller utils)
+target_link_libraries(motor_speed_controller
+                      PUBLIC motor_controller encoder_controller pid_controller)
