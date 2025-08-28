@@ -3,6 +3,7 @@
 
 #include "direction.h"
 #include "lidar_struct.h"
+#include "robot_pose_struct.h"
 
 namespace lidar_processor
 {
@@ -106,6 +107,7 @@ struct ResolvedWalls {
  * 4. Merges segments that are approximately collinear and close together using `mergeSegments`.
  *
  * @param timedLidarData LiDAR scan data with timestamps.
+ * @param robotDeltaPose Robot motion compensation (Δx, Δy, Δh) applied to transform points (default: {0,0,0}).
  * @param splitThreshold Maximum perpendicular distance (meters) from a point to the best-fit line before splitting the segment.
  * @param minPoints Minimum number of points required to form a segment.
  * @param maxPointGap Maximum allowed distance between consecutive points within a segment.
@@ -116,6 +118,7 @@ struct ResolvedWalls {
  */
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
+    const RobotDeltaPose &robotDeltaPose = {0.0f, 0.0f, 0.0f},
     float splitThreshold = 0.05f,
     int minPoints = 10,
     float maxPointGap = 0.10f,

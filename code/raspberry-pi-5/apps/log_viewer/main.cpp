@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
         const auto &cameraEntry = cameraEntries[i];
         TimedFrame timedFrame = reconstructTimedFrame(cameraEntry);
 
-        auto lineSegments = lidar_processor::getLines(filteredLidarData, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+        auto lineSegments = lidar_processor::getLines(filteredLidarData, {0.0f, 0.0f, 0.0f}, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
 
         auto newRobotTurnDirecton = lidar_processor::getTurnDirection(relativeWalls);

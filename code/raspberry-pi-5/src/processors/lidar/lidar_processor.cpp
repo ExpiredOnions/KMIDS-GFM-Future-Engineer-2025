@@ -289,6 +289,7 @@ namespace
 
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
+    const RobotDeltaPose &robotDeltaPose,
     float splitThreshold,
     int minPoints,
     float maxPointGap,
@@ -321,7 +322,28 @@ std::vector<LineSegment> getLines(
         splitSegment(points, 0, points.size() - 1, rawSegments, splitThreshold, minPoints, maxPointGap, minLength);
     }
 
-    return mergeSegments(rawSegments, mergeAngleThreshold, mergeGapThreshold);
+    auto mergedSegments = mergeSegments(rawSegments, mergeAngleThreshold, mergeGapThreshold);
+
+    // Apply delta transform: translate (-deltaX, -deltaY) and rotate (-deltaH)
+    float radH = robotDeltaPose.deltaH * static_cast<float>(M_PI) / 180.0f;
+    float cosH = std::cos(radH);
+    float sinH = std::sin(radH);
+
+    for (auto &seg : mergedSegments) {
+        // Translate
+        float x1t = seg.x1 - robotDeltaPose.deltaX;
+        float y1t = seg.y1 - robotDeltaPose.deltaY;
+        float x2t = seg.x2 - robotDeltaPose.deltaX;
+        float y2t = seg.y2 - robotDeltaPose.deltaY;
+
+        // Rotate around (0,0)
+        seg.x1 = x1t * cosH - y1t * sinH;
+        seg.y1 = x1t * sinH + y1t * cosH;
+        seg.x2 = x2t * cosH - y2t * sinH;
+        seg.y2 = x2t * sinH + y2t * cosH;
+    }
+
+    return mergedSegments;
 }
 
 RelativeWalls getRelativeWalls(
