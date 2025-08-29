@@ -26,8 +26,6 @@ def battery_percentage(voltage):
 
 def read_battery_temperature():
     temp = read_register_16(0x0B)
-    # Temperature range is -20 to 65°C mapped to 0-65535?
-    # If register is already in °C, just return as is
     return temp
 
 
@@ -39,3 +37,7 @@ if __name__ == "__main__":
     print(f"Battery Voltage: {voltage:.2f} V")
     print(f"Battery Percentage: {percent}%")
     print(f"Battery Temperature: {temperature} °C")
+    print("----------")
+    print(f"Battery Full Voltage: {read_register_16(0x0D)} mV")
+    print(f"Battery Empty Voltage: {read_register_16(0x0F)} mV")
+    print(f"Battery Protection Voltage: {read_register_16(0x11)} mV")
