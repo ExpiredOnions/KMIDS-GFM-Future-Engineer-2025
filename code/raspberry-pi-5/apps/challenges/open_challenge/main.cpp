@@ -18,12 +18,24 @@ void signalHandler(int signum) {
     stop_flag = 1;
 }
 
+enum Mode
+{
+    NORMAL,
+    PRE_TURN,
+    TURNING,
+    PRE_STOP,
+    STOP
+};
+
 struct State {
     PIDController headingPid{3.0f, 0.0, 0.0f};
-    PIDController wallPid{150.0f, 0.0, 0.0f};
+    PIDController wallPid{180.0f, 0.0, 0.0f};
 
     std::optional<float> initialHeading;
     std::optional<RotationDirection> robotTurnDirection;
+
+    Mode robotMode = Mode::NORMAL;
+    int numberOfTurn = 0;
     Direction headingDirection = Direction::NORTH;
 };
 
@@ -51,8 +63,6 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         }
     }
 
-    // pico2.setMovementInfo(4.5f, 100.0f);
-
     auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 
     // std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
@@ -60,7 +70,7 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
 
     if (not state.initialHeading) state.initialHeading = timedPico2Data.euler.h;
 
-    float heading = timedPico2Data.euler.h - state.initialHeading.value();
+    float heading = timedPico2Data.euler.h - state.initialHeading.value_or(0.0f);
     heading = std::fmod(heading, 360.0f);
     if (heading < 0.0f) heading += 360.0f;
 
@@ -80,26 +90,119 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
     std::optional<lidar_processor::LineSegment> outerWall;
     std::optional<lidar_processor::LineSegment> innerWall;
 
-    Direction nextHeadingDirection;
     if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
         outerWall = resolveWalls.leftWall;
         innerWall = resolveWalls.rightWall;
-
-        float nextHeading = state.headingDirection.toHeading() + 90.0f;
-        nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-        nextHeadingDirection = Direction::fromHeading(nextHeading);
     } else {
         outerWall = resolveWalls.rightWall;
         innerWall = resolveWalls.leftWall;
-
-        float nextHeading = state.headingDirection.toHeading() - 90.0f;
-        nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-        nextHeadingDirection = Direction::fromHeading(nextHeading);
     }
+
+instant_update:
+    switch (state.robotMode) {
+    default:
+        std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
+        stop_flag = true;
+        return;
+
+    case Mode::NORMAL: {
+        std::cout << "[Mode::NORMAL]\n";
+
+        const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
+        const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+
+        if (state.numberOfTurn == 12) {
+            state.robotMode = Mode::PRE_STOP;
+            goto instant_update;
+        }
+
+        static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE &&
+            (now - lastPreTurnTrigger) >= PRE_TURN_COOLDOWN)
+        {
+            state.robotMode = Mode::PRE_TURN;
+            lastPreTurnTrigger = now;
+            goto instant_update;
+        }
+        outMotorSpeed = 4.5f;
+        break;
+    }
+    case Mode::PRE_TURN: {
+        std::cout << "[Mode::PRE_TURN]\n";
+
+        const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
+            Direction nextHeadingDirection;
+            if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+                float nextHeading = state.headingDirection.toHeading() + 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextHeadingDirection = Direction::fromHeading(nextHeading);
+            } else {
+                float nextHeading = state.headingDirection.toHeading() - 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextHeadingDirection = Direction::fromHeading(nextHeading);
+            }
+
+            state.headingDirection = nextHeadingDirection;
+
+            state.robotMode = Mode::TURNING;
+            goto instant_update;
+        }
+
+        outMotorSpeed = 4.5f;
+        break;
+    }
+    case Mode::TURNING: {
+        std::cout << "[Mode::TURNING]\n";
+
+        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+            state.numberOfTurn++;
+            state.robotMode = Mode::NORMAL;
+            goto instant_update;
+        }
+
+        outMotorSpeed = 4.5f;
+        break;
+    }
+    case Mode::PRE_STOP: {
+        std::cout << "[Mode::PRE_STOP]\n";
+
+        const float STOP_FRONT_WALL_DISTANCE = 1.70f;
+        const auto STOP_DELAY = std::chrono::milliseconds(800);
+
+        static bool stopTimerActive = false;
+        static auto stopStartTime = std::chrono::steady_clock::now();
+        if (!stopTimerActive) {
+            stopTimerActive = true;
+            stopStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - stopStartTime;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= STOP_FRONT_WALL_DISTANCE && elapsed >= STOP_DELAY) {
+            stopTimerActive = false;
+
+            state.robotMode = Mode::STOP;
+            goto instant_update;
+        }
+        outMotorSpeed = 4.5f;
+
+        break;
+    }
+    case Mode::STOP: {
+        std::cout << "[Mode::STOP]\n";
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+        return;
+    }
+    }
+
+    // NOTE: Use break and it will run the pid
+    // If don't want to run the pid then use return
 
     float wallError = 0.0f;
     if (outerWall) {
-        wallError = outerWall.value().perpendicularDistance(0.0f, 0.0f) - 0.50f;
+        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - 0.50f;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
@@ -109,30 +212,12 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
     headingError -= 180.0f;
     headingError += headingErrorOffset;
 
-    float steeringPercent = state.headingPid.update(headingError, dt);
+    outSteeringPercent = state.headingPid.update(headingError, dt);
 
     std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
-              << "°, Next Heading Direction: " << nextHeadingDirection.toHeading() << "°, Heading Error: " << headingError << "°"
-              << "°, Heading Error Offset: " << headingErrorOffset << "°" << std::endl;
-
-    if (not frontWall) {
-        outMotorSpeed = 4.5f;
-        outSteeringPercent = steeringPercent;
-        return;
-    }
-
-    static auto lastTrigger = std::chrono::steady_clock::now() - std::chrono::milliseconds(2000);
-    if (frontWall.value().perpendicularDistance(0.0f, 0.0f) <= 0.90f && (now - lastTrigger) >= std::chrono::milliseconds(2000)) {
-        outMotorSpeed = 4.5f;
-        outSteeringPercent = steeringPercent;
-
-        state.headingDirection = nextHeadingDirection;
-
-        lastTrigger = now;
-    } else {
-        outMotorSpeed = 4.5f;
-        outSteeringPercent = steeringPercent;
-    }
+              << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
+              << "°, Motor Speed: " << outMotorSpeed << "rps, Steering Percent: " << outSteeringPercent << "%\n"
+              << std::endl;
 }
 
 int main() {
