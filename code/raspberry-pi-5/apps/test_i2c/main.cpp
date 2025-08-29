@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <csignal>
 #include <iostream>
 #include <thread>
@@ -45,6 +46,8 @@ int main() {
     std::cout << "[Main] Pico2 module initialized.\n";
     std::thread(inputThread).detach();
 
+    std::optional<float> initialHeading;
+
     while (!stop_flag) {
         if (!paused) {
             bool running = pico2.isReady();
@@ -56,10 +59,16 @@ int main() {
             if (pico2.getData(pico2Data)) {
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(pico2Data.timestamp.time_since_epoch()).count();
 
+                if (not initialHeading) initialHeading = pico2Data.euler.h;
+
+                float heading = pico2Data.euler.h - initialHeading.value();
+                heading = std::fmod(heading + 360.0f, 360.0f);
+
                 std::cout << "Timestamp: " << ms << " ms" << std::endl;
                 std::cout << "Accel: x=" << pico2Data.accel.x << " y=" << pico2Data.accel.y << " z=" << pico2Data.accel.z << std::endl;
                 std::cout << "Euler: h=" << pico2Data.euler.h << " r=" << pico2Data.euler.r << " p=" << pico2Data.euler.p << std::endl;
                 std::cout << "Encoder Angle: " << pico2Data.encoderAngle << std::endl;
+                std::cout << "Delta Heading: " << heading << std::endl;
             }
 
             // Optional: send zero movement
