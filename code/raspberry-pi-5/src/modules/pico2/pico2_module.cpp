@@ -6,7 +6,8 @@
 
 Pico2Module::Pico2Module(uint8_t i2cAddress)
     : master_(i2cAddress)
-    , running_(false) {}
+    , running_(false)
+    , logger_(nullptr) {}
 
 Pico2Module::Pico2Module(Logger *logger, uint8_t i2cAddress)
     : master_(i2cAddress)
