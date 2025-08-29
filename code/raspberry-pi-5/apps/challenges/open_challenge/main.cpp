@@ -168,8 +168,8 @@ instant_update:
     case Mode::PRE_STOP: {
         std::cout << "[Mode::PRE_STOP]\n";
 
-        const float STOP_FRONT_WALL_DISTANCE = 1.70f;
-        const auto STOP_DELAY = std::chrono::milliseconds(800);
+        const float STOP_FRONT_WALL_DISTANCE = 1.80f;
+        const auto STOP_DELAY = std::chrono::milliseconds(100);
 
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
@@ -210,7 +210,12 @@ instant_update:
     headingError = std::fmod(headingError + 180.0f, 360.0f);
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
-    headingError += headingErrorOffset;
+
+    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+        headingError -= headingErrorOffset;
+    } else {
+        headingError += headingErrorOffset;
+    }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
 
@@ -218,6 +223,9 @@ instant_update:
               << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
               << "°, Motor Speed: " << outMotorSpeed << "rps, Steering Percent: " << outSteeringPercent << "%\n"
               << std::endl;
+
+    auto dir = state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE);
+    std::cout << "robotTurnDirection: " << (dir == RotationDirection::CLOCKWISE ? "CLOCKWISE" : "COUNTERCLOCKWISE") << "\n";
 }
 
 int main() {
