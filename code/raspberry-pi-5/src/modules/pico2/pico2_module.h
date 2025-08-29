@@ -1,6 +1,7 @@
 #pragma once
 
 #include "i2c_master.h"
+#include "logger.h"
 #include "pico2_struct.h"
 #include "ring_buffer.hpp"
 
@@ -35,6 +36,18 @@ public:
      * @param i2cAddress I2C address of the Pico2 device (default 0x39).
      */
     explicit Pico2Module(uint8_t i2cAddress = 0x39);
+
+    /**
+     * @brief Construct a new Pico2Module with optional logging.
+     *
+     * This constructor allows you to pass a Logger instance to enable
+     * logging within the Pico2Module. If you do not need logging, you
+     * can pass nullptr.
+     *
+     * @param logger Pointer to a Logger instance, or nullptr if logging is not needed.
+     * @param i2cAddress I2C address of the Pico2 device (default 0x39).
+     */
+    Pico2Module(Logger *logger, uint8_t i2cAddress = 0x39);
 
     /**
      * @brief Destructor. Ensures polling thread is stopped.
@@ -114,4 +127,6 @@ private:
     pico_i2c_mem_addr::StatusFlags status_;
 
     RingBuffer<TimedPico2Data> dataBuffer_{120};
+
+    Logger *logger_;
 };

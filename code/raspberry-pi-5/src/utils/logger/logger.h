@@ -1,8 +1,10 @@
 #pragma once
+
 #include <filesystem>
 #include <fstream>
 #include <mutex>
 #include <string>
+
 /**
  * @class Logger
  * @brief Thread-safe binary logger for various sensor data streams.
@@ -15,16 +17,6 @@
 class Logger
 {
 public:
-    /**
-     * @enum LogType
-     * @brief Identifies the type of sensor data being logged.
-     */
-    enum class LogType : uint8_t
-    {
-        LIDAR = 1,  ///< LIDAR sensor data
-        CAMERA = 2  ///< Camera frame data
-    };
-
     /**
      * @brief Constructs a Logger and opens the output file.
      * @param filename Path to the binary log file.
@@ -48,6 +40,46 @@ public:
      * @param dataSize Number of bytes
      */
     void writeData(uint64_t timestamp_ns, const void *data, size_t dataSize);
+
+    /**
+     * @brief Generate a filename inside a timestamped folder.
+     *
+     * Creates folder logs/YYYYMMDD_HHMMSS if it doesn't exist.
+     * Format: folder/prefix.suffix
+     *
+     * @param baseFolder Base folder for logs (default: "logs")
+     * @param prefix File prefix (default: "log")
+     * @param suffix File extension (default: ".bin")
+     * @return std::string Full path to the generated file
+     */
+    static std::string generateFilename(
+        const std::string &baseFolder = "logs",
+        const std::string &prefix = "log",
+        const std::string &suffix = ".bin"
+    ) {
+        // Generate timestamp for folder
+        auto now = std::chrono::system_clock::now();
+        auto t_c = std::chrono::system_clock::to_time_t(now);
+
+        std::tm tm_buf;
+#if defined(_WIN32) || defined(_WIN64)
+        localtime_s(&tm_buf, &t_c);
+#else
+        localtime_r(&t_c, &tm_buf);
+#endif
+
+        std::ostringstream folderName;
+        folderName << baseFolder << "/" << std::put_time(&tm_buf, "%Y%m%d_%H%M%S");
+
+        // Create the timestamped folder
+        std::filesystem::create_directories(folderName.str());
+
+        // Full file path
+        std::ostringstream filePath;
+        filePath << folderName.str() << "/" << prefix << suffix;
+
+        return filePath.str();
+    }
 
 private:
     std::ofstream file;  ///< Output file stream for the log

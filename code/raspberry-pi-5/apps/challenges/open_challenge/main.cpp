@@ -102,7 +102,7 @@ instant_update:
     switch (state.robotMode) {
     default:
         std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
-        stop_flag = true;
+        stop_flag = 1;
         return;
 
     case Mode::NORMAL: {
@@ -193,6 +193,8 @@ instant_update:
         std::cout << "[Mode::STOP]\n";
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
+
+        stop_flag = 1;
         return;
     }
     }
@@ -231,14 +233,21 @@ instant_update:
 int main() {
     std::signal(SIGINT, signalHandler);
 
+    const char *home = std::getenv("HOME");
+    if (!home) throw std::runtime_error("HOME environment variable not set");
+    std::string logFolder = std::string(home) + "/.cache/gfm_logs";
+
+    Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
+    Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
+
     // Initialize LidarModule
-    LidarModule lidar;
+    LidarModule lidar(&lidarLogger);
     if (!lidar.initialize()) return -1;
     lidar.printDeviceInfo();
     if (!lidar.start()) return -1;
 
     // Initialize Pico2Module
-    Pico2Module pico2;
+    Pico2Module pico2(&pico2Logger);
     if (!pico2.initialize()) return -1;
 
     State state;
