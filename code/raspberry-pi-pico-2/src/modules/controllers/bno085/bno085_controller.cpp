@@ -28,7 +28,7 @@ bool Bno085Controller::begin() {
 }
 
 bool Bno085Controller::enableRotation(uint interval_ms) {
-    if (!imu_.enableRotationVector(interval_ms)) {
+    if (!imu_.enableGameRotationVector(interval_ms)) {
         printf("Failed to enable rotation vector!\n");
         return false;
     }
@@ -46,7 +46,7 @@ bool Bno085Controller::enableAccelerometer(uint interval_ms) {
 bool Bno085Controller::update(ImuAccel &accel, ImuEuler &euler) {
     if (imu_.getSensorEvent()) {
         switch (imu_.getSensorEventID()) {
-        case SENSOR_REPORTID_ROTATION_VECTOR:
+        case SENSOR_REPORTID_GAME_ROTATION_VECTOR:
             euler.h = imu_.getYaw() * 180.0f / M_PI;
             euler.p = imu_.getPitch() * 180.0f / M_PI;
             euler.r = imu_.getRoll() * 180.0f / M_PI;

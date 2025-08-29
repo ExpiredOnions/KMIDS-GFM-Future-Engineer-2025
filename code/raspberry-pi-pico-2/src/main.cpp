@@ -95,7 +95,7 @@ int main() {
     float steeringPercent = 0.0f;
 
     uint32_t lastImuUpdate = 0;
-    const uint32_t imuInterval = 2;
+    const uint32_t imuInterval = 4;
 
     uint32_t lastMotorPidUpdate = 0;
     const uint32_t motorPidInterval = 8;
@@ -107,8 +107,8 @@ int main() {
         if (now - lastImuUpdate >= imuInterval) {
             // FIXME:
             if (imu.imu_.wasReset()) {
-                imu.enableRotation(8);
-                imu.enableAccelerometer(8);
+                imu.enableRotation(10);
+                imu.enableAccelerometer(10);
             }
 
             if (imu.update(accel, euler)) {
