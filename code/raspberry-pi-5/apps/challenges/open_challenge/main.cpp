@@ -99,7 +99,7 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
 
     float wallError = 0.0f;
     if (outerWall) {
-        wallError = 0.50f - outerWall.value().perpendicularDistance(0.0f, 0.0f);
+        wallError = outerWall.value().perpendicularDistance(0.0f, 0.0f) - 0.50f;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
@@ -107,13 +107,13 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
     headingError = std::fmod(headingError + 180.0f, 360.0f);
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
-    headingError -= headingErrorOffset;
+    headingError += headingErrorOffset;
 
     float steeringPercent = state.headingPid.update(headingError, dt);
 
     std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
               << "°, Next Heading Direction: " << nextHeadingDirection.toHeading() << "°, Heading Error: " << headingError << "°"
-              << std::endl;
+              << "°, Heading Error Offset: " << headingErrorOffset << "°" << std::endl;
 
     if (not frontWall) {
         outMotorSpeed = 4.5f;
@@ -121,8 +121,8 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         return;
     }
 
-    static auto lastTrigger = std::chrono::steady_clock::now() - std::chrono::milliseconds(1000);
-    if (frontWall.value().perpendicularDistance(0.0f, 0.0f) <= 0.80f && (now - lastTrigger) >= std::chrono::milliseconds(1000)) {
+    static auto lastTrigger = std::chrono::steady_clock::now() - std::chrono::milliseconds(2000);
+    if (frontWall.value().perpendicularDistance(0.0f, 0.0f) <= 0.90f && (now - lastTrigger) >= std::chrono::milliseconds(2000)) {
         outMotorSpeed = 4.5f;
         outSteeringPercent = steeringPercent;
 
