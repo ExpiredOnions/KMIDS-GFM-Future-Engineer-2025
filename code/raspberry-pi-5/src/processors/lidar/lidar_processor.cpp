@@ -438,7 +438,7 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
             continue;
         }
 
-        if (frontLine->perpendicularDistance(leftHigherX, leftHigherY) < 0.25f) return RotationDirection::CLOCKWISE;
+        if (frontLine->perpendicularDistance(leftHigherX, leftHigherY) < 0.30) return RotationDirection::CLOCKWISE;
 
         if (leftLine.perpendicularDistance(frontLeftX, frontLeftY) > 0.30f) {
             float dir = leftLine.perpendicularDirection(frontLeftX, frontLeftY);
@@ -465,7 +465,7 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
             continue;
         }
 
-        if (frontLine->perpendicularDistance(rightHigherX, rightHigherY) < 0.25f) return RotationDirection::COUNTER_CLOCKWISE;
+        if (frontLine->perpendicularDistance(rightHigherX, rightHigherY) < 0.30) return RotationDirection::COUNTER_CLOCKWISE;
 
         if (rightLine.perpendicularDistance(frontRightX, frontRightY) > 0.30f) {
             float dir = rightLine.perpendicularDirection(frontRightX, frontRightY);
