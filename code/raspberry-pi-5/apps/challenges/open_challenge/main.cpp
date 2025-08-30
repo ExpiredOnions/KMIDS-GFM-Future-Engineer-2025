@@ -18,6 +18,16 @@ void signalHandler(int signum) {
     stop_flag = 1;
 }
 
+const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
+
+const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
+const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+
+const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+
+const float STOP_FRONT_WALL_DISTANCE = 1.80f;
+const auto STOP_DELAY = std::chrono::milliseconds(100);
+
 enum Mode
 {
     NORMAL,
@@ -82,12 +92,14 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
     std::optional<lidar_processor::LineSegment> outerWall;
     std::optional<lidar_processor::LineSegment> innerWall;
 
-    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-        outerWall = resolveWalls.leftWall;
-        innerWall = resolveWalls.rightWall;
-    } else {
-        outerWall = resolveWalls.rightWall;
-        innerWall = resolveWalls.leftWall;
+    if (state.robotTurnDirection) {
+        if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+            outerWall = resolveWalls.leftWall;
+            innerWall = resolveWalls.rightWall;
+        } else {
+            outerWall = resolveWalls.rightWall;
+            innerWall = resolveWalls.leftWall;
+        }
     }
 
 instant_update:
@@ -98,10 +110,7 @@ instant_update:
         return;
 
     case Mode::NORMAL: {
-        std::cout << "[Mode::NORMAL]\n";
-
-        const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
-        const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+        // std::cout << "[Mode::NORMAL]\n";
 
         if (state.numberOfTurn == 12) {
             state.robotMode = Mode::PRE_STOP;
@@ -120,9 +129,7 @@ instant_update:
         break;
     }
     case Mode::PRE_TURN: {
-        std::cout << "[Mode::PRE_TURN]\n";
-
-        const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+        // std::cout << "[Mode::PRE_TURN]\n";
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
             Direction nextHeadingDirection;
@@ -146,7 +153,7 @@ instant_update:
         break;
     }
     case Mode::TURNING: {
-        std::cout << "[Mode::TURNING]\n";
+        // std::cout << "[Mode::TURNING]\n";
 
         if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
             state.numberOfTurn++;
@@ -158,10 +165,7 @@ instant_update:
         break;
     }
     case Mode::PRE_STOP: {
-        std::cout << "[Mode::PRE_STOP]\n";
-
-        const float STOP_FRONT_WALL_DISTANCE = 1.80f;
-        const auto STOP_DELAY = std::chrono::milliseconds(100);
+        // std::cout << "[Mode::PRE_STOP]\n";
 
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
@@ -182,7 +186,7 @@ instant_update:
         break;
     }
     case Mode::STOP: {
-        std::cout << "[Mode::STOP]\n";
+        // std::cout << "[Mode::STOP]\n";
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
 
@@ -196,7 +200,7 @@ instant_update:
 
     float wallError = 0.0f;
     if (outerWall) {
-        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - 0.50f;
+        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - TARGET_OUTER_WALL_DISTANCE;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
@@ -213,13 +217,13 @@ instant_update:
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
 
-    std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
-              << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
-              << "°, Motor Speed: " << outMotorSpeed << "rps, Steering Percent: " << outSteeringPercent << "%\n"
-              << std::endl;
+    // std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
+    //           << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
+    //           << "°, Motor Speed: " << outMotorSpeed << "rps, Steering Percent: " << outSteeringPercent << "%\n"
+    //           << std::endl;
 
     auto dir = state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE);
-    std::cout << "robotTurnDirection: " << (dir == RotationDirection::CLOCKWISE ? "CLOCKWISE" : "COUNTERCLOCKWISE") << "\n";
+    // std::cout << "robotTurnDirection: " << (dir == RotationDirection::CLOCKWISE ? "CLOCKWISE" : "COUNTERCLOCKWISE") << "\n";
 }
 
 int main() {
@@ -244,8 +248,8 @@ int main() {
 
     State state;
 
-    std::cout << "Waiting 3 seconds before starting control loop..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
     auto lastTime = std::chrono::steady_clock::now();
