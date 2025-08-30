@@ -231,7 +231,7 @@ int main() {
 
     const char *home = std::getenv("HOME");
     if (!home) throw std::runtime_error("HOME environment variable not set");
-    std::string logFolder = std::string(home) + "/.cache/gfm_logs";
+    std::string logFolder = std::string(home) + "/gfm_logs/open_challenge";
 
     Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
     Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
