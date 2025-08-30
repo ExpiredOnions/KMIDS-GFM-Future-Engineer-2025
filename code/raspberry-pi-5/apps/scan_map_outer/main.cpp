@@ -1,5 +1,6 @@
 // FIXME: UNTESTED
 
+#include "camera_module.h"
 #include "combined_processor.h"
 #include "lidar_module.h"
 #include "lidar_processor.h"
@@ -19,6 +20,9 @@ void signalHandler(int signum) {
     std::cout << "\nInterrupt signal (" << signum << ") received.\n";
     stop_flag = 1;
 }
+
+const uint32_t camWidth = 1296;
+const uint32_t camHeight = 972;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.16;
 const float TARGET_OUTER_WALL_DISTANCE_STARTING_SECTION = 0.32;
@@ -245,10 +249,11 @@ int main() {
 
     const char *home = std::getenv("HOME");
     if (!home) throw std::runtime_error("HOME environment variable not set");
-    std::string logFolder = std::string(home) + "/.cache/gfm_logs";
+    std::string logFolder = std::string(home) + "/gfm_logs/scan_map_outer";
 
     Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
     Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
+    Logger cameraLogger(Logger::generateFilename(logFolder, "camera"));
 
     // Initialize LidarModule
     LidarModule lidar(&lidarLogger);
@@ -259,6 +264,30 @@ int main() {
     // Initialize Pico2Module
     Pico2Module pico2(&pico2Logger);
     if (!pico2.initialize()) return -1;
+
+    // Initialize CameraModule (for logging only)
+    auto cameraOptionCallback = [](lccv::PiCamera &cam) {
+        libcamera::ControlList &camControls = cam.getControlList();
+
+        cam.options->video_width = camWidth;
+        cam.options->video_height = camHeight;
+        cam.options->framerate = 30.0f;
+
+        camControls.set(controls::AnalogueGainMode, controls::AnalogueGainModeEnum::AnalogueGainModeManual);
+        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
+        camControls.set(controls::AwbEnable, false);
+
+        cam.options->awb_gain_r = 0.83;
+        cam.options->awb_gain_b = 1.5;
+
+        cam.options->brightness = 0.1;
+        cam.options->sharpness = 1;
+        cam.options->saturation = 1.5;
+        cam.options->contrast = 1;
+        cam.options->gain = 5;
+    };
+    CameraModule camera(&cameraLogger, cameraOptionCallback);
+    if (!camera.start()) return -1;
 
     State state;
 
