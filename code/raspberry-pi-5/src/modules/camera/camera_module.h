@@ -62,12 +62,12 @@ public:
      *
      * This is thread-safe.
      *
+     * FIXME:
      * @param[out] outFrame The frame image.
-     * @param[out] outTimestamp The time when the frame was captured.
      *
      * @return true if a frame is available, false otherwise.
      */
-    bool getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) const;
+    bool getFrame(TimedFrame &outTimedFrame) const;
 
     /**
      * @brief Get the current number of frames stored in the buffer.
@@ -96,12 +96,13 @@ public:
      * This function blocks the calling thread until a new frame is captured.
      * Once available, it copies the latest frame and its timestamp into the output parameters.
      *
+     * FIXME:
      * @param[out] outFrame The most recently captured frame.
      * @param[out] outTimestamp The timestamp when the frame was captured.
      *
      * @return true if a frame was successfully retrieved.
      */
-    bool waitForFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp);
+    bool waitForFrame(TimedFrame &outTimedFrame);
 
 private:
     /**

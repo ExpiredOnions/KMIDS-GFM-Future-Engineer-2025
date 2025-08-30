@@ -47,13 +47,11 @@ void CameraModule::stop() {
     cam_.stopVideo();
 }
 
-bool CameraModule::getFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) const {
+bool CameraModule::getFrame(TimedFrame &outTimedFrame) const {
     std::lock_guard<std::mutex> lock(frameMutex_);
     if (frameBuffer_.empty()) return false;
 
-    TimedFrame timedFrame = frameBuffer_.latest().value();
-    outFrame = timedFrame.frame;
-    outTimestamp = timedFrame.timestamp;
+    outTimedFrame = frameBuffer_.latest().value();
     return true;
 }
 
@@ -71,13 +69,11 @@ bool CameraModule::getAllTimedFrame(std::vector<TimedFrame> &outTimedFrames) con
     return true;
 }
 
-bool CameraModule::waitForFrame(cv::Mat &outFrame, std::chrono::steady_clock::time_point &outTimestamp) {
+bool CameraModule::waitForFrame(TimedFrame &outTimedFrame) {
     std::unique_lock<std::mutex> lock(frameMutex_);
     frameUpdated_.wait(lock, [&] { return !frameBuffer_.empty(); });
 
-    TimedFrame timedFrame = frameBuffer_.latest().value();
-    outFrame = timedFrame.frame;
-    outTimestamp = timedFrame.timestamp;
+    outTimedFrame = frameBuffer_.latest().value();
     return true;
 }
 
@@ -88,6 +84,8 @@ void CameraModule::captureLoop() {
             std::cerr << "[CameraModule] Timeout error" << std::endl;
             continue;
         }
+
+        cv::rotate(frame, frame, cv::ROTATE_180);
 
         TimedFrame timedFrame{std::move(frame), std::chrono::steady_clock::now()};
 

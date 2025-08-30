@@ -45,10 +45,10 @@ int main() {
         cam.options->framerate = 30.0f;
 
         camControls.set(controls::AnalogueGainMode, controls::AnalogueGainModeEnum::AnalogueGainModeManual);
-        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeManual);
+        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
         camControls.set(controls::AwbEnable, false);
 
-        cam.options->awb_gain_r = 0.90;
+        cam.options->awb_gain_r = 0.80;
         cam.options->awb_gain_b = 1.25;
 
         cam.options->brightness = 0.0;
@@ -56,14 +56,12 @@ int main() {
         cam.options->saturation = 1.5;
         cam.options->contrast = 1.0;
         cam.options->shutter = 10000;
-        cam.options->gain = 2.0;  // If can't seperate red and pink try changing gain
+        cam.options->gain = 4.0;  // If can't seperate red and pink try changing gain
     };
 
     CameraModule camera(cameraOptionCallback);
 
-    cv::Mat camImage;
-    std::chrono::steady_clock::time_point latestFrameTimestamp;
-    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
+    TimedFrame timedFrame;
 
     std::vector<TimedFrame> timedFrames;
     cv::namedWindow("Delayed Video", cv::WINDOW_FULLSCREEN);
@@ -74,8 +72,8 @@ int main() {
 
     while (!stop_flag) {
         if (!paused) {
-            if (camera.getFrame(camImage, latestFrameTimestamp)) {
-                cv::imshow("Video", camImage);
+            if (camera.getFrame(timedFrame)) {
+                cv::imshow("Video", timedFrame.frame);
             }
 
             if (camera.getAllTimedFrame(timedFrames) && camera.bufferSize() > 29) {
