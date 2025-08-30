@@ -117,7 +117,7 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE_STARTING_SECTION;
     } else {
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
-        turningFrontWallDistance == TURNING_FRONT_WALL_DISTANCE;
+        turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
     }
 
 instant_update:
