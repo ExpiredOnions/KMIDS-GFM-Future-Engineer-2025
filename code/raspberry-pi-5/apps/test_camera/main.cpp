@@ -17,6 +17,8 @@ void signalHandler(int signum) {
 
 std::atomic<bool> paused(false);
 
+CameraModule *globalCamera = nullptr;
+
 void inputThread() {
     std::string command;
     while (true) {
@@ -30,6 +32,35 @@ void inputThread() {
         } else if (command == "quit") {
             stop_flag = true;
             break;
+        } else {
+            // Example: set brightness 0.5
+            std::istringstream iss(command);
+            std::string cmd, name;
+            float value;
+            iss >> cmd >> name >> value;
+            if (cmd == "set" && !name.empty()) {
+                if (globalCamera) {
+                    globalCamera->changeSetting([=](lccv::PiCamera &cam) {
+                        if (name == "awb_r")
+                            cam.options->awb_gain_r = value;
+                        else if (name == "awb_b")
+                            cam.options->awb_gain_b = value;
+                        else if (name == "brightness")
+                            cam.options->brightness = value;
+                        else if (name == "sharpness")
+                            cam.options->sharpness = value;
+                        else if (name == "saturation")
+                            cam.options->saturation = value;
+                        else if (name == "contrast")
+                            cam.options->contrast = value;
+                        else if (name == "gain")
+                            cam.options->gain = value;
+                        else
+                            std::cout << "Unknown setting: " << name << "\n";
+                    });
+                    std::cout << "Updated " << name << " to " << value << "\n";
+                }
+            }
         }
     }
 }
@@ -48,25 +79,26 @@ int main() {
         camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
         camControls.set(controls::AwbEnable, false);
 
-        cam.options->awb_gain_r = 0.80;
-        cam.options->awb_gain_b = 1.25;
+        cam.options->awb_gain_r = 0.83;
+        cam.options->awb_gain_b = 1.5;
 
-        cam.options->brightness = 0.0;
-        cam.options->sharpness = 1.0;
+        cam.options->brightness = 0.1;
+        cam.options->sharpness = 1;
         cam.options->saturation = 1.5;
-        cam.options->contrast = 1.0;
-        cam.options->shutter = 10000;
-        cam.options->gain = 4.0;  // If can't seperate red and pink try changing gain
+        cam.options->contrast = 1;
+        cam.options->gain = 5;
     };
 
     CameraModule camera(cameraOptionCallback);
 
     TimedFrame timedFrame;
+    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
 
     std::vector<TimedFrame> timedFrames;
     cv::namedWindow("Delayed Video", cv::WINDOW_FULLSCREEN);
 
     camera.start();
+    globalCamera = &camera;  // so inputThread can access
 
     std::thread(inputThread).detach();
 
@@ -79,12 +111,12 @@ int main() {
             if (camera.getAllTimedFrame(timedFrames) && camera.bufferSize() > 29) {
                 cv::imshow("Delayed Video", timedFrames[0].frame);
 
-                auto duration = timedFrames[29].timestamp - timedFrames[0].timestamp;
-                std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
+                // auto duration = timedFrames[29].timestamp - timedFrames[0].timestamp;
+                // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
             }
         }
 
-        cv::waitKey(10);
+        cv::waitKey(15);
     }
 
     camera.stop();

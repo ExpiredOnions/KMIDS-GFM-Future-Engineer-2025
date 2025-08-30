@@ -48,6 +48,19 @@ public:
     ~CameraModule();
 
     /**
+     * @brief Change camera settings at runtime.
+     *
+     * Applies a new configuration to the internal lccv::PiCamera instance
+     * by invoking the provided callback. This allows adjusting camera
+     * options such as resolution, format, or exposure without recreating
+     * the CameraModule.
+     *
+     * @param callback Function that receives a reference to the internal
+     *        lccv::PiCamera and modifies its settings.
+     */
+    void changeSetting(CameraOptionCallback callback);
+
+    /**
      * @brief Start capturing frames in a separate thread.
      */
     bool start();

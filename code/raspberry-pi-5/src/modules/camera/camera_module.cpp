@@ -16,6 +16,22 @@ CameraModule::~CameraModule() {
     if (running_) stop();
 }
 
+void CameraModule::changeSetting(CameraOptionCallback callback) {
+    if (running_) stop();
+    callback(cam_);
+
+    std::cout << "cam.options->awb_gain_r = " << cam_.options->awb_gain_r << ";\n"
+              << "cam.options->awb_gain_b = " << cam_.options->awb_gain_b << ";\n\n"
+              << "cam.options->brightness = " << cam_.options->brightness << ";\n"
+              << "cam.options->sharpness = " << cam_.options->sharpness << ";\n"
+              << "cam.options->saturation = " << cam_.options->saturation << ";\n"
+              << "cam.options->contrast = " << cam_.options->contrast << ";\n"
+              << "cam.options->gain = " << cam_.options->gain << ";\n"
+              << std::endl;
+
+    start();
+}
+
 bool CameraModule::start() {
     if (running_) {
         std::cout << "[CameraModule] Already started." << std::endl;
