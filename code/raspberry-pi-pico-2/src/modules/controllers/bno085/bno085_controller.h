@@ -93,10 +93,35 @@ public:
      */
     bool clearTare();
 
-    BNO08x imu_; /**< Internal BNO08x object */
+    /**
+     * @brief Configure which sensors to calibrate.
+     *
+     * @param sensors Bitmask of sensors to calibrate.
+     * @return true if config was applied successfully
+     * @return false if config failed
+     */
+    bool setCalibrationConfig(uint8_t sensors);
+
+    /**
+     * @brief Save the current calibration to non-volatile memory.
+     *
+     * @return true if save succeeded
+     * @return false if save failed
+     */
+    bool saveCalibration();
+
+    /**
+     * @brief Check if the IMU has reset since last check.
+     *
+     * @return true if reset occurred
+     * @return false otherwise
+     */
+    bool wasReset();
+
 private:
     i2c_inst_t *i2c_; /**< Pointer to the I2C instance */
     uint sdaPin_;     /**< SDA GPIO pin */
     uint sclPin_;     /**< SCL GPIO pin */
     uint8_t address_; /**< I2C address of the IMU */
+    BNO08x imu_;      /**< Internal BNO08x object */
 };

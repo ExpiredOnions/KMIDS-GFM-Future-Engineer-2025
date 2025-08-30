@@ -78,8 +78,7 @@ int main() {
         sleep_ms(1000);
     }
 
-    // FIXME:
-    imu.imu_.setCalibrationConfig(0b0000000);
+    imu.setCalibrationConfig(0b0000000);
     sleep_ms(1000);
 
     i2c_slave::setIsRunning(false);
@@ -105,8 +104,7 @@ int main() {
         i2c_slave::setIsRunning(true);
 
         if (now - lastImuUpdate >= imuInterval) {
-            // FIXME:
-            if (imu.imu_.wasReset()) {
+            if (imu.wasReset()) {
                 imu.enableRotation(10);
                 imu.enableAccelerometer(10);
             }

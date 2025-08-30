@@ -76,3 +76,15 @@ bool Bno085Controller::saveTare() {
 bool Bno085Controller::clearTare() {
     return imu_.clearTare();
 }
+
+bool Bno085Controller::setCalibrationConfig(uint8_t sensors) {
+    return imu_.setCalibrationConfig(sensors);
+}
+
+bool Bno085Controller::saveCalibration() {
+    return imu_.saveCalibration();
+}
+
+bool Bno085Controller::wasReset() {
+    return imu_.wasReset();
+}
