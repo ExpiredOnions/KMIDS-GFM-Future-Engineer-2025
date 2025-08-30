@@ -287,6 +287,19 @@ namespace
 
 }  // namespace
 
+TimedLidarData filterLidarData(const TimedLidarData &timedLidarData, float minDistance) {
+    TimedLidarData filteredLidarData;
+    filteredLidarData.timestamp = timedLidarData.timestamp;
+
+    for (const auto &node : timedLidarData.lidarData) {
+        if (node.distance >= minDistance) {
+            filteredLidarData.lidarData.push_back(node);
+        }
+    }
+
+    return filteredLidarData;
+}
+
 std::vector<LineSegment> getLines(
     const TimedLidarData &timedLidarData,
     const RobotDeltaPose &robotDeltaPose,

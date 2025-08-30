@@ -53,15 +53,7 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
 
     auto now = std::chrono::steady_clock::now();
 
-    // FIXME:
-    // --- Filter LIDAR points ---
-    TimedLidarData filteredLidarData;
-    filteredLidarData.timestamp = timedLidarData.timestamp;
-    for (const auto &node : timedLidarData.lidarData) {
-        if (node.distance >= 0.15f) {
-            filteredLidarData.lidarData.push_back(node);
-        }
-    }
+    auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
     auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 

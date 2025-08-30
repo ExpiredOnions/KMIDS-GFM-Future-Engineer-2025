@@ -128,13 +128,7 @@ int main(int argc, char **argv) {
         const auto &lidarEntry = lidarEntries[i];
         TimedLidarData timedLidarData = reconstructTimedLidar(lidarEntry);
 
-        TimedLidarData filteredLidarData;
-        filteredLidarData.timestamp = timedLidarData.timestamp;
-        for (const auto &node : timedLidarData.lidarData) {
-            if (node.distance >= 0.15f) {
-                filteredLidarData.lidarData.push_back(node);
-            }
-        }
+        auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
         const auto &imuEntry = imuEntries[i];
         TimedImuData timedImuData = reconstructTimedImu(imuEntry);

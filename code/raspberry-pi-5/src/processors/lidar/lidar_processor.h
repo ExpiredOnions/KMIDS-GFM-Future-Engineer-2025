@@ -96,6 +96,19 @@ struct ResolvedWalls {
 };
 
 /**
+ * @brief Removes lidar points closer than a given distance.
+ *
+ * Constructs a new TimedLidarData containing only the points from the input
+ * whose distance is greater than or equal to the specified threshold. The
+ * timestamp from the input data is preserved.
+ *
+ * @param timedLidarData Source lidar data with timestamp and raw points.
+ * @param minDistance Minimum accepted distance in meters. Defaults to 0.05f.
+ * @return A TimedLidarData object with filtered lidar points.
+ */
+TimedLidarData filterLidarData(const TimedLidarData &timedLidarData, float minDistance = 0.05f);
+
+/**
  * @brief Extract line segments from timed LiDAR data by converting points to Cartesian coordinates,
  *        splitting them based on deviation from a best-fit line, and merging approximately collinear segments.
  *

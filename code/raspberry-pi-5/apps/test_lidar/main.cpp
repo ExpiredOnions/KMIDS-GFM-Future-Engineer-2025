@@ -41,9 +41,7 @@ int main() {
     std::vector<TimedLidarData> timedLidarDatas;
 
     if (!lidar.initialize()) return -1;
-
     lidar.printDeviceInfo();
-
     if (!lidar.start()) return -1;
 
     cv::namedWindow("Lidar View", cv::WINDOW_FULLSCREEN);
@@ -60,13 +58,7 @@ int main() {
 
                     // LidarModule::printScanData(timedLidarData.lidarData);
 
-                    TimedLidarData filteredLidarData;
-                    filteredLidarData.timestamp = timedLidarData.timestamp;
-                    for (const auto &node : timedLidarData.lidarData) {
-                        if (node.distance >= 0.15f) {
-                            filteredLidarData.lidarData.push_back(node);
-                        }
-                    }
+                    auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
                     float heading = 0.0f;
 

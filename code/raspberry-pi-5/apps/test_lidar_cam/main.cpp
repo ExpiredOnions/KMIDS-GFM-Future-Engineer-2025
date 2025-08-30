@@ -104,13 +104,7 @@ int main() {
             auto &timedLidarData = timedLidarDatas.back();
             auto &timedFrame = timedFrames.back();
 
-            TimedLidarData filteredLidarData;
-            filteredLidarData.timestamp = timedLidarData.timestamp;
-            for (const auto &node : timedLidarData.lidarData) {
-                if (node.distance >= 0.15f) {
-                    filteredLidarData.lidarData.push_back(node);
-                }
-            }
+            auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
             float heading = 0.0f;
 
