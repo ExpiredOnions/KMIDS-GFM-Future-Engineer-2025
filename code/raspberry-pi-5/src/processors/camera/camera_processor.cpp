@@ -34,6 +34,10 @@ ColorMasks filterColors(const TimedFrame &timedFrame, double areaThreshold) {
     CV_Assert(!input.empty());
     CV_Assert(input.type() == CV_8UC3);
 
+    // Fill the top part with black
+    int topRows = static_cast<int>(input.rows * 0.50);
+    input(cv::Rect(0, 0, input.cols, topRows)) = cv::Scalar(0, 0, 0);
+
     cv::Mat hsv;
     cv::cvtColor(input, hsv, cv::COLOR_BGR2HSV);
 
@@ -95,6 +99,36 @@ void drawColorMasksFromImage(cv::Mat &img, const cv::Mat &original, const ColorM
 
     drawMaskAndContours(colors.red);
     drawMaskAndContours(colors.green);
+}
+
+float pixelToAngle(int pixelX, int imageWidth, float hfov) {
+    if (imageWidth <= 1) {
+        return 0.0f;  // avoid divide by zero
+    }
+
+    // Normalize pixelX to [-0.5, 0.5]
+    float normalized = (static_cast<float>(pixelX) / (imageWidth - 1)) - 0.5f;
+
+    // Scale by HFOV
+    return normalized * hfov;
+}
+
+std::vector<BlockAngle> computeBlockAngles(const ColorMasks &masks, int imageWidth, float hfov) {
+    std::vector<BlockAngle> results;
+
+    // Red blocks
+    for (const auto &contour : masks.red.contours) {
+        float angle = pixelToAngle(static_cast<int>(contour.centroid.x), imageWidth, hfov);
+        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::Red});
+    }
+
+    // Green blocks
+    for (const auto &contour : masks.green.contours) {
+        float angle = pixelToAngle(static_cast<int>(contour.centroid.x), imageWidth, hfov);
+        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::Green});
+    }
+
+    return results;
 }
 
 }  // namespace camera_processor
