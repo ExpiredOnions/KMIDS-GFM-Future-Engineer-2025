@@ -1,3 +1,5 @@
+#pragma once
+
 #include <opencv2/opencv.hpp>
 
 #include "camera_struct.h"
@@ -62,25 +64,6 @@ struct ColorMasks {
 };
 
 /**
- * @brief Enum for colors we care about.
- */
-enum class Color
-{
-    Red,
-    Green
-};
-
-/**
- * @brief Stores angle information of detected blocks.
- */
-struct BlockAngle {
-    float angle;           ///< Horizontal angle of the block (radians).
-    double area;           ///< Area of the block (pixels).
-    cv::Point2f centroid;  ///< Centroid of the block in image coordinates.
-    Color color;           ///< Color of the block.
-};
-
-/**
  * @brief Filters an input frame for red, green, and pink colors and extracts contours.
  *
  * The input frame is converted to HSV color space, thresholded into binary masks
@@ -119,6 +102,25 @@ void drawColorMasks(cv::Mat &img, const ColorMasks &colors);
  * @return float      Angle in radians relative to camera center.
  */
 float pixelToAngle(int pixelX, int imageWidth, float hfov);
+
+/**
+ * @brief Enum for colors we care about.
+ */
+enum class Color
+{
+    Red,
+    Green
+};
+
+/**
+ * @brief Stores angle information of detected blocks.
+ */
+struct BlockAngle {
+    float angle;           ///< Horizontal angle of the block (radians).
+    double area;           ///< Area of the block (pixels).
+    cv::Point2f centroid;  ///< Centroid of the block in image coordinates.
+    Color color;           ///< Color of the block.
+};
 
 /**
  * @brief Compute the horizontal angles of all detected red and green blocks.

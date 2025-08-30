@@ -9,4 +9,4 @@ target_include_directories(
 target_link_libraries(
   combined_processor
   PRIVATE ${OpenCV_LIBS}
-  PUBLIC ring_buffer)
+  PUBLIC ring_buffer camera_processor)

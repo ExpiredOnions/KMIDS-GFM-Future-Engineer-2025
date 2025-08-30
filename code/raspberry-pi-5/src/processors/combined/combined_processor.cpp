@@ -90,4 +90,76 @@ std::optional<SyncedLidarCamera> syncLidarCamera(
     return std::nullopt;
 }
 
+std::vector<TrafficLightInfo> combineTrafficLightInfo(
+    const std::vector<camera_processor::BlockAngle> &blockAngles,
+    const std::vector<cv::Point2f> &lidarPoints,
+    cv::Point2f cameraOffset,
+    float maxAngleDiff
+) {
+    std::vector<TrafficLightInfo> results;
+    std::vector<cv::Point2f> availableLidar = lidarPoints;
+
+    for (const auto &block : blockAngles) {
+        size_t bestIndex = std::numeric_limits<size_t>::max();
+        float smallestDiff = std::numeric_limits<float>::max();
+        float closestDistance = std::numeric_limits<float>::max();
+
+        // Loop over all available LiDAR points
+        for (size_t i = 0; i < availableLidar.size(); ++i) {
+            const auto &lp = availableLidar[i];
+            float dx = lp.x - cameraOffset.x;
+            float dy = lp.y - cameraOffset.y;
+
+            float lidarAngle = std::atan2(dy, dx);  // radians
+            float lidarAngleDeg = lidarAngle * 180.0f / M_PI;
+
+            float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
+
+            if (angleDiff <= maxAngleDiff) {
+                float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
+
+                // Pick the closest along the ray (smallest distance)
+                if (distanceAlongRay < closestDistance || angleDiff < smallestDiff) {
+                    closestDistance = distanceAlongRay;
+                    smallestDiff = angleDiff;
+                    bestIndex = i;
+                }
+            }
+        }
+
+        if (bestIndex != std::numeric_limits<size_t>::max()) {
+            results.push_back(TrafficLightInfo{availableLidar[bestIndex], block});
+            availableLidar.erase(availableLidar.begin() + bestIndex);  // consume
+        }
+    }
+
+    return results;
+}
+
+void drawTrafficLightInfo(cv::Mat &img, const TrafficLightInfo &info, float scale, int radius) {
+    CV_Assert(!img.empty());
+    CV_Assert(img.type() == CV_8UC3);
+
+    cv::Point center(img.cols / 2, img.rows / 2);
+
+    int x = static_cast<int>(center.x + info.lidarPosition.x * (img.cols / scale));
+    int y = static_cast<int>(center.y - info.lidarPosition.y * (img.rows / scale));
+
+    // Choose color based on camera block
+    cv::Scalar color;
+    switch (info.cameraBlock.color) {
+    case camera_processor::Color::Red:
+        color = cv::Scalar(0, 0, 255);  // BGR
+        break;
+    case camera_processor::Color::Green:
+        color = cv::Scalar(0, 255, 0);
+        break;
+    default:
+        color = cv::Scalar(255, 255, 255);  // fallback white
+        break;
+    }
+
+    cv::circle(img, cv::Point(x, y), radius, color, cv::FILLED);
+}
+
 }  // namespace combined_processor

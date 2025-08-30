@@ -1,5 +1,6 @@
 #include "camera_module.h"
 #include "camera_processor.h"
+#include "combined_processor.h"
 #include "lidar_module.h"
 #include "lidar_processor.h"
 
@@ -127,6 +128,8 @@ int main() {
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
+            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
+
             const float SCALE = 6.0f;
 
             cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
@@ -165,6 +168,10 @@ int main() {
 
             for (auto &trafficLightPoint : trafficLightPoints) {
                 lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, SCALE);
+            }
+
+            for (auto &trafficLightInfo : trafficLightInfos) {
+                combined_processor::drawTrafficLightInfo(lidarMat, trafficLightInfo, SCALE);
             }
 
             cv::Mat cameraMat = cv::Mat::zeros(timedFrame.frame.size(), timedFrame.frame.type());
