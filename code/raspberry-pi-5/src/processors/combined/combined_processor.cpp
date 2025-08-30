@@ -60,4 +60,34 @@ RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const s
     return deltaPose;
 }
 
+std::optional<SyncedLidarCamera> syncLidarCamera(
+    const std::vector<TimedFrame> &timedFrames,
+    const std::vector<TimedLidarData> &timedLidarDatas,
+    std::chrono::milliseconds cameraDelay
+) {
+    if (timedFrames.empty() || timedLidarDatas.empty()) return std::nullopt;
+
+    for (const auto &frame : timedFrames) {
+        auto adjustedTime = frame.timestamp + cameraDelay;
+
+        // Find lidar data closest in time
+        const TimedLidarData *bestMatch = nullptr;
+        auto bestDiff = std::chrono::milliseconds::max();
+
+        for (const auto &lidar : timedLidarDatas) {
+            auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(adjustedTime - lidar.timestamp);
+            if (std::abs(diff.count()) < bestDiff.count()) {
+                bestDiff = diff;
+                bestMatch = &lidar;
+            }
+        }
+
+        if (bestMatch) {
+            return SyncedLidarCamera{frame, *bestMatch};
+        }
+    }
+
+    return std::nullopt;
+}
+
 }  // namespace combined_processor
