@@ -1,4 +1,5 @@
 #include "camera_module.h"
+#include "camera_processor.h"
 
 #include <csignal>
 #include <iostream>
@@ -65,6 +66,73 @@ void inputThread() {
     }
 }
 
+std::vector<cv::Point> polygonPoints;
+bool selectMode = false;
+
+// Mouse callback
+void mouseCallback(int event, int x, int y, int, void *) {
+    if (!selectMode) return;
+    if (event == cv::EVENT_LBUTTONDOWN) {
+        polygonPoints.emplace_back(x, y);
+    }
+}
+
+// Compute two HSV bounds for pixels inside polygon
+void computeHSVBounds(const cv::Mat &frame, cv::Scalar &lower1, cv::Scalar &upper1, cv::Scalar &lower2, cv::Scalar &upper2) {
+    if (polygonPoints.empty()) return;
+
+    cv::Mat hsv;
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+
+    // Polygon mask
+    cv::Mat mask = cv::Mat::zeros(frame.size(), CV_8UC1);
+    std::vector<std::vector<cv::Point>> pts{polygonPoints};
+    cv::fillPoly(mask, pts, cv::Scalar(255));
+
+    std::vector<int> Hs, Ss, Vs;
+    for (int y = 0; y < frame.rows; ++y) {
+        for (int x = 0; x < frame.cols; ++x) {
+            if (mask.at<uchar>(y, x)) {
+                cv::Vec3b pixel = hsv.at<cv::Vec3b>(y, x);
+                if (pixel[2] <= 1) continue;
+
+                Hs.push_back(pixel[0]);
+                Ss.push_back(pixel[1]);
+                Vs.push_back(pixel[2]);
+            }
+        }
+    }
+
+    if (Hs.empty()) return;
+
+    // Saturation and Value
+    int minS = *std::min_element(Ss.begin(), Ss.end());
+    int maxS = *std::max_element(Ss.begin(), Ss.end());
+    int minV = *std::min_element(Vs.begin(), Vs.end());
+    int maxV = *std::max_element(Vs.begin(), Vs.end());
+
+    // Hue wrap-around
+    int minH = *std::min_element(Hs.begin(), Hs.end());
+    int maxH = *std::max_element(Hs.begin(), Hs.end());
+
+    int directSpan = maxH - minH;
+    int wrapSpan = (minH + 180) - maxH;
+
+    if (wrapSpan < directSpan) {
+        // Wrap-around case → two ranges
+        lower1 = cv::Scalar(0, minS, minV);
+        upper1 = cv::Scalar(minH, maxS, maxV);
+        lower2 = cv::Scalar(maxH, minS, minV);
+        upper2 = cv::Scalar(180, maxS, maxV);
+    } else {
+        // Normal case → single range, second unused
+        lower1 = cv::Scalar(minH, minS, minV);
+        upper1 = cv::Scalar(maxH, maxS, maxV);
+        lower2 = cv::Scalar(maxH, maxS, maxV);
+        upper2 = cv::Scalar(maxH, maxS, maxV);
+    }
+}
+
 int main() {
     std::signal(SIGINT, signalHandler);
 
@@ -92,9 +160,14 @@ int main() {
     CameraModule camera(cameraOptionCallback);
 
     TimedFrame timedFrame;
-    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
-
     std::vector<TimedFrame> timedFrames;
+
+    bool isDisplayingMask = false;
+    cv::Mat displayingFrame;
+
+    cv::namedWindow("Video", cv::WINDOW_FULLSCREEN);
+    cv::setMouseCallback("Video", mouseCallback);
+
     cv::namedWindow("Delayed Video", cv::WINDOW_FULLSCREEN);
 
     camera.start();
@@ -105,18 +178,55 @@ int main() {
     while (!stop_flag) {
         if (!paused) {
             if (camera.getFrame(timedFrame)) {
-                cv::imshow("Video", timedFrame.frame);
+                if (not isDisplayingMask) {
+                    displayingFrame = timedFrame.frame;
+                } else {
+                    auto colorMasks = camera_processor::filterColors(timedFrame);
+
+                    displayingFrame = cv::Mat::zeros(timedFrame.frame.size(), timedFrame.frame.type());
+                    // if (!colorMasks.green.mask.empty()) {
+                    //     // Copy the pixels from the original image where mask is true
+                    //     timedFrame.frame.copyTo(displayingFrame, colorMasks.green.mask);
+                    // }
+                    // if (!colorMasks.red.mask.empty()) {
+                    //     // Copy the pixels from the original image where mask is true
+                    //     timedFrame.frame.copyTo(displayingFrame, colorMasks.red.mask);
+                    // }
+
+                    camera_processor::drawColorMasks(displayingFrame, colorMasks);
+                }
+
+                cv::imshow("Video", displayingFrame);
             }
 
             if (camera.getAllTimedFrame(timedFrames) && camera.bufferSize() > 29) {
-                cv::imshow("Delayed Video", timedFrames[0].frame);
+                // cv::imshow("Delayed Video", timedFrames[0].frame);
 
                 // auto duration = timedFrames[29].timestamp - timedFrames[0].timestamp;
                 // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
             }
         }
 
-        cv::waitKey(15);
+        int key = cv::waitKey(15);
+        if (key == 'm') {
+            isDisplayingMask = not isDisplayingMask;
+        } else if (key == 'i') {
+            selectMode = true;
+            polygonPoints.clear();
+            std::cout << "Click points to define polygon, then press 'c' to confirm.\n";
+
+            paused = true;
+        } else if (key == 'c') {
+            selectMode = false;
+            cv::Scalar lower1, upper1, lower2, upper2;
+            computeHSVBounds(displayingFrame, lower1, upper1, lower2, upper2);
+            std::cout << "Lower1 HSV: " << lower1 << "\n";
+            std::cout << "Upper1 HSV: " << upper1 << "\n";
+            std::cout << "Lower2 HSV: " << lower2 << "\n";
+            std::cout << "Upper2 HSV: " << upper2 << "\n";
+
+            paused = false;
+        }
     }
 
     camera.stop();

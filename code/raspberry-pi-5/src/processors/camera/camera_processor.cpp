@@ -77,4 +77,24 @@ void drawColorMasks(cv::Mat &img, const ColorMasks &colors) {
     drawMaskAndContours(colors.green, cv::Scalar(0, 255, 0), cv::Scalar(255, 255, 0));  // Green BGR
 }
 
+void drawColorMasksFromImage(cv::Mat &img, const cv::Mat &original, const ColorMasks &colors) {
+    CV_Assert(!img.empty());
+    CV_Assert(!original.empty());
+    CV_Assert(img.size() == original.size());
+    CV_Assert(img.type() == CV_8UC3 && original.type() == CV_8UC3);
+
+    auto drawMaskAndContours = [&](const ColorInfo &colorInfo) {
+        if (!colorInfo.mask.empty()) {
+            // Copy the pixels from the original image where mask is true
+            original.copyTo(img, colorInfo.mask);
+        }
+    };
+
+    // Start with black background
+    img = cv::Mat::zeros(img.size(), img.type());
+
+    drawMaskAndContours(colors.red);
+    drawMaskAndContours(colors.green);
+}
+
 }  // namespace camera_processor
