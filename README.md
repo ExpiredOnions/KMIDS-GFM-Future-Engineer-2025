@@ -98,12 +98,14 @@ Motor: N20 Motor
 </table>
 
 **Reason for Selection:**
-- It is compact and lightweight, allowing us to fit into our robot easily.
+- It is compact and lightweight, allowing us to fit it into our robot easily.
 - Provides moderate torque that is more than enough for the flat arena.
 - Easy to use on the robot and integrate with other parts.
 
+  We equipped the N20 motor with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate --
+
 **Mounting:**
-- Installed using 3D-printed motor clamps screwed to a detachable motor plate.
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears.
   <img src="g" alt="show motor plate" >
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
@@ -124,9 +126,21 @@ While this steering geometry is complex to implement, we believe that the advant
 
 Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
 
+**Calibration and Implementation**
+
+To make sure the steering angle performed correctly, we carried out an iterative calibration process:
+
+- We manually adjusted the servo horn angle and linkage positions step by step in FreeCAD until the wheels aligned at the desired steering angle.
+
+- After each adjustment, we observed whether the wheels tracked correctly in both directions.
+
+- Once the optimal angle is reached, we make sure to model the steering mechanism around the angle.
+
 <img src="" alt="GIF of steering" >
 
-### S0004m Servo 
+
+### Servo
+Servo: S0004m 
 <!-- link here -->
 <table>
   <tr>
@@ -156,14 +170,11 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 - Screwed directly into a platform plate in front of the chassis.
   <img src="" alt="Servo screwed location" >
   <img src="" alt="close up on the plate and screws" >
-- A custom servo horn is attached to the steering linkage.
-  <img src="" alt="servo horn" >
-  ### Our custom-printed servo horn.
-  
-- It is positioned at the front, positioned to allow for Ackermann steering geometry.
 
+
+  
 **Considerations** 
-We believe that while the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
+While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
 
 ---
 
@@ -171,7 +182,7 @@ We believe that while the servo used is adequate for the task, it can still be r
 
 **Design Overview**
 
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform that we can implement the steering geometry onto.
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry onto.
 
 Layout
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
@@ -181,13 +192,6 @@ The layout of the chassis is made to fit the rear-mounted motors and front-mount
   <img src="" alt="diagram of the position of components" >
 
 Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
-
-Dimensions: 
-
-Software Used: FreeCAD
-
-
-
 
 ### 2.4 Mounting and Structure
 
@@ -232,7 +236,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 To ensure stable operation throughout the competition, we implemented an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle.
 
-It is powered by a 2x18650 Li-ion battery pack and includes a built-in charging circuit, voltage regulation, and power management. It maintains a stable 5V output to the Raspberry Pi 5 even thoughout fluctuations. It has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision making throughout the run.
+It is powered by a 2x18650 Li-ion battery pack and includes a built-in charging circuit, voltage regulation, and power management. It maintains a stable 5V output to the Raspberry Pi 5 even thoughout fluctuations. It has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 ### 3.2 Sensor and Camera
 
@@ -387,22 +391,151 @@ The open challenge involves the robot completing three full laps around the fiel
 
 The obstacle challenge requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the barriers around it.
 
-### 4.1 Strategy Overview
+Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
-We divide our strategies into three categories 
+We divide the strategy into three phases:
 
-**Obstacle Detection and Classification:** The robot identifies the signs and determines their colour and relative position.
+- Open Challenge 
 
-**Course Navigation** How to navigate the game field without touching objects, while using the input from the obstacle to steer and pass on the correct side of each sign. 
+- Obstacle Challenge 
 
-**Parking:** The robot executes a parallel parking
+- Parallel Parking Manoeuvre
+
+### 4.1 LIDAR-Based Navigation Overview
+
+To navigate the game arena, we rely on our LiDAR-based navigation algorithm that detects walls and obstacles, allowing the robot to make real-time movement decisions.
 
 
 
-### 4.2 Flowcharts and Pseudocode
-<!-- TODO: Include diagrams or lists that represent logical flow for obstacle avoidance. -->
+
+
+
+
+### 4.2 Open Challenge
+
+The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomised at the start, so relying on pre-programmed movements is not feasible
+
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Column 1</b><br>
+      <img src="" width="300">
+    </td>
+    <td align="center">
+      <b>Column 2</b><br>
+      <img src="" width="300">
+    </td>
+  </tr>
+</table>
+
+1. To decide the orientation of the robot's starting position and which way to turn, the algorithm compares the space on the left and right. The robot then knows to turn to the side with greater clearance.
+
+2. The LIDAR continuously scans the environment and returns the distance value from each side of the robot (front, back, left, right).
+   
+
+- If front clearance > threshold → drive forward.
+
+- If front clearance ≤ threshold → turn toward the side with greater clearance (compare left vs right). 
+
+
+3. If the distance detected in the front sector is greater than a set threshold, the robot proceeds forward since the path is clear. 
+
+4. When it falls below a threshold, it stops and turns towards the side that it knows is clear, and proceeds
+
+
+### 4.3 Obstacle Challenge
+
+### 4.3 Parallel Parking
+
+
+
 
 ### 4.3 Source Code Summary
+
+LIDAR Code
+```
+
+The constructor of the LidarModule class establishes the initial communication parameters for the LIDAR device. It sets the serial port path (defaulting to /dev/ttyAMA0) and baud rate (defaulting to 460800), and optionally links a logger for diagnostic messages. While it prepares the internal state, it does not start scanning immediately. This separation ensures the robot can configure its LIDAR hardware without committing resources until scanning is explicitly requested.
+
+LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
+LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
+
+
+The destructor and initialization functions handle safe resource management. initialize() connects the driver to the LIDAR hardware, preparing it for operation, while shutdown() stops the device and releases resources. Together, these ensure that the LIDAR can be powered on, connected, and safely powered off, allowing the robot to control its awareness sensor as needed during a run.
+
+~LidarModule();
+bool initialize();
+void shutdown();
+
+
+Once initialized, the robot can begin scanning control through the start() and stop() methods. The start() function launches the scanning process and begins data acquisition in a background thread, while stop() halts the motor and data collection. This design allows the robot to dynamically control when it “looks” at its surroundings, enabling energy-efficient awareness that can be switched on or off depending on the current task.
+
+bool start();
+void stop();
+
+
+The LIDAR’s role as a real-time awareness sensor is enabled through data access functions. The getData() method retrieves the most recent scan in a thread-safe way, while waitForData() blocks until new scan data is available. This distinction allows the robot to either poll for the latest awareness data or synchronize actions with fresh environmental readings. The bufferSize() method shows how many scans are currently stored, and getAllTimedLidarData() can extract the entire buffered history. These options give higher-level navigation and mapping algorithms flexible access to the robot’s perception history.
+
+bool getData(TimedLidarData &outTimedLidarData) const;
+bool waitForData(TimedLidarData &outTimedLidarData);
+size_t bufferSize() const;
+bool getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLidarData) const;
+
+
+For diagnostics and inspection, the module includes methods that report device details and raw scan outputs. printDeviceInfo() provides information about the connected LIDAR hardware, while printScanData() prints the vector of scan nodes. These utilities let developers verify that the robot’s awareness hardware is functioning correctly, and provide insights into the quality and density of environmental readings.
+
+bool printDeviceInfo();
+static void printScanData(const std::vector<RawLidarNode> &nodeDataVector);
+
+
+Internally, the awareness pipeline is supported by private members that manage continuous scanning. The scanLoop() function runs in a background thread, streaming scans into a ring buffer of size 10. Synchronization is handled through mutexes and update flags, ensuring thread-safe access between the scanning process and application queries. The lidarDriver_ and serialChannel_ maintain the connection to the hardware, while flags like initialized_ and running_ track the sensor’s state. This internal structure ensures that the robot has a steady stream of fresh perception data while maintaining stability and safety in a multi-threaded environment.
+
+//Internal (private)
+void scanLoop();
+rplidar_response_device_info_t lidarDriver_;
+std::unique_ptr<SerialChannel> serialChannel_;
+std::string serialPort_;
+int baudRate_;
+bool initialized_;
+std::thread lidarThread_;
+std::atomic<bool> running_;
+mutable std::mutex lidarDataMutex_;
+mutable std::condition_variable lidarDataUpdated_;
+std::deque<TimedLidarData> lidarDataBuffer_; // capacity 10
+Logger *logger_;
+
+
+The example usage shows how the LidarModule integrates into the robot’s runtime awareness. After creating a LidarModule instance, the robot initializes and starts scanning. It then waits for a data frame, printing how many points were captured and the timestamp. Finally, it stops and shuts down the device. This simple workflow illustrates how the robot can gain environmental awareness, use the data in its navigation or mapping logic, and cleanly release resources when scanning is no longer required.
+
+int main() {
+    LidarModule lidar;
+
+    if (!lidar.initialize()) {
+        std::cerr << "Failed to initialize LIDAR" << std::endl;
+        return -1;
+    }
+
+    if (!lidar.start()) {
+        std::cerr << "Failed to start scanning" << std::endl;
+        return -1;
+    }
+
+    TimedLidarData data;
+    if (lidar.waitForData(data)) {
+        std::cout << "Captured scan with " << data.nodes.size() << " points at timestamp "
+                  << data.timestamp << std::endl;
+    }
+
+    lidar.stop();
+    lidar.shutdown();
+
+    return 0;
+}
+
+
+
+```
 <!-- TODO: Describe key code modules related to obstacle management and explain them briefly. -->
 
 ---
@@ -493,20 +626,27 @@ NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and 
 
 ## 8. Build Instructions
 
-**Bill of Materials:**
+**List of Components**
 
-| Component               | Specs                          | Qty | Source/Supplier        |
-|------------------------|---------------------------------|-----|------------------------|
-| N20 DC Motor  |                                 | 2   |    |
-| S0004 Servo            |                                 | 1   |    |
-| Raspberry Pi Pico 2    | Microcontroller                 | 1   |    |
-| Raspberry Pi 5         | SBC                             | 1   | |
-| RPLidar C1             | 360° Lidar                      | 1   | SLAMTEC         |
-| 5MP Fish Eye Camera    | Wide-angle, IR-capable          | 1   | Cytron     |
-| Chassis Material       | esun pla plus         | 1   | Local / 3D Printed     |
-| 3D Printed Mounts      | STL files included              | N/A | User-designed          |
-| Wires                  | Assorted lengths/connectors     | —   | Any electronics vendor |
-
+| Component               | Quantity          | Qty | Source/Supplier        |
+|------------------------       |---------------------------------|-----|------------------------|
+| N20 DC Motor + encoder        |  2                               | 2   |    |
+| S0004m Servo                  |    2                             | 1   |    |
+| Raspberry Pi Pico 2           | 1                 | 1   |    |
+| Raspberry Pi 5                | 1                             | 1   | |
+| RPLidar C1                    | 1                     | 1   | SLAMTEC         |
+| 5MP Fish Eye Camera           | 1          | 1   | Cytron     |
+| 18650 Lithium Ion Battery     |  2  | —   |  |
+| UPS EP-0136                   |                                 | 2   |    |
+| BNO085 IMU                    |                                 | 1   |    |
+|   Mini L298N                  |                       | 1   |    |
+| N Channel MOSFET Transistor   |                                 | 1   | |
+| 4.4 kΩ resistor               |                           | 1   | SLAMTEC         |
+| DC to DC Boost Step Up Module|              | 1   | Cytron     |
+|       |             | 1   | Local / 3D Printed     |
+|     |                  | N/A | User-designed          |
+| eSUN PLA+ Spool     | eSUN PLA+      | 3  |    |
+| Wires                  |  N/A     | —   | Any electronics vendor |
 ---
 
 ### 📁 CAD & Design Files
