@@ -27,7 +27,22 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [4.1 Open Challenge](#41-open-challenge)
   - [4.2 Obstacle Challenge](#42-obstacle-challenge)
   - [4.3 Parallel Parking](#43-parallel-parking)
-  - [4.4 Source Code Summary](#44-source-code-summary)
+  - [4.4 Extra: Converting Raw Lidar Datas to Useful Datas](#44-extra-converting-raw-lidar-datas-to-useful-datas)
+- [5. Robot Design](#5-robot-design)
+  - [5.1 Robot Images](#51-robot-images)
+  - [5.2 Chassis Design](#52-chassis-design)
+- [6. Performance Videos](#6-performance-videos)
+- [7. Source Code](#7-source-code)
+  - [7.1 Code Structure](#71-code-structure)
+  - [7.3 Compilation/Upload Instructions](#73-compilationupload-instructions)
+- [8. List of Components](#8-list-of-components)
+- [9. 3D Printed Parts](#9-3d-printed-parts)
+  - [9.1 Chassis & Core Structure](#91-chassis--core-structure)
+  - [9.2 Motor & Transmission](#92-motor--transmission)
+  - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
+  - [9.4 Steering Linkages](#94-steering-linkages)
+  - [9.5 Miscellaneous](#95-miscellaneous)
+- [10. Tools and Assembly](#10-tools-and-assembly)
 
 <!-- tocstop -->
 
@@ -361,6 +376,8 @@ The robot determines which direction to turn by analyzing the walls detected aro
 <details>
 <summary>Click here to show C++ code</summary>
 
+getTurnDirection code (from lidar_processor.h / lidar_processor.cpp) <!--TODO: Add link to the actual file-->
+
 ```cpp
 /**
  * @brief Determine the robot's turn direction based on relative walls.
@@ -459,95 +476,297 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
 
 ### 4.2 Obstacle Challenge
 
+![Robot navigating Obstacle Challenge](./docs/resources/lidar_image_obstacle.png)\
+*Figure: Example of robot navigating the Obstacle Challenge arena and detecting traffic lights.*
+
+The Obstacle Challenge requires the robot to navigate the arena while avoiding obstacles and detecting traffic lights. The robot combines LiDAR and camera data to make real-time decisions. The main processing steps are:
+
+1. **Determine turn direction**
+
+   - Uses the same algorithm as in the Open Challenge to decide whether to turn CLOCKWISE or COUNTER_CLOCKWISE based on the surrounding walls.
+   - If no clear direction is detected, the default is CLOCKWISE.
+
+1. **Convert LiDAR data to Cartesian coordinates**
+
+   - LiDAR points that are too close (< 0.005 m), too far (> 3.2 m), or outside the forward scanning range are ignored.
+   - Converts polar coordinates (distance, angle) to Cartesian coordinates relative to the robot.
+
+1. **Filter points based on walls and turn direction**
+
+   - Depending on the current turn direction, left, right, and far walls are used to remove points that are too close to obstacles.
+   - Thresholds (`outerEdge = 0.30 m`, `innerEdge = 0.70 m`) define valid regions for candidate traffic lights.
+
+1. **Cluster nearby LiDAR points**
+
+   - Points within `distanceThreshold` (default 0.05 m) are grouped together.
+   - Each cluster is averaged to generate a candidate traffic light location.
+
+1. **Filter camera colors**
+
+   - The camera frame is converted to HSV color space.
+   - Thresholded for red, green, and pink colors.
+   - The top 50% of the frame is blacked out to reduce noise from the ceiling or irrelevant background.
+   - Contours are extracted, and only those larger than the `areaThreshold` are kept.
+
+1. **Combine camera and LiDAR data**
+
+   - For each detected camera block (red/green), find the closest LiDAR point within a maximum allowed horizontal angle difference.
+   - Only the nearest point along the ray is matched to prevent duplicate detections.
+   - Returns a vector of `TrafficLightInfo` containing both the LiDAR location and the camera block information.
+
+1. **Decision making**
+
+   - Using the combined traffic light data, the robot can identify which traffic light is relevant for its current path.
+   - Integrates turn direction, obstacle positions, and traffic light locations to navigate safely and efficiently.
+
+<details>
+<summary>Click here to show C++ code for Obstacle Challenge processing</summary>
+
+getTrafficLightPoints code (from lidar_processor.h / lidar_processor.cpp) <!--TODO: Add link to the actual file-->
+
+```cpp
+/**
+ * @brief Detect traffic light points from LiDAR data and resolved walls.
+ *
+ * @param timedLidarData LiDAR scan data with timestamps.
+ * @param resolveWalls Resolved walls around the robot.
+ * @param turnDirection Optional turn direction of the robot (if has no value assume CLOCKWISE).
+ * @param distanceThreshold Maximum distance between points to cluster into a single traffic light point.
+ * @return Vector of 2D points representing detected traffic light locations.
+ */
+std::vector<cv::Point2f> getTrafficLightPoints(
+    const TimedLidarData &timedLidarData,
+    const ResolvedWalls resolveWalls,
+    std::optional<RotationDirection> turnDirection,
+    float distanceThreshold
+) {
+    // Convert polar to Cartesian (in meters)
+    std::vector<cv::Point2f> points;
+    points.reserve(timedLidarData.lidarData.size());
+
+    for (const auto &node : timedLidarData.lidarData) {
+        // TODO: Change this value to fit the actual robot
+        if (node.distance < 0.005) continue;
+        if (node.distance > 3.200) continue;
+        if (node.angle > 5 && node.angle < 175 && node.distance > 0.700) continue;
+
+        float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
+
+        float lidarX = node.distance * std::sin(rad);
+        float lidarY = node.distance * std::cos(rad);
+        float x, y;
+        lidarToCartesian(lidarX, lidarY, x, y);
+
+        points.emplace_back(x, y);
+    }
+
+    std::vector<cv::Point2f> filteredPoints;
+    for (auto &point : points) {
+        if (not resolveWalls.frontWall) return {};
+        float frontDistance = resolveWalls.frontWall->perpendicularDistance(point.x, point.y);
+
+        std::optional<LineSegment> outerWall, innerWall, farOuterWall;
+        if (turnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            outerWall = resolveWalls.leftWall;
+            innerWall = resolveWalls.rightWall;
+
+            farOuterWall = resolveWalls.farRightWall;
+        } else {
+            outerWall = resolveWalls.rightWall;
+            innerWall = resolveWalls.leftWall;
+
+            farOuterWall = resolveWalls.farLeftWall;
+        }
+
+        float outerDistance;
+        if (outerWall) {
+            outerDistance = outerWall->perpendicularDistance(point.x, point.y);
+        } else if (innerWall) {
+            outerDistance = 1.00f - innerWall->perpendicularDistance(point.x, point.y);
+        } else {
+            return {};
+        }
+
+        // TODO: Clean up this magic number
+        const float outerEdge = 0.30f;
+        const float innerEdge = 0.70f;
+
+        if (farOuterWall) {
+            float outerFarDistance = farOuterWall->perpendicularDistance(point.x, point.y);
+
+            if (frontDistance < outerEdge or frontDistance > 3.00f - outerEdge or outerDistance < outerEdge or outerFarDistance < outerEdge)
+                continue;
+            if (frontDistance > innerEdge and outerDistance > innerEdge and outerFarDistance > innerEdge) continue;
+        } else {
+            if (frontDistance < outerEdge or frontDistance > 3.00f - outerEdge or outerDistance < outerEdge or
+                outerDistance > 3.00f - outerEdge)
+                continue;
+            if (frontDistance > innerEdge and outerDistance > innerEdge) continue;
+        }
+
+        filteredPoints.push_back(point);
+    }
+
+    std::vector<cv::Point2f> averages;
+    if (filteredPoints.empty()) return averages;
+
+    std::vector<cv::Point2f> currentCluster;
+    currentCluster.push_back(filteredPoints[0]);
+
+    for (size_t i = 1; i < filteredPoints.size(); ++i) {
+        cv::Point2f p1 = currentCluster.back();
+        cv::Point2f p2 = filteredPoints[i];
+
+        float dist = std::hypot(p2.x - p1.x, p2.y - p1.y);
+
+        if (dist < distanceThreshold) {
+            currentCluster.push_back(p2);
+        } else {
+            // compute average for current cluster
+            float sumX = 0, sumY = 0;
+            for (auto &p : currentCluster) {
+                sumX += p.x;
+                sumY += p.y;
+            }
+            averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
+
+            // start new cluster
+            currentCluster.clear();
+            currentCluster.push_back(p2);
+        }
+    }
+
+    // handle last cluster
+    if (!currentCluster.empty()) {
+        float sumX = 0, sumY = 0;
+        for (auto &p : currentCluster) {
+            sumX += p.x;
+            sumY += p.y;
+        }
+        averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
+    }
+
+    return averages;
+}
+```
+
+filterColors code (from camera_processor.h / camera_processor.cpp) <!--TODO: Add link to the actual file-->
+
+```cpp
+/**
+ * @brief Filters an input frame for red, green, and pink colors and extracts contours.
+ *
+ * The input frame is converted to HSV color space, thresholded into binary masks
+ * for each target color (red, green, pink), and processed to extract contour
+ * centroids and areas. Contours smaller than the given area threshold are discarded.
+ *
+ * @param timedFrame Input frame with timestamp and image data.
+ * @param areaThreshold Minimum area threshold (in pixels) to filter out small/noisy contours.
+ * @return ColorMasks A struct containing masks and contour info for red, green, and pink.
+ */
+ColorMasks filterColors(const TimedFrame &timedFrame, double areaThreshold) {
+    const cv::Mat &input = timedFrame.frame;
+
+    CV_Assert(!input.empty());
+    CV_Assert(input.type() == CV_8UC3);
+
+    // Fill the top part with black
+    int topRows = static_cast<int>(input.rows * 0.50);
+    input(cv::Rect(0, 0, input.cols, topRows)) = cv::Scalar(0, 0, 0);
+
+    cv::Mat hsv;
+    cv::cvtColor(input, hsv, cv::COLOR_BGR2HSV);
+
+    // Red
+    cv::Mat maskRed1, maskRed2, maskRed;
+    cv::inRange(hsv, lowerRed1Light, upperRed1Light, maskRed1);
+    cv::inRange(hsv, lowerRed2Light, upperRed2Light, maskRed2);
+    cv::bitwise_or(maskRed1, maskRed2, maskRed);
+
+    // Green
+    cv::Mat maskGreen1, maskGreen2, maskGreen;
+    cv::inRange(hsv, lowerGreen1Light, upperGreen1Light, maskGreen1);
+    cv::inRange(hsv, lowerGreen2Light, upperGreen2Light, maskGreen2);
+    cv::bitwise_or(maskGreen1, maskGreen2, maskGreen);
+
+    return {{extractContoursInfo(maskRed, areaThreshold), maskRed}, {extractContoursInfo(maskGreen, areaThreshold), maskGreen}};
+}
+```
+
+combineTrafficLightInfo code (from combined_processor.h / combined_processor.cpp) <!--TODO: Add link to the actual file-->
+
+```cpp
+/**
+ * @brief Combine camera block angles and LiDAR traffic light points.
+ *
+ * Only returns traffic lights that have a matching camera block based on horizontal angle.
+ * The LiDAR points are assumed to be in the LiDAR coordinate frame, and the camera may be
+ * offset relative to the LiDAR. The function accounts for this offset when computing angles.
+ *
+ * @param blockAngles Vector of camera BlockAngle (red/green blocks).
+ * @param lidarPoints Vector of 2D points from LiDAR (traffic lights), in LiDAR coordinates.
+ * @param cameraOffset Position of the camera relative to the LiDAR (x, y) in LiDAR coordinates.
+ * @param maxAngleDiff Maximum allowed difference in angle (radians) to consider a camera block
+ *                     as corresponding to a LiDAR point.
+ * @return std::vector<TrafficLightInfo> Combined information for traffic lights that have
+ *                                      matching camera blocks.
+ */
+std::vector<TrafficLightInfo> combineTrafficLightInfo(
+    const std::vector<camera_processor::BlockAngle> &blockAngles,
+    const std::vector<cv::Point2f> &lidarPoints,
+    cv::Point2f cameraOffset,
+    float maxAngleDiff
+) {
+    std::vector<TrafficLightInfo> results;
+    std::vector<cv::Point2f> availableLidar = lidarPoints;
+
+    for (const auto &block : blockAngles) {
+        size_t bestIndex = std::numeric_limits<size_t>::max();
+        float smallestDiff = std::numeric_limits<float>::max();
+        float closestDistance = std::numeric_limits<float>::max();
+
+        // Loop over all available LiDAR points
+        for (size_t i = 0; i < availableLidar.size(); ++i) {
+            const auto &lp = availableLidar[i];
+            float dx = lp.x - cameraOffset.x;
+            float dy = lp.y - cameraOffset.y;
+
+            float lidarAngle = std::atan2(dy, dx);  // radians
+            float lidarAngleDeg = lidarAngle * 180.0f / M_PI;
+
+            float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
+
+            if (angleDiff <= maxAngleDiff) {
+                float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
+
+                // Pick the closest along the ray (smallest distance)
+                if (distanceAlongRay < closestDistance || angleDiff < smallestDiff) {
+                    closestDistance = distanceAlongRay;
+                    smallestDiff = angleDiff;
+                    bestIndex = i;
+                }
+            }
+        }
+
+        if (bestIndex != std::numeric_limits<size_t>::max()) {
+            results.push_back(TrafficLightInfo{availableLidar[bestIndex], block});
+            availableLidar.erase(availableLidar.begin() + bestIndex);  // consume
+        }
+    }
+
+    return results;
+}
+```
+
+</details>
+
 ### 4.3 Parallel Parking
 
-### 4.4 Source Code Summary
+TBA. <!--TODO:-->
 
-<!--TODO:-->
+### 4.4 Extra: Converting Raw Lidar Datas to Useful Datas
 
-LIDAR Code
-
-<!-- The constructor of the LidarModule class establishes the initial communication parameters for the LIDAR device. It sets the serial port path (defaulting to /dev/ttyAMA0) and baud rate (defaulting to 460800), and optionally links a logger for diagnostic messages. While it prepares the internal state, it does not start scanning immediately. This separation ensures the robot can configure its LIDAR hardware without committing resources until scanning is explicitly requested.
-
-LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
-LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
-
-
-The destructor and initialization functions handle safe resource management. initialize() connects the driver to the LIDAR hardware, preparing it for operation, while shutdown() stops the device and releases resources. Together, these ensure that the LIDAR can be powered on, connected, and safely powered off, allowing the robot to control its awareness sensor as needed during a run.
-
-~LidarModule();
-bool initialize();
-void shutdown();
-
-
-Once initialized, the robot can begin scanning control through the start() and stop() methods. The start() function launches the scanning process and begins data acquisition in a background thread, while stop() halts the motor and data collection. This design allows the robot to dynamically control when it “looks” at its surroundings, enabling energy-efficient awareness that can be switched on or off depending on the current task.
-
-bool start();
-void stop();
-
-
-The LIDAR’s role as a real-time awareness sensor is enabled through data access functions. The getData() method retrieves the most recent scan in a thread-safe way, while waitForData() blocks until new scan data is available. This distinction allows the robot to either poll for the latest awareness data or synchronize actions with fresh environmental readings. The bufferSize() method shows how many scans are currently stored, and getAllTimedLidarData() can extract the entire buffered history. These options give higher-level navigation and mapping algorithms flexible access to the robot’s perception history.
-
-bool getData(TimedLidarData &outTimedLidarData) const;
-bool waitForData(TimedLidarData &outTimedLidarData);
-size_t bufferSize() const;
-bool getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLidarData) const;
-
-
-For diagnostics and inspection, the module includes methods that report device details and raw scan outputs. printDeviceInfo() provides information about the connected LIDAR hardware, while printScanData() prints the vector of scan nodes. These utilities let developers verify that the robot’s awareness hardware is functioning correctly, and provide insights into the quality and density of environmental readings.
-
-bool printDeviceInfo();
-static void printScanData(const std::vector<RawLidarNode> &nodeDataVector);
-
-
-Internally, the awareness pipeline is supported by private members that manage continuous scanning. The scanLoop() function runs in a background thread, streaming scans into a ring buffer of size 10. Synchronization is handled through mutexes and update flags, ensuring thread-safe access between the scanning process and application queries. The lidarDriver_ and serialChannel_ maintain the connection to the hardware, while flags like initialized_ and running_ track the sensor’s state. This internal structure ensures that the robot has a steady stream of fresh perception data while maintaining stability and safety in a multi-threaded environment.
-
-//Internal (private)
-void scanLoop();
-rplidar_response_device_info_t lidarDriver_;
-std::unique_ptr<SerialChannel> serialChannel_;
-std::string serialPort_;
-int baudRate_;
-bool initialized_;
-std::thread lidarThread_;
-std::atomic<bool> running_;
-mutable std::mutex lidarDataMutex_;
-mutable std::condition_variable lidarDataUpdated_;
-std::deque<TimedLidarData> lidarDataBuffer_; // capacity 10
-Logger *logger_;
-
-
-The example usage shows how the LidarModule integrates into the robot’s runtime awareness. After creating a LidarModule instance, the robot initializes and starts scanning. It then waits for a data frame, printing how many points were captured and the timestamp. Finally, it stops and shuts down the device. This simple workflow illustrates how the robot can gain environmental awareness, use the data in its navigation or mapping logic, and cleanly release resources when scanning is no longer required.
-
-int main() {
-    LidarModule lidar;
-
-    if (!lidar.initialize()) {
-        std::cerr << "Failed to initialize LIDAR" << std::endl;
-        return -1;
-    }
-
-    if (!lidar.start()) {
-        std::cerr << "Failed to start scanning" << std::endl;
-        return -1;
-    }
-
-    TimedLidarData data;
-    if (lidar.waitForData(data)) {
-        std::cout << "Captured scan with " << data.nodes.size() << " points at timestamp "
-                  << data.timestamp << std::endl;
-    }
-
-    lidar.stop();
-    lidar.shutdown();
-
-    return 0;
-}
-
-
-
-```
-<!-- TODO: Describe key code modules related to obstacle management and explain them briefly. -->
+TBA. <!--TODO:-->
 
 ______________________________________________________________________
 
