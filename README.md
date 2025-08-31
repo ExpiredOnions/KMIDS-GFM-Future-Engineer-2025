@@ -34,7 +34,10 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 - [6. Performance Videos](#6-performance-videos)
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
-  - [7.3 Compilation/Upload Instructions](#73-compilationupload-instructions)
+  - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
+    - [Dependencies](#dependencies)
+    - [Raspberry Pi 5 Build](#raspberry-pi-5-build)
+    - [Raspberry Pi Pico 2 Build & Upload](#raspberry-pi-pico-2-build--upload)
 - [8. List of Components](#8-list-of-components)
 - [9. 3D Printed Parts](#9-3d-printed-parts)
   - [9.1 Chassis & Core Structure](#91-chassis--core-structure)
@@ -826,23 +829,185 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-<!--TODO:-->
-
 ## 7. Source Code
 
 ### 7.1 Code Structure
 
-<!-- TODO: Explain how your codebase is organized (e.g., folders for different challenges or components). -->
+<!--TODO: Add link to the code-->
 
-<!-- ### 7.2 Main Code Modules
-- Motor Control
-- Sensor Input & Processing
-- Obstacle Navigation
-- Serial Communication (e.g., with camera or sensors)
-- Setup and Initialization
+The project codebase is organized to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
 
-### 7.3 Compilation/Upload Instructions
-NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and steps to upload to microcontroller. -->
+```txt
+repo-root
+└─ code
+   ├─ raspberry-pi-5
+   │  ├─ apps
+   │  │  ├─ challenges
+   │  │  │  ├─ open_challenge      # Executable for open challenge
+   │  │  │  └─ obstacle_challenge  # Executable for obstacle challenge
+   │  │  ├─ log_viewer             # Applications to visualize logs
+   │  │  ├─ scan_map_inner         # Inner map scanning tools
+   │  │  ├─ scan_map_outer         # Outer map scanning tools
+   │  │  ├─ test_camera            # Camera testing app
+   │  │  ├─ test_i2c               # I2C communication testing
+   │  │  ├─ test_lidar             # LIDAR testing app
+   │  │  └─ test_lidar_cam         # Combined LIDAR + camera testing
+   │  ├─ external
+   │  │  ├─ lccv                   # External library (depends on libcamera)
+   │  │  └─ rplidar_sdk            # RPLIDAR SDK (external, Make-based)
+   │  ├─ scripts
+   │  │  ├─ check_battery_status.py
+   │  │  ├─ shutdown.sh
+   │  │  └─ ups_shutdown.py
+   │  ├─ src
+   │  │  ├─ modules
+   │  │  │  ├─ camera
+   │  │  │  ├─ i2c_master
+   │  │  │  ├─ lidar
+   │  │  │  └─ pico2
+   │  │  │     └─ CMakeLists.txt
+   │  │  ├─ processors
+   │  │  │  ├─ camera
+   │  │  │  ├─ combined
+   │  │  │  ├─ lidar
+   │  │  │  └─ CMakeLists.txt
+   │  │  ├─ types
+   │  │  │  ├─ camera_struct.h
+   │  │  │  ├─ lidar_struct.h
+   │  │  │  ├─ pico2_struct.h
+   │  │  │  └─ robot_pose_struct.h
+   │  │  └─ utils
+   │  │     ├─ direction
+   │  │     ├─ log_reader
+   │  │     ├─ logger
+   │  │     ├─ pid_controller
+   │  │     ├─ ring_buffer
+   │  │     └─ CMakeLists.txt
+   │  └─ CMakeLists.txt
+   │  └─ build.sh
+   │
+   ├─ raspberry-pi-pico-2
+   │  ├─ external
+   │  │  ├─ BNO08x_Pico_Library
+   │  │  └─ pico-sdk
+   │  ├─ src
+   │  │  ├─ modules
+   │  │  │  ├─ controllers
+   │  │  │  └─ i2c_slave
+   │  │  ├─ utils
+   │  │  │  └─ pid_controller
+   │  │  └─ CMakeLists.txt
+   │  ├─ main.cpp
+   │  └─ CMakeLists.txt
+   │  └─ build.sh
+   │
+   └─ shared                # Shared code used by both Pi 5 and Pi Pico
+      ├─ i2c
+      └─ types
+```
+
+**Notes on structure:**
+
+- **`apps/`**: Executables for tests, challenges, and log visualization (Pi 5-specific).
+- **`external/`**: Third-party libraries like LCCV, RPLIDAR SDK, Pico SDK.
+- **`scripts/`**: System control scripts (shutdown, battery check, etc.).
+- **`src/modules/`**: Hardware-specific functional modules.
+- **`src/processors/`**: Data processing pipelines (camera, LIDAR, combined sensors).
+- **`src/types/`**: Data structure headers for the local target.
+- **`src/utils/`**: Utility classes (PID controllers, logging, ring buffers).
+- **`shared/`**: Code reused by both `raspberry-pi-5` and `raspberry-pi-pico-2` (I2C handling, types).
+- **`build.sh` & `CMakeLists.txt`**: Build scripts for each hardware target.
+
+This structure allows Pi 5 and Pi Pico to share common code while keeping hardware-specific modules separate.
+
+______________________________________________________________________
+
+### 7.2 Compilation / Upload Instructions
+
+This section describes how to build and run the project on the **Raspberry Pi 5** and **Raspberry Pi Pico 2**, including all dependencies.
+
+______________________________________________________________________
+
+#### Dependencies
+
+**Git Submodules (must initialize and update recursively):**
+
+```bash
+git submodule update --init --recursive
+```
+
+**Raspberry Pi 5 specific:**
+
+- **RPLIDAR SDK** – For LIDAR functionality.
+- **LCCV** – Custom computer vision library that depends on **libcamera**.
+- **System libraries (install separately):**
+  - **OpenCV** – For camera image processing. <!--TODO: Add guide on how to install-->
+  - **libcamera** – Required by LCCV for camera capture. <!--TODO: Add guide on how to install-->
+
+**Raspberry Pi Pico 2 specific:**
+
+- **Pico SDK** – Required for building Pico firmware.
+- **BNO08x_Pico_Library** – IMU library for Pico.
+
+______________________________________________________________________
+
+#### Raspberry Pi 5 Build
+
+1. Go to the Pi 5 project directory:
+
+```bash
+cd ~/git/KMIDS-GFM-Future-Engineer-2025/code/raspberry-pi-5
+```
+
+2. Make the build script executable:
+
+```bash
+chmod +x build.sh
+```
+
+3. Build all targets:
+
+```bash
+./build.sh
+```
+
+4. Build a specific target (example: `open_challenge`):
+
+```bash
+./build.sh open_challenge
+```
+
+5. Executables are generated in the `build/` directory according to the CMake output settings.
+
+______________________________________________________________________
+
+#### Raspberry Pi Pico 2 Build & Upload
+
+1. Go to the Pico project directory:
+
+```bash
+cd ~/git/KMIDS-GFM-Future-Engineer-2025/code/raspberry-pi-pico-2
+```
+
+2. Make the build script executable:
+
+```bash
+chmod +x build.sh
+```
+
+3. Build all targets:
+
+```bash
+./build.sh
+```
+
+4. Upload the compiled UF2 file to the Pico:
+
+```bash
+sudo picotool load build/gfm_pico_2.uf2 -f
+```
+
+> Note: The UF2 file path should match the output name specified in the Pico CMakeLists.txt.
 
 ______________________________________________________________________
 
@@ -882,9 +1047,11 @@ ______________________________________________________________________
 
 ### 9.5 Miscellaneous
 
+<!--TODO:-->
+
+<!--
 ______________________________________________________________________
 
-<!--TODO:-->
 
 ## 10. Tools and Assembly
 
@@ -899,3 +1066,4 @@ Install Pi 5 + Pico on the central plate.
 Mount LIDAR on \`\`
 
 Wire components as per the diagram.
+-->
