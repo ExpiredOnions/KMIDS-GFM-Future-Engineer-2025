@@ -77,7 +77,7 @@ ______________________________________________________________________
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="./docs/resources/motor.webp" alt="motor.webp" >
+      <img src="./docs/resources/motorencoder.webp" alt="motor.webp" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -163,9 +163,12 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 - Screwed directly into a platform plate in front of the chassis into the platform plate.
 
-<!--FIXME: Add servo_screw.png-->
 
-<!--FIXME: Add servo_mounting.png-->
+
+
+<img src="docs/resources/servomount.jpg" alt="Servo Mounting" width=400>
+ 
+
 
 **Considerations**
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
@@ -769,7 +772,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 TBA. <!--TODO:-->
 
-### 4.4 Extra: Converting Raw Lidar Datas to Useful Datas
+### 4.4 Extra: Converting Raw Lidar Data to Useful Data
 
 TBA. <!--TODO:-->
 
