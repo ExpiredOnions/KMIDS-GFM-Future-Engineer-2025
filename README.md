@@ -1,71 +1,53 @@
 # Hello! We are **Team KMIDS-GFM**.
 
-
-<p align="center">
-  pic
-</p>
-
-
-
 # WRO - Future Engineers - Robotics Project Documentation
 
-
 ## Team Members
-- **Chayanon Ninyawee (Garfield)** 
-- **Supakorn Sunthonthammarat (Pleum)** 
-- **Thammatouch Chantasarn (Kao)** 
+
+- **Chayanon Ninyawee (Garfield)**
+- **Supakorn Sunthonthammarat (Pleum)**
+- **Thammatouch Chantasarn (Kao)**
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
-<!-- NOTE: Replace all placeholder sections below with your team's actual content and details. -->
+## Table of Contents
 
-##  Table of Contents
+<!-- toc -->
 
-
-
-### Sections
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
-  - [Drivetrain](#21-drivetrain)
-    - [Motor](#motor)
-  - [Steering](#22-steering)
-    - [Servo](#servo)
+  - [2.1 Drive System](#21-drive-system)
+  - [2.2 Steering](#22-steering)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  - [Power Source](#31-power-source)
-  - [Sensor and Camera](#32-sensor-and-camera)
-    - [LIDAR Sensor](#lidar-sensor)
-    - [Fish Eye Lens Camera](#fish-eye-lens-camera)
-  - [Processing-Unit](#33-processing-units)
-    - [Single-Board Computer](#single-board-computer)
-    - [Microcontroller](#microcontroller)
-  - [Circuit Diagram](#34-circuit-diagram)
-- [4. Navigation](#4-obstacle-management)
-- [5. Robot Design](#5-Robot-Design)
-- [6. Performance Video](#6-performance-videos)
-- [7. Source Code](#7-source-code)
-- [8. Build Instructions](#8-build-instructions)
-- [9. GitHub Usage and Commit History](#9-github-usage-and-commit-history)
-  
+  - [3.1 Power Source](#31-power-source)
+  - [3.2 Sensor and Camera](#32-sensor-and-camera)
+  - [3.3 Processing Units](#33-processing-units)
+  - [3.4 Circuit Diagram](#34-circuit-diagram)
+- [4. Navigation](#4-navigation)
+  - [4.1 LIDAR-Based Navigation Overview](#41-lidar-based-navigation-overview)
+  - [4.2 Open Challenge](#42-open-challenge)
+  - [4.3 Obstacle Challenge](#43-obstacle-challenge)
+  - [4.3 Parallel Parking](#43-parallel-parking)
+  - [4.3 Source Code Summary](#43-source-code-summary)
 
----
+<!-- tocstop -->
+
+______________________________________________________________________
 
 ## 1. About the Project
 
-
-This project focuses on designing, building, and programming an autonomous robot capable of completing a series of complex obstacle challenges as part of the WRO Future Engineers competition. 
+This project focuses on designing, building, and programming an autonomous robot capable of completing a series of complex obstacle challenges as part of the WRO Future Engineers competition.
 
 Team KMIDS-GFM was inspired by the challenge of applying engineering principles and problem-solving skills to creatively and efficiently solve complex problems. Pushing forward with our passion for innovation and hands-on learning.
 
 Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and a smoother workflow throughout the project.
 
-Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
+Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilizes a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
-Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed. 
+Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
 
+______________________________________________________________________
 
-<!-- TODO: You should add a few paragraphs here about your inspiration, high-level goals, team structure, and overall approach. -->
-
----
 ## 2. Mobility Management
 
 <!-- Discussion on design principle -->
@@ -75,17 +57,14 @@ Our objective is to create an intelligent robot that is capable of navigating th
 - **Drive System:** 2-wheel differential drive (rear wheels).
 - **Steering:** Front-wheel steering using S0004m servo.
 
-### 2.1 Drivetrain
+### 2.1 Drive System
 
+**Motor: N20 Motor** <!--FIXME: Add link to buy the motor here -->
 
-### Motor
-
-Motor: N20 Motor 
-<!-- link here -->
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/motor.webp" alt="INSERT MOTOR" >
+      <img src="./docs/resources/motor.webp" alt="motor.webp" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -101,18 +80,17 @@ Motor: N20 Motor
 </table>
 
 **Reason for Selection:**
+
 - It is compact and lightweight, allowing us to fit it into our robot easily.
 - Provides moderate torque that is more than enough for the flat arena.
 - Easy to use on the robot and integrate with other parts.
 
-
-
-The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimises wheel slip and ensures stability during sharp manoeuvres. 
+The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimises wheel slip and ensures stability during sharp manoeuvres.
 The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential geartrain makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
 
 **Mounting:**
-- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears.
-  <img src="g" alt="show motor plate" >
+
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. <!--FIXME: Add link to the STL file-->
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
 
@@ -121,12 +99,11 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-
 We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behaviour of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
-<img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/ackermann%20steering.png">
+<img src="./docs/resources/ackermann_steering.png">
 
 While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvres and accurate alignment in narrower spaces.
 
@@ -137,21 +114,17 @@ Our implementation involves designing a custom 3D-printed Ackermann steering mec
 To make sure the steering angle performed correctly, we carried out an iterative calibration process:
 
 - We manually adjusted the servo horn angle and linkage positions step by step in FreeCAD until the wheels aligned at the desired steering angle.
-
 - After each adjustment, we observed whether the wheels tracked correctly in both directions.
-
 - Once the optimal angle is reached, we make sure to model the steering mechanism around the angle.
 
-<img src="" alt="GIF of steering" >
+<img src="" alt="steering_gif.gif"> <!--FIXME: Add steering_gif-->
 
+**Servo: S0004m** <!--FIXME: Add link to buy the servo here -->
 
-### Servo
-Servo: S0004m 
-<!-- link here -->
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/servo.png" alt="INSERT SERVO" >
+      <img src="./docs/resources/servo.png" alt="servo.png" >
     </td>
     <td> 
       <h3>Specifications:</h3>
@@ -167,34 +140,34 @@ Servo: S0004m
 </table>
 
 **Reason for Selection:**
+
 - The small size and PWM interface make it easy to control via Raspberry Pi Pico 2.
 - It has sufficient torque to steer the front wheels responsively.
 - It has balanced speed and stability during turns and lane changes.
 - This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
 **Mounting:**
+
 - Screwed directly into a platform plate in front of the chassis into the platform plate.
 
-  <img src="" alt="Servo screwed location" >
-  <img src="" alt="close up on the plate and screws" >
+  <img src="" alt="servo_screw.png"> <!--FIXME: Add servo_screw.png-->
+  <img src="" alt="servo_mounting.png"> <!--FIXME: Add servo_mounting.png-->
 
+**Considerations**
+While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
 
-  
-**Considerations** 
-While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
-
----
+______________________________________________________________________
 
 ## 3. Power and Sense Management
 
 ### 3.1 Power Source
 
-### [18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery]()
+[18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)
 
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/battery.png" alt="INSERT Battery" width = 100% >
+      <img src="./docs/resources/battery.png" alt="battery.png" width = 100% >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -208,28 +181,23 @@ While the servo used is adequate for the task, it can still be replaced with som
   </tr>
 </table>
 
-The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. 
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
 The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 The motors, however, require a higher voltage — at least 6V, and to ensure reliable performance, the N20 motor power is supplied through a step-up converter that increases 5V to 12V. Because the motor power is separate from the Raspberry Pi, the standard on/off switch could not fully control the system. To solve this, a MOSFET and a 4.4 kΩ resistor were added between the gate and source, with the drain connected to the negative side of the step-up converter. This allows the robot to be safely powered on and off while supplying sufficient power to both the Raspberry Pi and the motors.
 
-
-
 The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
 
-  <img src="" alt="Battery location" >
-
+<img src="" alt="battery_location.png"> <!--FIXME: Add battery_location.png-->
 
 ### 3.2 Sensor and Camera
 
-### LIDAR Sensor
-
-### [RPLIDAR C1](https://www.slamtec.com/en/C1)
+[RPLIDAR C1](https://www.slamtec.com/en/C1)
 
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/LIDAR.jpg" alt="INSERT LIDAR" width = 100% >
+      <img src="./docs/resources/LIDAR.jpg" alt="LIDAR.jpg" width = 100% >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -251,6 +219,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 </table>
 
 **Reason for Selection:**
+
 - **Precise distance measurement** of obstacles within a wide radius
 - **360° scanning** makes it ideal for SLAM (Simultaneous Localisation and Mapping).
 - **Compact size and lightweightness** allow easy fitting on our robot.
@@ -258,16 +227,14 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 The LIDAR's sensor driver has been custom-coded to better fit our needs. [Code Link Here]
 
-  <img src="" alt="LIDAR Mount" >
+<img src="" alt="LIDAR_mount.png"> <!--FIXME: Add LIDAR_mount.png-->
 
-### Fish Eye Lens Camera
-
-### [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
+[Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
 <table >
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RaspberryPI-FE-5MPIRCAM.jpg" alt="INSERT Camera" width = 100% >
+      <img src="./docs/resources/RaspberryPI-FE-5MPIRCAM.jpg" alt="RaspberryPI-FE-5MPIRCAM.jpg" width = 100% >
     </td>
     <td >
       <h3>Specifications:</h3>
@@ -283,34 +250,30 @@ The LIDAR's sensor driver has been custom-coded to better fit our needs. [Code L
 </table>
 
 **Reason for Selection:**
+
 - **130° wide field of view** captures a large area for tracking.
 - **Infrared compatibility** enables low-light vision.
 - **High-resolution (5MP)** provides a clear image for the robot.
 - **Compact size** fits well on our robot.
 
-
 This setup allows for a wide-angle view, enhancing environmental awareness during both the Open Challenge and Obstacle Challenge. The camera identifies course elements such as walls, pillars, colored markers, parking spaces, and lane lines.
 
 - Detect and differentiate wall positions.
 
-- Identify pillar colours and types.
+- Identify pillar colors and types.
 
-- Recognise parking zones.
+- Recognize parking zones.
 
 - Track path lines and boundaries.
-  
-
 
 ### 3.3 Processing Units
 
-### Single-Board Computer
-
-### [Raspberry Pi 5](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html)
+[Single Board Computer: Raspberry Pi 5](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html)
 
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RP5.webp" alt="INSERT RP5" >
+      <img src="./docs/resources/RP5.webp" alt="INSERT RP5" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -325,13 +288,12 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
   </tr>
 </table>
 
-### Microcontroller
-### [Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
+[Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
 
 <table>
   <tr>
     <td align="center" width="300" >
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/RPP2.webp" alt="INSERT RPP2" >
+      <img src="./docs/resources/RPP2.webp" alt="INSERT RPP2" >
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -346,28 +308,15 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
   </tr>
 </table>
 
-
-
 ### 3.4 Circuit Diagram
 
-
-
 **Wiring Diagram:**
-> *[Include labeled wiring diagram image here]*
 
-  <img src="" alt="Wiring diagram pic" >
-  <img src="" alt="Wiring real pic" >
-  
-**Wiring Summary:**
+<img src="./docs/resources/wiring-diagram.png" alt="Wiring diagram pic" >
 
-
----
+______________________________________________________________________
 
 ## 4. Navigation
-
-<!-- TODO: Obstacle management discussion should include the strategy for the vehicle to
-negotiate the obstacle course for all the challenges. This could include flow
-diagrams, pseudo code and source code with detailed comments. -->
 
 The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
 
@@ -377,10 +326,8 @@ Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens
 
 We divide the strategy into three phases:
 
-- Open Challenge 
-
-- Obstacle Challenge 
-
+- Open Challenge
+- Obstacle Challenge
 - Parallel Parking Manoeuvre
 
 ### 4.1 LIDAR-Based Navigation Overview
@@ -390,7 +337,6 @@ To navigate the game arena, we rely on our LiDAR-based navigation algorithm that
 ### 4.2 Open Challenge
 
 The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomised at the start, so relying on pre-programmed movements is not feasible
-
 
 <table>
   <tr>
@@ -406,30 +352,24 @@ The Open Challenge requires the robot to complete three laps around the arena wi
 </table>
 
 1. To decide the orientation of the robot's starting position and which way to turn, the algorithm compares the space on the left and right. The robot then knows to turn to the side with greater clearance.
-
-2. The LIDAR continuously scans the environment and returns the distance value from each side of the robot (front, back, left, right).
-   
+1. The LIDAR continuously scans the environment and returns the distance value from each side of the robot (front, back, left, right).
 
 - If front clearance > threshold → drive forward.
+- If front clearance ≤ threshold → turn toward the side with greater clearance (compare left vs right).
 
-- If front clearance ≤ threshold → turn toward the side with greater clearance (compare left vs right). 
-
-
-3. If the distance detected in the front sector is greater than a set threshold, the robot proceeds forward since the path is clear. 
-
-4. When it falls below a threshold, it stops and turns towards the side that it knows is clear, and proceeds
-
+3. If the distance detected in the front sector is greater than a set threshold, the robot proceeds forward since the path is clear.
+1. When it falls below a threshold, it stops and turns towards the side that it knows is clear, and proceeds
 
 ### 4.3 Obstacle Challenge
 
 ### 4.3 Parallel Parking
 
-
-
-
 ### 4.3 Source Code Summary
 
+<!--TODO:-->
+
 LIDAR Code
+
 <!-- The constructor of the LidarModule class establishes the initial communication parameters for the LIDAR device. It sets the serial port path (defaulting to /dev/ttyAMA0) and baud rate (defaulting to 460800), and optionally links a logger for diagnostic messages. While it prepares the internal state, it does not start scanning immediately. This separation ensures the robot can configure its LIDAR hardware without committing resources until scanning is explicitly requested.
 
 LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
@@ -512,40 +452,41 @@ int main() {
 ```
 <!-- TODO: Describe key code modules related to obstacle management and explain them briefly. -->
 
----
+______________________________________________________________________
 
 ## 5. Robot Design
 
 ### 5.1 Robot Images
+
 <!-- TODO: Include clear, high-quality photos from top, bottom, front, back, left, and right. -->
 
 <table>
   <tr>
     <td align="center">
       <b>Front View</b><br>
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/frontview.jpg" width="300">
+      <img src="./docs/resources/frontview.jpg" width="300">
     </td>
     <td align="center">
       <b>Back View</b><br>
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/backview.jpg" width="300">
+      <img src="./docs/resources/backview.jpg" width="300">
     </td>
     <td align="center">
       <b>Left Side View</b><br>
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/leftview.jpg" width="300">
+      <img src="./docs/resources/leftview.jpg" width="300">
     </td>
   </tr>
   <tr>
     <td align="center">
       <b>Right Side View</b><br>
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/rightview.jpg" width="300">
+      <img src="./docs/resources/rightview.jpg" width="300">
     </td>
   <td align="center">
   <b>Top View</b><br>
-  <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/topview.jpg" width="300" style="transform: rotate(90deg); transform-origin: center;">
+  <img src="./docs/resources/topview.jpg" width="300" style="transform: rotate(90deg); transform-origin: center;">
 </td>
     <td align="center">
       <b>Bottom View</b><br>
-      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/botview.jpg" width="300">
+      <img src="./docs/resources/botview.jpg" width="300">
     </td>
   </tr>
 </table>
@@ -557,23 +498,24 @@ int main() {
 Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry.
 
 **Layout**
-The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
 
 Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
 
-
----
+______________________________________________________________________
 
 ## 6. Performance Videos
 
+[Watch on YouTube](-) <!--FIXME: Add YouTube Link-->
 
-[Watch on YouTube]( - ) 
+______________________________________________________________________
 
----
+<!--TODO:-->
 
 ## 7. Source Code
 
 ### 7.1 Code Structure
+
 <!-- TODO: Explain how your codebase is organized (e.g., folders for different challenges or components). -->
 
 <!-- ### 7.2 Main Code Modules
@@ -586,70 +528,60 @@ Our robot chassis was completely custom-designed and 3D printed using [esun PLA+
 ### 7.3 Compilation/Upload Instructions
 NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and steps to upload to microcontroller. -->
 
----
+______________________________________________________________________
 
-## 8. Build Instructions
+## 8. List of Components
 
-**List of Components**
+| Component                     | Quantity  | Qty | Source/Supplier        |
+| ----------------------------- | --------- | --- | ---------------------- |
+| N20 DC Motor + encoder        | 2         | 2   |                        |
+| S0004m Servo                  | 2         | 1   |                        |
+| Raspberry Pi Pico 2           | 1         | 1   |                        |
+| Raspberry Pi 5                | 1         | 1   |                        |
+| RPLidar C1                    | 1         | 1   | SLAMTEC                |
+| 5MP Fish Eye Camera           | 1         | 1   | Cytron                 |
+| 18650 Lithium Ion Battery     | 2         | —   |                        |
+| UPS EP-0136                   |           | 2   |                        |
+| BNO085 IMU                    |           | 1   |                        |
+| Mini L298N                    |           | 1   |                        |
+| N Channel MOSFET Transistor   |           | 1   |                        |
+| 4.4 kΩ resistor               |           | 1   | SLAMTEC                |
+| DC to DC Boost Step Up Module |           | 1   | Cytron                 |
+|                               |           | 1   | Local / 3D Printed     |
+|                               |           | N/A | User-designed          |
+| eSUN PLA+ Spool               | eSUN PLA+ | 3   |                        |
+| Wires                         | N/A       | —   | Any electronics vendor |
 
-| Component               | Quantity          | Qty | Source/Supplier        |
-|------------------------       |---------------------------------|-----|------------------------|
-| N20 DC Motor + encoder        |  2                               | 2   |    |
-| S0004m Servo                  |    2                             | 1   |    |
-| Raspberry Pi Pico 2           | 1                 | 1   |    |
-| Raspberry Pi 5                | 1                             | 1   | |
-| RPLidar C1                    | 1                     | 1   | SLAMTEC         |
-| 5MP Fish Eye Camera           | 1          | 1   | Cytron     |
-| 18650 Lithium Ion Battery     |  2  | —   |  |
-| UPS EP-0136                   |                                 | 2   |    |
-| BNO085 IMU                    |                                 | 1   |    |
-| Mini L298N                    |                       | 1   |    |
-| N Channel MOSFET Transistor   |                                 | 1   | |
-| 4.4 kΩ resistor               |                           | 1   | SLAMTEC         |
-| DC to DC Boost Step Up Module |              | 1   | Cytron     |
-|                               |             | 1   | Local / 3D Printed     |
-|                               |                  | N/A | User-designed          |
-| eSUN PLA+ Spool               | eSUN PLA+      | 3  |    |
-| Wires                         |  N/A     | —   | Any electronics vendor |
----
+______________________________________________________________________
 
-### 8.1 3D Printed Parts
+<!--TODO:-->
 
-###  Chassis & Core Structure
+## 9. 3D Printed Parts
 
----
+### 9.1 Chassis & Core Structure
 
-###  Motor & Transmission
+### 9.2 Motor & Transmission
 
+### 9.3 Wheel & Axle Components
 
----
+### 9.4 Steering Linkages
 
-### Wheel & Axle Components
+### 9.5 Miscellaneous
 
+______________________________________________________________________
 
----
+<!--TODO:-->
 
-###  Steering Linkages
-
-
----
-
-### Miscellaneous
-
-
-
-### 8.2 Tools and Assembly
+## 10. Tools and Assembly
 
 Print ` `
 
-Attach motors with ``
+Attach motors with \`\`
 
-Mount servo with ``
+Mount servo with \`\`
 
 Install Pi 5 + Pico on the central plate.
 
-Mount LIDAR on ``
+Mount LIDAR on \`\`
 
 Wire components as per the diagram.
-
----
