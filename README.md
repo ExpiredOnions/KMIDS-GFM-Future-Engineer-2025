@@ -24,11 +24,10 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [3.3 Processing Units](#33-processing-units)
   - [3.4 Circuit Diagram](#34-circuit-diagram)
 - [4. Obstacle Management](#4-obstacle-management)
-  - [4.1 LIDAR-Based Navigation Overview](#41-lidar-based-navigation-overview)
-  - [4.2 Open Challenge](#42-open-challenge)
-  - [4.3 Obstacle Challenge](#43-obstacle-challenge)
-  - [4.4 Parallel Parking](#44-parallel-parking)
-  - [4.5 Source Code Summary](#45-source-code-summary)
+  - [4.1 Open Challenge](#41-open-challenge)
+  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  - [4.3 Parallel Parking](#43-parallel-parking)
+  - [4.4 Source Code Summary](#44-source-code-summary)
 
 <!-- tocstop -->
 
@@ -325,11 +324,7 @@ We divide the strategy into three phases:
 - Obstacle Challenge
 - Parallel Parking Maneuver
 
-### 4.1 LIDAR-Based Navigation Overview
-
-To navigate the game arena, we rely on our LiDAR-based navigation algorithm that detects walls and obstacles, allowing the robot to make real-time movement decisions.
-
-### 4.2 Open Challenge
+### 4.1 Open Challenge
 
 ![Robot navigating Open Challenge](./docs/resources/lidar_image_open.png)\
 *Figure: Example of robot sensing walls and navigating the field.*
@@ -461,11 +456,11 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
 
 </details>
 
-### 4.3 Obstacle Challenge
+### 4.2 Obstacle Challenge
 
-### 4.4 Parallel Parking
+### 4.3 Parallel Parking
 
-### 4.5 Source Code Summary
+### 4.4 Source Code Summary
 
 <!--TODO:-->
 
