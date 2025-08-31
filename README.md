@@ -162,8 +162,10 @@ To make sure the steering angle performed correctly, we carried out an iterative
 **Mounting:**
 
 - Screwed directly into a platform plate in front of the chassis into the platform plate.
-  <img src="" alt="servo_screw.png"> <!--FIXME: Add servo_screw.png-->
-  <img src="" alt="servo_mounting.png"> <!--FIXME: Add servo_mounting.png-->
+
+<!--FIXME: Add servo_screw.png-->
+
+<!--FIXME: Add servo_mounting.png-->
 
 **Considerations**
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
@@ -200,7 +202,7 @@ The motors, however, require a higher voltage — at least 6V, and to ensure rel
 
 The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
 
-<img src="" alt="battery_location.png"> <!--FIXME: Add battery_location.png-->
+<img src="./docs/resources/battery_location.jpg" alt="battery_location.jpg" width=600px> 
 
 ### 3.2 Sensor and Camera
 
@@ -237,9 +239,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 - **Compact size and lightweightness** allow easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-The LIDAR's sensor driver has been custom-coded to better fit our needs. [Code Link Here]
-
-<img src="" alt="LIDAR_mount.png"> <!--FIXME: Add LIDAR_mount.png-->
+<!--FIXME: Add LIDAR_mount.png-->
 
 [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
@@ -479,8 +479,10 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
 
 ### 4.2 Obstacle Challenge
 
-![Robot navigating Obstacle Challenge](./docs/resources/lidar_image_obstacle.png)\
-*Figure: Example of robot navigating the Obstacle Challenge arena and detecting traffic lights.*
+<img src="./docs/resources/lidar_image_obstacle.png" alt="LIDAR view" width="400px">
+<img src="./docs/resources/camera_image_obstacle.png" alt="Camera view" width="400px">
+
+*Figure: Example of robot detecting traffic lights.*
 
 The Obstacle Challenge requires the robot to navigate the arena while avoiding obstacles and detecting traffic lights. The robot combines LiDAR and camera data to make real-time decisions. The main processing steps are:
 
