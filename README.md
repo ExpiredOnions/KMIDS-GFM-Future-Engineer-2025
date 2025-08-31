@@ -31,7 +31,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 - [5. Robot Design](#5-robot-design)
   - [5.1 Robot Images](#51-robot-images)
   - [5.2 Chassis Design](#52-chassis-design)
-- [6. Performance Videos](#6-performance-videos)
+- [6. Performance Video](#6-performance-video)
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
@@ -45,7 +45,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
   - [9.4 Steering Linkages](#94-steering-linkages)
   - [9.5 Miscellaneous](#95-miscellaneous)
-- [10. Tools and Assembly](#10-tools-and-assembly)
+
 
 <!-- tocstop -->
 
@@ -59,7 +59,7 @@ Team KMIDS-GFM was inspired by the challenge of applying engineering principles 
 
 Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and a smoother workflow throughout the project.
 
-Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilizes a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
+Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
 Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
 
@@ -72,7 +72,7 @@ ______________________________________________________________________
 
 ### 2.1 Drive System
 
-**Motor: N20 Motor** <!--FIXME: Add link to buy the motor here -->
+[Motor: N20 Motor](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273) 
 
 <table>
   <tr>
@@ -86,7 +86,7 @@ ______________________________________________________________________
         <li>No-load Speed: 500RPM </li>
         <li>Stall Torque 0.15kg-cm</li>
         <li>Current: 0.023A</li>
-        <li>Gear Ratio: 1:30</li>
+        <li>Gear Ratio: 1:100</li>
       </ul>
     </td>
   </tr>
@@ -103,7 +103,7 @@ The integration of encoders with the N20 motors provides real-time feedback for 
 
 **Mounting:**
 
-- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. <!--FIXME: Add link to the STL file-->
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. (./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
 
@@ -112,7 +112,7 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behaviour of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
@@ -132,7 +132,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
-**Servo: S0004m** <!--FIXME: Add link to buy the servo here -->
+[Servo: S0004m](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) 
 
 <table>
   <tr>
@@ -348,9 +348,9 @@ We divide the strategy into three phases:
 ![Robot navigating Open Challenge](./docs/resources/lidar_image_open.png)\
 *Figure: Example of robot sensing walls and navigating the field.*
 
-The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomized at the start, so relying on pre-programmed movements is not feasible
+The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomised at the start, so relying on pre-programmed movements is not feasible
 
-The robot determines which direction to turn by analyzing the walls detected around it. The algorithm works as follows:
+The robot determines which direction to turn by analysing the walls detected around it. The algorithm works as follows:
 
 1. **Check for empty walls:**
 
@@ -369,7 +369,7 @@ The robot determines which direction to turn by analyzing the walls detected aro
 
 1. **Evaluate right walls:**
 
-   - Similarly checks right wall line segments.
+   - Similarly, checks the right wall line segments.
    - Returns `CLOCKWISE` if a right turn is clear, or `COUNTER_CLOCKWISE` if blocked.
 
 1. **Fallback:**
@@ -825,9 +825,11 @@ Our robot chassis was completely custom-designed and 3D printed using [esun PLA+
 
 ______________________________________________________________________
 
-## 6. Performance Videos
+## 6. Performance Video
 
-[Watch on YouTube](-) <!--FIXME: Add YouTube Link-->
+[Watch on YouTube](youtube.com/watch?v=7SNfU2ATe68&feature=youtu.be) <!--FIXME: Add YouTube Link-->
+
+#### | The video shows both the open and obstacle challenge
 
 ______________________________________________________________________
 
@@ -1031,7 +1033,7 @@ ______________________________________________________________________
 | N Channel MOSFET Transistor   | 1        | N/A             |
 | 4.4 kΩ resistor               | 1        | N/A             |
 | Wires                         | A lot    | N/A             |
-| eSUN PLA+ Spool               | 1        | eSUN            |
+| eSUN PLA+ Spool               | 3        | eSUN            |
 
 ______________________________________________________________________
 
