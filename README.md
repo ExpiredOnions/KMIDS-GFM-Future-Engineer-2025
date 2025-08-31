@@ -12,7 +12,7 @@
 
 ## Team Members
 - **Chayanon Ninyawee (Garfield)** 
-- **Supakorn Sunthonthammarat (Pluem)** 
+- **Supakorn Sunthonthammarat (Pleum)** 
 - **Thammatouch Chantasarn (Kao)** 
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
@@ -20,14 +20,16 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- NOTE: Replace all placeholder sections below with your team's actual content and details. -->
 
 ##  Table of Contents
+
+
+
+### Sections
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
   - [Drivetrain](#21-drivetrain)
     - [Motor](#motor)
   - [Steering](#22-steering)
     - [Servo](#servo)
-  - [Chassis Design](#23-chassis-design)
-  - [Mounting and Structure](#24-mounting-and-structure)
 - [3. Power and Sense Management](#3-power-and-sense-management)
   - [Power Source](#31-power-source)
   - [Sensor and Camera](#32-sensor-and-camera)
@@ -37,12 +39,13 @@ We are a team of dedicated students with a passion for robotics and innovation. 
     - [Single-Board Computer](#single-board-computer)
     - [Microcontroller](#microcontroller)
   - [Circuit Diagram](#34-circuit-diagram)
-- [4. Obstacle Management](#4-obstacle-management)
-- [5. Images](#5-images)
-- [6. Performance Videos](#6-performance-videos)
+- [4. Navigation](#4-obstacle-management)
+- [5. Robot Design](#5-Robot-Design)
+- [6. Performance Video](#6-performance-videos)
 - [7. Source Code](#7-source-code)
 - [8. Build Instructions](#8-build-instructions)
 - [9. GitHub Usage and Commit History](#9-github-usage-and-commit-history)
+  
 
 ---
 
@@ -119,7 +122,7 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 ### 2.2 Steering
 
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behaviour of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
@@ -170,7 +173,8 @@ Servo: S0004m
 - This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
 **Mounting:**
-- Screwed directly into a platform plate in front of the chassis.
+- Screwed directly into a platform plate in front of the chassis into the platform plate.
+
   <img src="" alt="Servo screwed location" >
   <img src="" alt="close up on the plate and screws" >
 
@@ -178,31 +182,6 @@ Servo: S0004m
   
 **Considerations** 
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM. 
-
----
-
-### 2.3 Chassis Design
-
-**Design Overview**
-
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry onto.
-
-Layout
-The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
-
-  <img src="" alt="Base chassis plate" >
-
-  <img src="" alt="diagram of the position of components" >
-
-Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
-
-### 2.4 Mounting and Structure
-
-- Uses a differential geartrain
-- The servo is installed at the front centre of the chassis using our **custom servo mounts**.
-  
-- A **custom printed servo horn** is attached to a pivoting front wheel or steering linkage to control direction.
-- The servo is securely screwed into a platform plate.
 
 ---
 
@@ -231,7 +210,10 @@ Our robot chassis was completely custom-designed and 3D printed using [esun PLA+
 
 The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. 
 The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
+
 The motors, however, require a higher voltage — at least 6V, and to ensure reliable performance, the N20 motor power is supplied through a step-up converter that increases 5V to 12V. Because the motor power is separate from the Raspberry Pi, the standard on/off switch could not fully control the system. To solve this, a MOSFET and a 4.4 kΩ resistor were added between the gate and source, with the drain connected to the negative side of the step-up converter. This allows the robot to be safely powered on and off while supplying sufficient power to both the Raspberry Pi and the motors.
+
+
 
 The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
 
@@ -381,7 +363,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 ---
 
-## 4. Obstacle Management
+## 4. Navigation
 
 <!-- TODO: Obstacle management discussion should include the strategy for the vehicle to
 negotiate the obstacle course for all the challenges. This could include flow
@@ -404,12 +386,6 @@ We divide the strategy into three phases:
 ### 4.1 LIDAR-Based Navigation Overview
 
 To navigate the game arena, we rely on our LiDAR-based navigation algorithm that detects walls and obstacles, allowing the robot to make real-time movement decisions.
-
-
-
-
-
-
 
 ### 4.2 Open Challenge
 
@@ -454,9 +430,7 @@ The Open Challenge requires the robot to complete three laps around the arena wi
 ### 4.3 Source Code Summary
 
 LIDAR Code
-```
-
-The constructor of the LidarModule class establishes the initial communication parameters for the LIDAR device. It sets the serial port path (defaulting to /dev/ttyAMA0) and baud rate (defaulting to 460800), and optionally links a logger for diagnostic messages. While it prepares the internal state, it does not start scanning immediately. This separation ensures the robot can configure its LIDAR hardware without committing resources until scanning is explicitly requested.
+<!-- The constructor of the LidarModule class establishes the initial communication parameters for the LIDAR device. It sets the serial port path (defaulting to /dev/ttyAMA0) and baud rate (defaulting to 460800), and optionally links a logger for diagnostic messages. While it prepares the internal state, it does not start scanning immediately. This separation ensures the robot can configure its LIDAR hardware without committing resources until scanning is explicitly requested.
 
 LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
 LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
@@ -540,15 +514,7 @@ int main() {
 
 ---
 
-## 5. Images
-
-<!-- TODO: Pictures of the team and robot must be provided. The pictures of the robot must
-cover all sides of the robot, must be clear, in focus and show aspects of the
-mobility, power and sense, and obstacle management. Reference in the
-discussion sections 1, 2 and 3 can be made to these pictures. Team photo is
-necessary for judges to relate and identify the team during the local and
-international competitions. -->
-
+## 5. Robot Design
 
 ### 5.1 Robot Images
 <!-- TODO: Include clear, high-quality photos from top, bottom, front, back, left, and right. -->
@@ -557,53 +523,51 @@ international competitions. -->
   <tr>
     <td align="center">
       <b>Front View</b><br>
-      <img src="" width="300">
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/frontview.jpg" width="300">
     </td>
     <td align="center">
       <b>Back View</b><br>
-      <img src="" width="300">
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/backview.jpg" width="300">
     </td>
     <td align="center">
       <b>Left Side View</b><br>
-      <img src="" width="300">
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/leftview.jpg" width="300">
     </td>
   </tr>
   <tr>
     <td align="center">
       <b>Right Side View</b><br>
-      <img src="" width="300">
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/rightview.jpg" width="300">
     </td>
-    <td align="center">
-      <b>Top View</b><br>
-      <img src="" width="300">
-    </td>
+  <td align="center">
+  <b>Top View</b><br>
+  <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/topview.jpg" width="300" style="transform: rotate(90deg); transform-origin: center;">
+</td>
     <td align="center">
       <b>Bottom View</b><br>
-      <img src="" width="300">
+      <img src="https://github.com/ExpiredOnions/KMIDS-GFM-Future-Engineer-2025/blob/feature/add-docs/docs/resources/botview.jpg" width="300">
     </td>
   </tr>
 </table>
 
-### 5.2 Internal View
-<!-- TODO: Show images of internal layout (wiring, board placement, sensors, motors). -->
+### 5.2 Chassis Design
+
+**Design Overview**
+
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry.
+
+**Layout**
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring. 
+
+Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
 
 
 ---
 
 ## 6. Performance Videos
 
-<!-- TODO: The performance videos must demonstrate the performance of the vehicle from
-start to finish for each challenge. The videos could include an overlay of
-commentary, titles or animations. The video could also include aspects of
-section 1, 2 or 3. -->
 
-### 6.1 Challenge 1 - Open Challenge
-[Watch on YouTube](#) <!-- TODO: Replace with actual video link -->
-
-### 6.2 Challenge 2 - Obstacle Challenge
-[Watch on YouTube](#) <!-- TODO: Replace with actual video link -->
-
-<!-- NOTE: Videos must be at least 30 seconds of continuous autonomous run. You may add overlays and labels. -->
+[Watch on YouTube]( - ) 
 
 ---
 
@@ -639,32 +603,53 @@ NOTE: List any software/IDE needed (e.g., Arduino IDE), libraries required, and 
 | 18650 Lithium Ion Battery     |  2  | —   |  |
 | UPS EP-0136                   |                                 | 2   |    |
 | BNO085 IMU                    |                                 | 1   |    |
-|   Mini L298N                  |                       | 1   |    |
+| Mini L298N                    |                       | 1   |    |
 | N Channel MOSFET Transistor   |                                 | 1   | |
 | 4.4 kΩ resistor               |                           | 1   | SLAMTEC         |
-| DC to DC Boost Step Up Module|              | 1   | Cytron     |
-|       |             | 1   | Local / 3D Printed     |
-|     |                  | N/A | User-designed          |
-| eSUN PLA+ Spool     | eSUN PLA+      | 3  |    |
-| Wires                  |  N/A     | —   | Any electronics vendor |
+| DC to DC Boost Step Up Module |              | 1   | Cytron     |
+|                               |             | 1   | Local / 3D Printed     |
+|                               |                  | N/A | User-designed          |
+| eSUN PLA+ Spool               | eSUN PLA+      | 3  |    |
+| Wires                         |  N/A     | —   | Any electronics vendor |
 ---
 
-### 📁 CAD & Design Files
-
-
-- ` ` — Base chassis
-- ` ` — Motor bracket
-- ` ` — Fisheye camera mount
-- ` ` — Front steering servo mount
-
-All files will be uploaded under ` ` and ` ` folders. 
-
-
-
 ### 8.1 3D Printed Parts
-<!-- TODO: Mention parts that are 3D printed. Include .STL files in the repo. -->
+
+###  Chassis & Core Structure
+
+---
+
+###  Motor & Transmission
+
+
+---
+
+### Wheel & Axle Components
+
+
+---
+
+###  Steering Linkages
+
+
+---
+
+### Miscellaneous
+
+
 
 ### 8.2 Tools and Assembly
-<!-- TODO: Provide brief assembly instructions or a link to a full manual. -->
+
+Print ` `
+
+Attach motors with ``
+
+Mount servo with ``
+
+Install Pi 5 + Pico on the central plate.
+
+Mount LIDAR on ``
+
+Wire components as per the diagram.
 
 ---
