@@ -81,8 +81,8 @@ ______________________________________________________________________
 - Provides moderate torque that is more than enough for the flat arena.
 - Easy to use on the robot and integrate with other parts.
 
-The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimises wheel slip and ensures stability during sharp manoeuvres.
-The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential geartrain makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
+The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimizes wheel slip and ensures stability during sharp maneuver.
+The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential gear makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
 
 **Mounting:**
 
@@ -95,15 +95,15 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behaviour of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
 <img src="./docs/resources/ackermann_steering.png">
 
-While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvres and accurate alignment in narrower spaces.
+While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother maneuver and accurate alignment in narrower spaces.
 
-Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behaviour iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behaviour.
+Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behavior.
 
 **Calibration and Implementation**
 
@@ -145,7 +145,6 @@ To make sure the steering angle performed correctly, we carried out an iterative
 **Mounting:**
 
 - Screwed directly into a platform plate in front of the chassis into the platform plate.
-
   <img src="" alt="servo_screw.png"> <!--FIXME: Add servo_screw.png-->
   <img src="" alt="servo_mounting.png"> <!--FIXME: Add servo_mounting.png-->
 
@@ -158,7 +157,7 @@ ______________________________________________________________________
 
 ### 3.1 Power Source
 
-[18650 Lithium Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)
+[18650 Lithium-Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)
 
 <table>
   <tr>
@@ -217,7 +216,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 **Reason for Selection:**
 
 - **Precise distance measurement** of obstacles within a wide radius
-- **360° scanning** makes it ideal for SLAM (Simultaneous Localisation and Mapping).
+- **360° scanning** makes it ideal for SLAM (Simultaneous Localization and Mapping).
 - **Compact size and lightweightness** allow easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
@@ -314,9 +313,9 @@ ______________________________________________________________________
 
 ## 4. Navigation
 
-The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
+The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomized.
 
-The obstacle challenge requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the barriers around it.
+The obstacle challenge requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomized. After the third lap, the car must find the parking area and park in the area without touching the surroundings barriers around it.
 
 Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
@@ -324,7 +323,7 @@ We divide the strategy into three phases:
 
 - Open Challenge
 - Obstacle Challenge
-- Parallel Parking Manoeuvre
+- Parallel Parking Maneuver
 
 ### 4.1 LIDAR-Based Navigation Overview
 
@@ -332,7 +331,7 @@ To navigate the game arena, we rely on our LiDAR-based navigation algorithm that
 
 ### 4.2 Open Challenge
 
-The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomised at the start, so relying on pre-programmed movements is not feasible
+The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomized at the start, so relying on pre-programmed movements is not feasible
 
 <table>
   <tr>
@@ -494,7 +493,7 @@ ______________________________________________________________________
 Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry.
 
 **Layout**
-The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the center for ease of wiring.
 
 Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
 
@@ -533,7 +532,7 @@ ______________________________________________________________________
 | Raspberry Pi 5                | 1        | Gammaco         |
 | Raspberry Pi Pico 2           | 1        | Cytron          |
 | UPS EP-0136                   | 1        | 52Pi            |
-| 18650 Lithium Ion Battery     | 2        | Cytron          |
+| 18650 Lithium-Ion Battery     | 2        | Cytron          |
 | RPLidar C1                    | 1        | SLAMTEC         |
 | 5MP Fish Eye Camera           | 1        | Cytron          |
 | BNO085 IMU                    | 1        | N/A             |
