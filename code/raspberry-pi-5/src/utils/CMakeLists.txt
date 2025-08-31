@@ -1,0 +1,5 @@
+add_subdirectory(direction)
+add_subdirectory(log_reader)
+add_subdirectory(logger)
+add_subdirectory(ring_buffer)
+add_subdirectory(pid_controller)

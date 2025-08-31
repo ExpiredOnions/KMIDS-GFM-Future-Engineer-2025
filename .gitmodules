@@ -1,0 +1,12 @@
+[submodule "LCCV"]
+	path = code/raspberry-pi-5/external/lccv
+	url = https://github.com/kbarni/LCCV.git
+[submodule "rplidar_sdk"]
+	path = code/raspberry-pi-5/external/rplidar_sdk
+	url = https://github.com/Slamtec/rplidar_sdk.git
+[submodule "pico-sdk"]
+	path = code/raspberry-pi-pico-2/external/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
+[submodule "BNO08x_Pico_Library"]
+	path = code/raspberry-pi-pico-2/external/BNO08x_Pico_Library
+	url = https://github.com/robotcopper/BNO08x_Pico_Library.git
