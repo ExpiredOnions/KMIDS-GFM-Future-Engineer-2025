@@ -312,9 +312,10 @@ ______________________________________________________________________
 
 ## 4. Obstacle Management
 
-The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomized.
+There are two challenges in this competition:
 
-The obstacle challenge requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomized. After the third lap, the car must find the parking area and park in the area without touching the surroundings barriers around it.
+- The **open challenge** involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomized.
+- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomized. After the third lap, the car must find the parking area and park in the area without touching the surroundings barriers around it.
 
 Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
