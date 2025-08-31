@@ -528,25 +528,23 @@ ______________________________________________________________________
 
 ## 8. List of Components
 
-| Component                     | Quantity  | Qty | Source/Supplier        |
-| ----------------------------- | --------- | --- | ---------------------- |
-| N20 DC Motor + encoder        | 2         | 2   |                        |
-| S0004m Servo                  | 2         | 1   |                        |
-| Raspberry Pi Pico 2           | 1         | 1   |                        |
-| Raspberry Pi 5                | 1         | 1   |                        |
-| RPLidar C1                    | 1         | 1   | SLAMTEC                |
-| 5MP Fish Eye Camera           | 1         | 1   | Cytron                 |
-| 18650 Lithium Ion Battery     | 2         | —   |                        |
-| UPS EP-0136                   |           | 2   |                        |
-| BNO085 IMU                    |           | 1   |                        |
-| Mini L298N                    |           | 1   |                        |
-| N Channel MOSFET Transistor   |           | 1   |                        |
-| 4.4 kΩ resistor               |           | 1   | SLAMTEC                |
-| DC to DC Boost Step Up Module |           | 1   | Cytron                 |
-|                               |           | 1   | Local / 3D Printed     |
-|                               |           | N/A | User-designed          |
-| eSUN PLA+ Spool               | eSUN PLA+ | 3   |                        |
-| Wires                         | N/A       | —   | Any electronics vendor |
+| Component                     | Quantity | Source/Supplier |
+| ----------------------------- | -------- | --------------- |
+| Raspberry Pi 5                | 1        | Gammaco         |
+| Raspberry Pi Pico 2           | 1        | Cytron          |
+| UPS EP-0136                   | 1        | 52Pi            |
+| 18650 Lithium Ion Battery     | 2        | Cytron          |
+| RPLidar C1                    | 1        | SLAMTEC         |
+| 5MP Fish Eye Camera           | 1        | Cytron          |
+| BNO085 IMU                    | 1        | N/A             |
+| S0004m Servo                  | 1        | N/A             |
+| N20 DC Motor + encoder        | 2        | N/A             |
+| DRV8871                       | 1        | N/A             |
+| DC to DC Boost Step Up Module | 1        | N/A             |
+| N Channel MOSFET Transistor   | 1        | N/A             |
+| 4.4 kΩ resistor               | 1        | N/A             |
+| Wires                         | A lot    | N/A             |
+| eSUN PLA+ Spool               | 1        | eSUN            |
 
 ______________________________________________________________________
 
