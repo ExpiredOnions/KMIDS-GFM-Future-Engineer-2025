@@ -12,7 +12,7 @@
 
 ## Team Members
 - **Chayanon Ninyawee (Garfield)** 
-- **Supakorn Sunthonthammarat (Pleum)** 
+- **Supakorn Sunthonthammarat (Pluem)** 
 - **Thammatouch Chantasarn (Kao)** 
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
