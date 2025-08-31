@@ -331,29 +331,110 @@ To navigate the game arena, we rely on our LiDAR-based navigation algorithm that
 
 ### 4.2 Open Challenge
 
+![Robot navigating Open Challenge](./docs/resources/lidar_image_open.png)\
+*Figure: Example of robot sensing walls and navigating the field.*
+
 The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomized at the start, so relying on pre-programmed movements is not feasible
 
-<table>
-  <tr>
-    <td align="center">
-      <b>Column 1</b><br>
-      <img src="" width="300">
-    </td>
-    <td align="center">
-      <b>Column 2</b><br>
-      <img src="" width="300">
-    </td>
-  </tr>
-</table>
+The robot determines which direction to turn by analyzing the walls detected around it. The algorithm works as follows:
 
-1. To decide the orientation of the robot's starting position and which way to turn, the algorithm compares the space on the left and right. The robot then knows to turn to the side with greater clearance.
-1. The LIDAR continuously scans the environment and returns the distance value from each side of the robot (front, back, left, right).
+1. Identify the **closest front wall** by comparing the midpoints of all front-facing line segments.
+1. Evaluate the **left and right walls** relative to the front wall, considering perpendicular distance and orientation to find clearance.
+1. Decide whether to turn **clockwise** or **counter-clockwise** based on which side has more clearance.
+1. Returns `std::nullopt` if no clear turn direction can be determined.
 
-- If front clearance > threshold → drive forward.
-- If front clearance ≤ threshold → turn toward the side with greater clearance (compare left vs right).
+<details>
+<summary>Click here to show C++ code</summary>
 
-3. If the distance detected in the front sector is greater than a set threshold, the robot proceeds forward since the path is clear.
-1. When it falls below a threshold, it stops and turns towards the side that it knows is clear, and proceeds
+```cpp
+std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
+    if (walls.frontWalls.empty()) return std::nullopt;
+    if (walls.leftWalls.empty() && walls.rightWalls.empty()) return std::nullopt;
+
+    // Pick the highest front line
+    const LineSegment *frontLine = &walls.frontWalls[0];
+    float frontMidY = (frontLine->y1 + frontLine->y2) / 2.0f;
+    for (const auto &line : walls.frontWalls) {
+        float midY = (line.y1 + line.y2) / 2.0f;
+        if (midY > frontMidY) {
+            frontLine = &line;
+            frontMidY = midY;
+        }
+    }
+
+    // Determine left and right points of the front line
+    float frontLeftX, frontLeftY, frontRightX, frontRightY;
+    if (frontLine->x1 < frontLine->x2) {
+        frontLeftX = frontLine->x1;
+        frontLeftY = frontLine->y1;
+        frontRightX = frontLine->x2;
+        frontRightY = frontLine->y2;
+    } else {
+        frontLeftX = frontLine->x2;
+        frontLeftY = frontLine->y2;
+        frontRightX = frontLine->x1;
+        frontRightY = frontLine->y1;
+    }
+
+    // Check left walls
+    for (const auto &leftLine : walls.leftWalls) {
+        float leftHigherX, leftHigherY;
+        if (leftLine.y1 < leftLine.y2) {
+            leftHigherX = leftLine.x1;
+            leftHigherY = leftLine.y1;
+        } else {
+            leftHigherX = leftLine.x2;
+            leftHigherY = leftLine.y2;
+        }
+
+        // Check for left wall that is far away in x direction from front wall
+        float dir = leftLine.perpendicularDirection(frontLeftX, frontLeftY);
+        if (dir > 90.0f && dir < 270.0f) {
+            if (leftLine.perpendicularDistance(0.0f, 0.0f) > 1.70f) return RotationDirection::COUNTER_CLOCKWISE;
+
+            continue;
+        }
+
+        if (frontLine->perpendicularDistance(leftHigherX, leftHigherY) < 0.30) return RotationDirection::CLOCKWISE;
+
+        if (leftLine.perpendicularDistance(frontLeftX, frontLeftY) > 0.30f) {
+            float dir = leftLine.perpendicularDirection(frontLeftX, frontLeftY);
+            if (dir > 270.0f || dir < 90.0f) return RotationDirection::COUNTER_CLOCKWISE;
+        }
+    }
+
+    // Check right walls
+    for (const auto &rightLine : walls.rightWalls) {
+        float rightHigherX, rightHigherY;
+        if (rightLine.y1 < rightLine.y2) {
+            rightHigherX = rightLine.x1;
+            rightHigherY = rightLine.y1;
+        } else {
+            rightHigherX = rightLine.x2;
+            rightHigherY = rightLine.y2;
+        }
+
+        // Check for right wall that is far away in x direction from front wall
+        float dir = rightLine.perpendicularDirection(frontRightX, frontRightY);
+        if (dir > 270.0f || dir < 90.0f) {
+            if (rightLine.perpendicularDistance(0.0f, 0.0f) > 1.70f) return RotationDirection::CLOCKWISE;
+
+            continue;
+        }
+
+        if (frontLine->perpendicularDistance(rightHigherX, rightHigherY) < 0.30) return RotationDirection::COUNTER_CLOCKWISE;
+
+        if (rightLine.perpendicularDistance(frontRightX, frontRightY) > 0.30f) {
+            float dir = rightLine.perpendicularDirection(frontRightX, frontRightY);
+            if (dir > 90.0f && dir < 270.0f) return RotationDirection::CLOCKWISE;
+        }
+    }
+
+    return std::nullopt;  // unknown if no rule matched
+}
+```
+
+</details>
 
 ### 4.3 Obstacle Challenge
 
