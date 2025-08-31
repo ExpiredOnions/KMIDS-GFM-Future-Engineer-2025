@@ -51,3 +51,6 @@ coverage/
 *.gcno
 *.gcda
 *.gcov
+
+# Ignore FreeCAD backup files
+*.FCBak
