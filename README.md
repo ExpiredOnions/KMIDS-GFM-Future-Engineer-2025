@@ -23,7 +23,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [3.2 Sensor and Camera](#32-sensor-and-camera)
   - [3.3 Processing Units](#33-processing-units)
   - [3.4 Circuit Diagram](#34-circuit-diagram)
-- [4. Navigation](#4-navigation)
+- [4. Obstacle Management](#4-obstacle-management)
   - [4.1 LIDAR-Based Navigation Overview](#41-lidar-based-navigation-overview)
   - [4.2 Open Challenge](#42-open-challenge)
   - [4.3 Obstacle Challenge](#43-obstacle-challenge)
@@ -311,7 +311,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 ______________________________________________________________________
 
-## 4. Navigation
+## 4. Obstacle Management
 
 The open challenge involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomized.
 
