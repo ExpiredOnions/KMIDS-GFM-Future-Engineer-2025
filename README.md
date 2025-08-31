@@ -113,7 +113,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 - After each adjustment, we observed whether the wheels tracked correctly in both directions.
 - Once the optimal angle is reached, we make sure to model the steering mechanism around the angle.
 
-<img src="" alt="steering_gif.gif"> <!--FIXME: Add steering_gif-->
+<img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
 **Servo: S0004m** <!--FIXME: Add link to buy the servo here -->
 
