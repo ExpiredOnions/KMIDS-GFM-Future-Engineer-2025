@@ -338,15 +338,40 @@ The Open Challenge requires the robot to complete three laps around the arena wi
 
 The robot determines which direction to turn by analyzing the walls detected around it. The algorithm works as follows:
 
-1. Identify the **closest front wall** by comparing the midpoints of all front-facing line segments.
-1. Evaluate the **left and right walls** relative to the front wall, considering perpendicular distance and orientation to find clearance.
-1. Decide whether to turn **clockwise** or **counter-clockwise** based on which side has more clearance.
-1. Returns `std::nullopt` if no clear turn direction can be determined.
+1. **Check for empty walls:**
+
+   - If there are no front walls or no side walls, the function returns `std::nullopt` because it cannot determine a turn direction.
+
+1. **Identify the closest front wall:**
+
+   - Compares all front wall line segments and selects the one with the highest midpoint (largest Y value).
+   - Determines left and right points of this front wall based on their X coordinates.
+
+1. **Evaluate left walls:**
+
+   - Finds the "higher" point of each left wall line segment.
+   - Uses `perpendicularDirection` and `perpendicularDistance` to determine if a left turn is feasible.
+   - Returns `COUNTER_CLOCKWISE` if a left turn is clear, or `CLOCKWISE` if blocked.
+
+1. **Evaluate right walls:**
+
+   - Similarly checks right wall line segments.
+   - Returns `CLOCKWISE` if a right turn is clear, or `COUNTER_CLOCKWISE` if blocked.
+
+1. **Fallback:**
+
+   - If no rules match, returns `std::nullopt`, indicating that the turn direction cannot be determined.
 
 <details>
 <summary>Click here to show C++ code</summary>
 
 ```cpp
+/**
+ * @brief Determine the robot's turn direction based on relative walls.
+ *
+ * @param walls Resolved or candidate walls around the robot.
+ * @return Optional RotationDirection; empty if turn direction can't be determined.
+ */
 std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
     if (walls.frontWalls.empty()) return std::nullopt;
     if (walls.leftWalls.empty() && walls.rightWalls.empty()) return std::nullopt;
