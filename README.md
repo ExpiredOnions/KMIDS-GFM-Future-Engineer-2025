@@ -27,8 +27,8 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [4.1 LIDAR-Based Navigation Overview](#41-lidar-based-navigation-overview)
   - [4.2 Open Challenge](#42-open-challenge)
   - [4.3 Obstacle Challenge](#43-obstacle-challenge)
-  - [4.3 Parallel Parking](#43-parallel-parking)
-  - [4.3 Source Code Summary](#43-source-code-summary)
+  - [4.4 Parallel Parking](#44-parallel-parking)
+  - [4.5 Source Code Summary](#45-source-code-summary)
 
 <!-- tocstop -->
 
@@ -49,10 +49,6 @@ Our objective is to create an intelligent robot that is capable of navigating th
 ______________________________________________________________________
 
 ## 2. Mobility Management
-
-<!-- Discussion on design principle -->
-
-<!-- Our robot is designed with precision as our priority, as it is essential for navigating obstacles in the competition arena. -->
 
 - **Drive System:** 2-wheel differential drive (rear wheels).
 - **Steering:** Front-wheel steering using S0004m servo.
@@ -362,9 +358,9 @@ The Open Challenge requires the robot to complete three laps around the arena wi
 
 ### 4.3 Obstacle Challenge
 
-### 4.3 Parallel Parking
+### 4.4 Parallel Parking
 
-### 4.3 Source Code Summary
+### 4.5 Source Code Summary
 
 <!--TODO:-->
 
