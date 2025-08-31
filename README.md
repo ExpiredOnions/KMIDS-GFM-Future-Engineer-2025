@@ -102,7 +102,10 @@ Motor: N20 Motor
 - Provides moderate torque that is more than enough for the flat arena.
 - Easy to use on the robot and integrate with other parts.
 
-  We equipped the N20 motor with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate --
+
+
+The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimises wheel slip and ensures stability during sharp manoeuvres. 
+The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential geartrain makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
 
 **Mounting:**
 - Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears.
@@ -226,17 +229,14 @@ Our robot chassis was completely custom-designed and 3D printed using [esun PLA+
   </tr>
 </table>
 
-The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a 2x 18650 Lithium-Ion battery pack, connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks.
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. 
+The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
+
 
 The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. Raspberry Pi recommends a 5V 5A power supply. This is well within the limits of what the two batteries can provide.
 
   <img src="" alt="Battery location" >
 
-### **Extra: Uninterruptible Power Supply**
-
-To ensure stable operation throughout the competition, we implemented an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle.
-
-It is powered by a 2x18650 Li-ion battery pack and includes a built-in charging circuit, voltage regulation, and power management. It maintains a stable 5V output to the Raspberry Pi 5 even thoughout fluctuations. It has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 ### 3.2 Sensor and Camera
 
