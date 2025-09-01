@@ -1,5 +1,7 @@
 # Hello! We are **Team KMIDS-GFM**.
 
+<img src="./docs/resources/team_photo.png" alt="Team Photo" width=600>
+
 # WRO - Future Engineers - Robotics Project Documentation
 
 ## Team Members
@@ -32,6 +34,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [5.1 Robot Images](#51-robot-images)
   - [5.2 Chassis Design](#52-chassis-design)
 - [6. Performance Video](#6-performance-video)
+  \+ [| The video shows both the open and obstacle challenge](#-the-video-shows-both-the-open-and-obstacle-challenge)
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
@@ -45,7 +48,6 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
   - [9.4 Steering Linkages](#94-steering-linkages)
   - [9.5 Miscellaneous](#95-miscellaneous)
-
 
 <!-- tocstop -->
 
@@ -72,7 +74,7 @@ ______________________________________________________________________
 
 ### 2.1 Drive System
 
-[Motor: N20 Motor](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273) 
+[Motor: N20 Motor](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273)
 
 <table>
   <tr>
@@ -133,7 +135,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
-[Servo: S0004m](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) 
+[Servo: S0004m](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true)
 
 <table>
   <tr>
@@ -164,12 +166,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 - Screwed directly into a platform plate in front of the chassis into the platform plate.
 
-
-
-
 <img src="docs/resources/servomount.jpg" alt="Servo Mounting" width=400>
- 
-
 
 **Considerations**
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
@@ -383,7 +380,7 @@ The robot determines which direction to turn by analysing the walls detected aro
 <details>
 <summary>Click here to show C++ code</summary>
 
-getTurnDirection code (from [lidar_processor.h](code/raspberry-pi-5/src/processors/lidar/lidar_processor.h) / [lidar_processor.cpp](code/raspberry-pi-5/src/processors/lidar/lidar_processor.cpp)) 
+getTurnDirection code (from [lidar_processor.h](code/raspberry-pi-5/src/processors/lidar/lidar_processor.h) / [lidar_processor.cpp](code/raspberry-pi-5/src/processors/lidar/lidar_processor.cpp))
 
 ```cpp
 /**
@@ -783,7 +780,6 @@ ______________________________________________________________________
 
 ### 5.1 Robot Images
 
-
 <table>
   <tr>
     <td align="center">
@@ -830,7 +826,7 @@ ______________________________________________________________________
 
 ## 6. Performance Video
 
-[Watch on YouTube](youtube.com/watch?v=7SNfU2ATe68&feature=youtu.be) 
+[Watch on YouTube](youtube.com/watch?v=7SNfU2ATe68&feature=youtu.be)
 
 #### | The video shows both the open and obstacle challenge
 
@@ -841,6 +837,7 @@ ______________________________________________________________________
 ### 7.1 Code Structure
 
 All the code used in the robot can be found [here](code)
+
 <!--TODO: Add link to the code-->
 
 The project codebase is organised to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
@@ -1046,16 +1043,19 @@ ______________________________________________________________________
 ## 9. 3D Printed Parts
 
 ### 9.1 Chassis & Core Structure
+
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
 ### 9.2 Motor & Transmission
+
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
 - [`MotorPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 
 ### 9.3 Wheel & Axle Components
+
 - [`BackWheelAxle_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelAxle_2x.stl)
 - [`BackWheelConnector_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelConnector_2x.stl)
 - [`BackWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelStopper_2x.stl)
@@ -1064,6 +1064,7 @@ ______________________________________________________________________
 - [`FrontWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelStopper_2x.stl)
 
 ### 9.4 Steering Linkages
+
 - [`TBoneLinkageBottom_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageBottom_1x.stl)
 - [`TBoneLinkageTop_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageTop_1x.stl)
 - [`TransferLinkageLeft_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TransferLinkageLeft_1x.stl)
@@ -1074,9 +1075,10 @@ ______________________________________________________________________
 - [`WheelLinkageTopRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopRight_1x.stl)
 
 ### 9.5 Miscellaneous
+
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
+
 <!--TODO:-->
 
 <!--
 ______________________________________________________________________
-
