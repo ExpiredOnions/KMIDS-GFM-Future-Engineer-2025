@@ -12,6 +12,11 @@
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
+---
+
+[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/image-drive-linux.md)
+
+[How to Image Drive in Linux](docs/dhcp-server-on-ethernet-port.md)
 ## Table of Contents
 
 <!-- toc -->
@@ -59,7 +64,7 @@ This project focuses on designing, building, and programming an autonomous robot
 
 Team KMIDS-GFM was inspired by the challenge of applying engineering principles and problem-solving skills to creatively and efficiently solve complex problems. Pushing forward with our passion for innovation and hands-on learning.
 
-Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and a smoother workflow throughout the project.
+Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation to facilitate knowledge sharing and ensure a smoother workflow throughout the project.
 
 Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
