@@ -110,8 +110,10 @@ The integration of encoders with the N20 motors provides real-time feedback for 
 
 **Mounting:**
 
-- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. (./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
-  <img src="docs/resources/diffgear.jpg" alt="diff gear" width=300>
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. [Motor Plate](./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
+ 
+<img src="docs/resources/diffgear.jpg" alt="diff gear" width=300>
+
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
 
