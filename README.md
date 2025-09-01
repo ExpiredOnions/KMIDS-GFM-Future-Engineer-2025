@@ -39,7 +39,6 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [5.1 Robot Images](#51-robot-images)
   - [5.2 Chassis Design](#52-chassis-design)
 - [6. Performance Video](#6-performance-video)
-  \+ [| The video shows both the open and obstacle challenge](#-the-video-shows-both-the-open-and-obstacle-challenge)
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
