@@ -1,4 +1,5 @@
 # Hello! We are **Team KMIDS-GFM**.
+<img width="607" height="511" alt="image" src="https://github.com/user-attachments/assets/28d99dba-5d77-4c04-8c1a-51872e0392ac" />
 
 # WRO - Future Engineers - Robotics Project Documentation
 
