@@ -14,9 +14,6 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 
 ---
 
-[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/image-drive-linux.md)
-
-[How to Image Drive in Linux](docs/dhcp-server-on-ethernet-port.md)
 ## Table of Contents
 
 <!-- toc -->
@@ -52,6 +49,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
   - [9.4 Steering Linkages](#94-steering-linkages)
   - [9.5 Miscellaneous](#95-miscellaneous)
+- [10. Extra Documentation](#10-extra-documentation)
 
 <!-- tocstop -->
 
@@ -774,7 +772,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 ### 4.3 Parallel Parking
 
-TBA. <!--TODO:-->
+<img src=docs/resources/parkingvid.gif> <!--TODO:-->
 
 ### 4.4 Extra: Converting Raw Lidar Data to Useful Data
 
@@ -1042,6 +1040,12 @@ ______________________________________________________________________
 | Wires                         | A lot    | N/A             |
 | eSUN PLA+ Spool               | 1-3      | eSUN            |
 
+**Printers Used:** [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D) and [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer) 
+
+Slicer files for both printers can be found [here](./Slicer-Files)
+
+
+
 ______________________________________________________________________
 
 <!--TODO:-->
@@ -1086,5 +1090,9 @@ ______________________________________________________________________
 
 <!--TODO:-->
 
-<!--
+### 10. Extra Documentation
+
+[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/image-drive-linux.md)
+
+[How to Image Drive in Linux](docs/dhcp-server-on-ethernet-port.md)
 ______________________________________________________________________
