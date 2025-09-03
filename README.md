@@ -168,7 +168,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 **Mounting:**
 
-- Screwed directly into a platform plate in front of the chassis into the platform plate.
+- Screwed directly into a platform plate in front of the chassis, connected to the steering mechanism.
 
 <img src="docs/resources/servomount.jpg" alt="Servo Mounting" width=400>
 
@@ -276,10 +276,10 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 **Reason for Selection:**
 
-- **130° wide field of view** captures a large area for tracking.
+- **130° wide field of view** from the fish-eye lens captures a large area for tracking compared to a regular lens.
 - **Infrared compatibility** enables low-light vision.
 - **High-resolution (5MP)** provides a clear image for the robot.
-- **Compact size** fits well on our robot.
+- **Compact size** fits well on our robot and is lightweight.
 
 This setup allows for a wide-angle view, enhancing environmental awareness during both the Open Challenge and Obstacle Challenge. The camera identifies course elements such as walls, pillars, colored markers, parking spaces, and lane lines.
 
@@ -348,7 +348,7 @@ ______________________________________________________________________
 There are two challenges in this competition:
 
 - The **open challenge** involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
-- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surroundings barriers around it.
+- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surrounding barriers around it.
 
 Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
