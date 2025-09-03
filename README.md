@@ -784,9 +784,9 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 <img src=docs/resources/parkingvid.gif> <!--TODO:-->
 
-### 4.4 Advanced Use: Converting Raw Lidar Data to Useful Data
+<!--### 4.4 Advanced Use: Converting Raw Lidar Data to Useful Data
 
-TBA. <!--TODO:-->
+TBA. TODO:-->
 
 ______________________________________________________________________
 
