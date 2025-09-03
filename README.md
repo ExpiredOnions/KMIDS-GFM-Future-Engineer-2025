@@ -127,7 +127,7 @@ The fundamental principle of Ackermann geometry involves positioning the steerin
 
 While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvring and accurate alignment in narrower spaces.
 
-Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behavior.
+Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism. Using CAD allowed us to experiment with different pivot points and steering angles iteratively. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes until it suits our desired behavior.
 
 **Calibration and Implementation**
 
@@ -200,7 +200,7 @@ ______________________________________________________________________
   </tr>
 </table>
 
-The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, our vehicle is powered by an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply), with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even during fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
 The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 The motors, however, require a higher voltage — at least 6V, and to ensure reliable performance, the N20 motor power is supplied through a step-up converter that increases 5V to 12V. Because the motor power is separate from the Raspberry Pi, the standard on/off switch could not fully control the system. To solve this, a MOSFET and a 4.4 kΩ resistor were added between the gate and source, with the drain connected to the negative side of the step-up converter. This allows the robot to be safely powered on and off while supplying sufficient power to both the Raspberry Pi and the motors.
@@ -244,7 +244,15 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 - **Compact size and lightweightness** allow easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-<!--FIXME: Add LIDAR_mount.png-->
+ **The LIDAR sensor is used mainly for the following tasks:**
+
+- Wall following and collision Avoidance
+
+- Obstacle detection
+
+- Identify parking space and assist in the parallel parking manoeuvre
+
+- Mapping and determining initial orientation
 
 [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
@@ -274,6 +282,8 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 - **Compact size** fits well on our robot.
 
 This setup allows for a wide-angle view, enhancing environmental awareness during both the Open Challenge and Obstacle Challenge. The camera identifies course elements such as walls, pillars, colored markers, parking spaces, and lane lines.
+
+**The camera is used mainly for the following tasks:**
 
 - Detect and differentiate wall positions.
 
@@ -774,7 +784,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 <img src=docs/resources/parkingvid.gif> <!--TODO:-->
 
-### 4.4 Extra: Converting Raw Lidar Data to Useful Data
+### 4.4 Advanced Use: Converting Raw Lidar Data to Useful Data
 
 TBA. <!--TODO:-->
 
@@ -819,12 +829,12 @@ ______________________________________________________________________
 
 **Design Overview**
 
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry.
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centred on the chassis.
 
 **Layout**
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
 
-Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
+Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps, sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
 ______________________________________________________________________
 
@@ -841,8 +851,6 @@ ______________________________________________________________________
 ### 7.1 Code Structure
 
 All the code used in the robot can be found [here](code)
-
-<!--TODO: Add link to the code-->
 
 The project codebase is organised to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
 
@@ -950,8 +958,8 @@ git submodule update --init --recursive
 - **RPLIDAR SDK** – For LIDAR functionality.
 - **LCCV** – Custom computer vision library that depends on **libcamera**.
 - **System libraries (install separately):**
-  - **OpenCV** – For camera image processing. The installation guide can be found [here](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html) <!--TODO: Add guide on how to install-->
-  - **libcamera** – Required by LCCV for camera capture. The installation guide can be found [here](https://libcamera.org/getting-started.html)<!--TODO: Add guide on how to install-->
+  - **OpenCV** – For camera image processing. The installation guide can be found [here](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html) 
+  - **libcamera** – Required by LCCV for camera capture. The installation guide can be found [here](https://libcamera.org/getting-started.html)
 
 **Raspberry Pi Pico 2 specific:**
 
@@ -1047,8 +1055,6 @@ Slicer files for both printers can be found [here](./Slicer-Files)
 
 
 ______________________________________________________________________
-
-<!--TODO:-->
 
 ## 9. 3D Printed Parts
 
