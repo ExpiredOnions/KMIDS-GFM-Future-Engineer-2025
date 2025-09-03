@@ -331,7 +331,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 **Wiring Diagram:**
 
-<img src="./docs/resources/wiring-diagram.png" alt="Wiring diagram pic" >
+<img src="./docs/resources/Wiring Diagram Revised.png" alt="Wiring diagram pic" >
 
 ______________________________________________________________________
 
@@ -832,7 +832,7 @@ ______________________________________________________________________
 
 ## 6. Performance Video
 
-[Watch on YouTube](youtube.com/watch?v=7SNfU2ATe68&feature=youtu.be)
+[Watch on YouTube](https://youtu.be/hUqdMjxhbqM)
 
 #### | The video shows both the open and obstacle challenge
 
